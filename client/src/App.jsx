@@ -12,6 +12,7 @@ function App() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [players, setPlayers] = useState([]);
+  const [joinMode, setJoinMode] = useState(false);
   const [hostUsername, setHostUsername] = useState('');
   const [hostSocketId, setHostSocketId] = useState('');
   const [isHost, setIsHost] = useState(false);
@@ -73,6 +74,7 @@ function App() {
       setCorrectAnswerIndex(null);
       setAnswerStats([]);
       setLeaderboard([]);
+      setRoomStatus('question');
       setScreen('question');
       setMessage('Answer now!');
     });
@@ -85,6 +87,7 @@ function App() {
       setCorrectAnswerIndex(data.correctAnswerIndex);
       setAnswerStats(data.answerStats);
       setLeaderboard(data.leaderboard);
+      setRoomStatus('leaderboard');
       setScreen('leaderboard');
       setMessage('Question complete. Reviewing leaderboard...');
     });
@@ -102,6 +105,11 @@ function App() {
       setMessage(`Host changed to ${data.newHostUsername}.`);
     });
 
+    socket.on('room_closed', (data) => {
+      setMessage(data.message || 'Room closed.');
+      setTimeout(resetState, 3000);
+    });
+
     socket.on('player_disconnected', (data) => {
       setMessage(`${data.username} left the room.`);
     });
@@ -113,6 +121,7 @@ function App() {
 
   const resetState = () => {
     setScreen('home');
+    setJoinMode(false);
     setUsername('');
     setPin('');
     setError('');
@@ -151,6 +160,7 @@ function App() {
         return;
       }
       setPin(response.pin);
+      setJoinMode(false);
       setHostUsername(username.trim());
       setIsHost(true);
       setScreen('lobby');
@@ -178,6 +188,7 @@ function App() {
           setError(response?.error || 'Unable to join room.');
           return;
         }
+        setJoinMode(false);
         setScreen('lobby');
         setMessage(`Joined room ${response.pin}. Waiting for host to start.`);
       },
@@ -232,29 +243,56 @@ function App() {
     });
   };
 
+  const handleBeginJoin = () => {
+    setJoinMode(true);
+    setError('');
+  };
+
+  const handleCancelJoin = () => {
+    setJoinMode(false);
+    setPin('');
+    setError('');
+  };
+
   const renderHome = () => (
     <div className="panel">
       <h1>QuizForge Multiplayer Demo</h1>
-      <p>Create a room or join with a 4-digit PIN.</p>
-      <div className="form-group">
-        <label>Username</label>
-        <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Your name" />
-      </div>
-      <div className="button-row">
-        <button className="button primary" onClick={handleCreateRoom}>
-          Create Room
-        </button>
-      </div>
-      <div className="divider">OR</div>
-      <div className="form-group">
-        <label>Room PIN</label>
-        <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="1234" maxLength={4} />
-      </div>
-      <div className="button-row">
-        <button className="button secondary" onClick={handleJoinRoom}>
-          Join Room
-        </button>
-      </div>
+      <p>Create a room as a host or join an existing room with a PIN.</p>
+      {joinMode ? (
+        <>
+          <div className="form-group">
+            <label>Username</label>
+            <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Your name" />
+          </div>
+          <div className="form-group">
+            <label>Room PIN</label>
+            <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="1234" maxLength={4} />
+          </div>
+          <div className="button-row">
+            <button className="button primary" onClick={handleJoinRoom}>
+              Join
+            </button>
+            <button className="button secondary" onClick={handleCancelJoin}>
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="form-group">
+            <label>Username</label>
+            <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Host name" />
+          </div>
+          <div className="button-row">
+            <button className="button primary" onClick={handleCreateRoom}>
+              Create Room
+            </button>
+            <button className="button secondary" onClick={handleBeginJoin}>
+              Join Room
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -360,7 +398,7 @@ function App() {
       </div>
       <div style={{ marginTop: 16 }}>
         {isHost ? (
-          <button className="button primary" onClick={handleNextQuestion} disabled={roomStatus !== 'leaderboard'}>
+          <button className="button primary" onClick={handleNextQuestion} disabled={screen !== 'leaderboard'}>
             Next Question
           </button>
         ) : (

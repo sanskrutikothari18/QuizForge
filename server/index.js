@@ -6,6 +6,7 @@ const { Server } = require('socket.io');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MAX_PLAYERS = 5;
+const MAX_HUMANS = 5;
 
 app.use(cors());
 app.use(express.json());
@@ -71,6 +72,22 @@ function generatePIN() {
   return pin;
 }
 
+function countHumanPlayers(room) {
+  if (!room) return 0;
+  return room.players.filter((player) => !player.isBot).length;
+}
+
+function removeBotSlots(room, slotsToFree = 1) {
+  if (!room || slotsToFree <= 0) return;
+  const bots = room.players.filter((player) => player.isBot);
+  while (slotsToFree > 0 && bots.length > 0) {
+    const botToRemove = bots.pop();
+    room.players = room.players.filter((player) => player.socketId !== botToRemove.socketId);
+    console.log(`[SERVER] removed bot ${botToRemove.username} to free slot for human player in room=${room.pin}`);
+    slotsToFree -= 1;
+  }
+}
+
 function clearRoomTimers(room) {
   if (!room) return;
   if (room.timerInterval) {
@@ -93,6 +110,8 @@ function clearRoomTimers(room) {
 
 function addDemoBots(room) {
   if (!room || room.status !== 'lobby') return;
+  if (countHumanPlayers(room) >= MAX_HUMANS) return;
+
   const addedBots = [];
   let botIndex = 0;
 
@@ -115,6 +134,7 @@ function addDemoBots(room) {
   }
 
   if (addedBots.length > 0) {
+    console.log(`[SERVER] auto-added bots ${addedBots.join(', ')} to room=${room.pin}`);
     io.to(`room_${room.pin}`).emit('bot_joined', { bots: addedBots });
     broadcastPlayerList(room);
   }
@@ -171,14 +191,10 @@ function getRoomForSocket(socketId) {
 function cleanupRoom(pin) {
   const room = rooms[pin];
   if (!room) return;
-  if (room.timerInterval) {
-    clearInterval(room.timerInterval);
-  }
-  if (room.nextPhaseTimeout) {
-    clearTimeout(room.nextPhaseTimeout);
-  }
+  clearRoomTimers(room);
   if (room.cleanupTimeout) {
     clearTimeout(room.cleanupTimeout);
+    room.cleanupTimeout = null;
   }
   delete rooms[pin];
 }
@@ -187,10 +203,16 @@ function broadcastPlayerList(room) {
   console.log(`[SERVER] broadcastPlayerList room=${room.pin} players=${room.players.length} status=${room.status}`);
   io.to(`room_${room.pin}`).emit('player_list', {
     pin: room.pin,
-    players: room.players.map((player) => ({ username: player.username, score: player.score })),
+    players: room.players.map((player) => ({
+      username: player.username,
+      score: player.score,
+      isBot: !!player.isBot,
+      isHost: player.socketId === room.hostId,
+    })),
     hostSocketId: room.hostId,
     hostUsername: room.hostUsername,
     roomStatus: room.status,
+    humanCount: countHumanPlayers(room),
   });
 }
 
@@ -354,6 +376,7 @@ io.on('connection', (socket) => {
           selectedAnswerIndex: null,
           lastAnswerCorrect: false,
           pointsEarned: 0,
+          isBot: false,
         },
       ],
       questions: QUESTIONS,
@@ -373,7 +396,8 @@ io.on('connection', (socket) => {
     socket.username = cleanName;
     socket.isHost = true;
 
-    callback?.({ success: true, pin, hostUsername: cleanName });
+    console.log(`[SERVER] room created pin=${pin} host=${cleanName} socket=${socket.id}`);
+    callback?.({ success: true, pin, hostUsername: cleanName, role: 'host' });
     broadcastPlayerList(room);
     scheduleBotFill(room);
   });
@@ -392,9 +416,14 @@ io.on('connection', (socket) => {
       callback?.({ success: false, error: 'Quiz already started. You cannot join.' });
       return;
     }
-    if (room.players.length >= MAX_PLAYERS) {
+    const humanCount = countHumanPlayers(room);
+    if (humanCount >= MAX_HUMANS) {
+      console.log(`[SERVER] join_room failed pin=${cleanPin} username=${cleanName} reason=room full`);
       callback?.({ success: false, error: 'Room is full.' });
       return;
+    }
+    if (room.players.length >= MAX_PLAYERS) {
+      removeBotSlots(room, 1);
     }
     if (!cleanName) {
       callback?.({ success: false, error: 'Username is required.' });
@@ -413,6 +442,7 @@ io.on('connection', (socket) => {
       selectedAnswerIndex: null,
       lastAnswerCorrect: false,
       pointsEarned: 0,
+      isBot: false,
     };
 
     room.players.push(newPlayer);
@@ -421,7 +451,8 @@ io.on('connection', (socket) => {
     socket.username = cleanName;
     socket.isHost = false;
 
-    callback?.({ success: true, pin: cleanPin, username: cleanName, hostSocketId: room.hostId });
+    console.log(`[SERVER] player joined pin=${cleanPin} username=${cleanName} socket=${socket.id}`);
+    callback?.({ success: true, pin: cleanPin, username: cleanName, hostSocketId: room.hostId, role: 'player' });
     broadcastPlayerList(room);
   });
 
@@ -444,6 +475,7 @@ io.on('connection', (socket) => {
 
     clearRoomTimers(room);
     room.currentQuestionIndex = 0;
+    console.log(`[SERVER] host ${socket.username} starting quiz in room=${room.pin}`);
     startQuestion(room);
     callback?.({ success: true });
   });
@@ -520,6 +552,7 @@ io.on('connection', (socket) => {
     }
 
     room.currentQuestionIndex += 1;
+    console.log(`[SERVER] host ${socket.username} advancing to question ${room.currentQuestionIndex + 1} in room=${room.pin}`);
     startQuestion(room);
     callback?.({ success: true });
   });
@@ -534,14 +567,11 @@ io.on('connection', (socket) => {
     const leavingPlayer = room.players.find((player) => player.socketId === socket.id);
     room.players = room.players.filter((player) => player.socketId !== socket.id);
 
-    if (socket.id === room.hostId && room.players.length > 0) {
-      const nextHost = room.players[0];
-      room.hostId = nextHost.socketId;
-      room.hostUsername = nextHost.username;
-      io.to(`room_${room.pin}`).emit('host_changed', {
-        newHostSocketId: room.hostId,
-        newHostUsername: room.hostUsername,
-      });
+    if (socket.id === room.hostId) {
+      console.log(`[SERVER] host disconnected, closing room=${room.pin}`);
+      io.to(`room_${room.pin}`).emit('room_closed', { message: 'Host has left. Room is closed.' });
+      cleanupRoom(room.pin);
+      return;
     }
 
     if (room.players.length === 0) {
