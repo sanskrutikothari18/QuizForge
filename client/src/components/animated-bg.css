@@ -1,0 +1,16 @@
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 48%;
+  filter: blur(28px) saturate(120%);
+  mix-blend-mode: screen;
+  opacity: 0.95;
+  transform-origin: center;
+}

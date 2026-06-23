@@ -1,0 +1,88 @@
+.final-screen {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 10;
+}
+
+.final-container {
+  width: min(980px, 96%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+
+.final-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.grade-badge {
+  border: 2px solid;
+  padding: 10px 16px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.02);
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.03);
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+}
+.stat-card.big { font-size: 1.75rem; }
+.stat-value { font-weight: 800; font-size: 1.5rem; }
+.stat-label { color: rgba(255,255,255,0.7); }
+
+.leaderboard-final { margin-top: 18px; }
+.leaderboard-list { display: grid; gap: 8px; }
+.leaderboard-item { display:flex; gap:12px; align-items:center; padding:10px; border-radius:10px; background: rgba(255,255,255,0.02); }
+.leaderboard-item.me { outline: 2px solid rgba(170,59,255,0.25); }
+.leaderboard-item .rank { width:48px; font-weight:700; }
+.leaderboard-item .meta { display:flex; justify-content:space-between; width:100%; }
+
+.confetti-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 18px;
+  opacity: 0.9;
+  transform: rotate(15deg);
+  animation: fall 1800ms linear infinite;
+}
+
+.confetti-0 { background: #f97316; left: 10%; animation-delay: 0ms; }
+.confetti-1 { background: #60a5fa; left: 20%; animation-delay: 80ms; }
+.confetti-2 { background: #34d399; left: 30%; animation-delay: 160ms; }
+.confetti-3 { background: #f59e0b; left: 45%; animation-delay: 240ms; }
+.confetti-4 { background: #ef4444; left: 60%; animation-delay: 320ms; }
+.confetti-5 { background: #a78bfa; left: 75%; animation-delay: 400ms; }
+
+@keyframes fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120vh) rotate(360deg); opacity: 0.2; }
+}

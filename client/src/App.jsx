@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import './App.css';
+import AnimatedBackground from './components/AnimatedBackground';
+import FinalResults from './components/FinalResults';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SERVER_URL = 'http://localhost:5000';
 
@@ -26,6 +29,12 @@ function App() {
   const [answerStats, setAnswerStats] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [finalRanking, setFinalRanking] = useState([]);
+  const prevLeaderboardRef = useRef([]);
+
+  useEffect(() => {
+    prevLeaderboardRef.current = leaderboard;
+  }, [leaderboard]);
+  const [isLastQuestion, setIsLastQuestion] = useState(false);
 
   useEffect(() => {
     const socket = io(SERVER_URL, { transports: ['websocket'] });
@@ -84,10 +93,12 @@ function App() {
     });
 
     socket.on('question_ended', (data) => {
+      // Server sends a finalized leaderboard; render it directly.
       setCorrectAnswerIndex(data.correctAnswerIndex);
       setAnswerStats(data.answerStats);
-      setLeaderboard(data.leaderboard);
+      setLeaderboard(data.leaderboard || []);
       setRoomStatus('leaderboard');
+      setIsLastQuestion(!!data.isLastQuestion);
       setScreen('leaderboard');
       setMessage('Question complete. Reviewing leaderboard...');
     });
@@ -266,7 +277,7 @@ function App() {
           </div>
           <div className="form-group">
             <label>Room PIN</label>
-            <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="1234" maxLength={4} />
+            <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="123456" maxLength={6} />
           </div>
           <div className="button-row">
             <button className="button primary" onClick={handleJoinRoom}>
@@ -375,14 +386,28 @@ function App() {
           <span>Score</span>
           <span>Result</span>
         </div>
-        {leaderboard.map((entry) => (
-          <div key={entry.username} className="leaderboard-row">
-            <span>{entry.rank}</span>
-            <span>{entry.username}</span>
-            <span>{entry.score}</span>
-            <span>{entry.lastAnswerCorrect ? '+10' : '0'}</span>
-          </div>
-        ))}
+        <div style={{ display: 'grid', gap: 8 }}>
+          <AnimatePresence>
+            {leaderboard.map((entry) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                key={entry.username}
+                className="leaderboard-row"
+                style={{ alignItems: 'center' }}
+              >
+                <span>{entry.rank}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <strong>{entry.username}</strong>
+                </span>
+                <span>{entry.score}</span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
       <div className="answer-summary">
         <p>Correct answer: <strong>{correctAnswerIndex !== null ? String.fromCharCode(65 + correctAnswerIndex) : '-'}</strong></p>
@@ -398,9 +423,19 @@ function App() {
       </div>
       <div style={{ marginTop: 16 }}>
         {isHost ? (
-          <button className="button primary" onClick={handleNextQuestion} disabled={screen !== 'leaderboard'}>
-            Next Question
-          </button>
+          isLastQuestion ? (
+            <button className="button primary" onClick={() => {
+              socketRef.current?.emit('end_quiz', (response) => {
+                if (!response?.success) setError(response?.error || 'Unable to end quiz.');
+              });
+            }}>
+              End Quiz
+            </button>
+          ) : (
+            <button className="button primary" onClick={handleNextQuestion} disabled={screen !== 'leaderboard'}>
+              Next Question
+            </button>
+          )
         ) : (
           <div className="hint">Waiting for the host to click "Next Question".</div>
         )}
@@ -438,13 +473,16 @@ function App() {
 
   return (
     <div className="app-shell">
+      <AnimatedBackground />
       {error && <div className="banner banner-error">{error}</div>}
       {message && <div className="banner banner-info">{message}</div>}
       {screen === 'home' && renderHome()}
       {screen === 'lobby' && renderLobby()}
       {screen === 'question' && renderQuestion()}
       {screen === 'leaderboard' && renderLeaderboard()}
-      {screen === 'final' && renderFinal()}
+      {screen === 'final' && (
+        <FinalResults finalRanking={finalRanking} username={username} totalQuestions={totalQuestions} />
+      )}
     </div>
   );
 }

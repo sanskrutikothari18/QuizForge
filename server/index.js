@@ -65,9 +65,10 @@ const BOT_NAMES = ['Bot 1', 'Bot 2', 'Bot 3', 'Bot 4'];
 const rooms = {};
 
 function generatePIN() {
+  // generate a unique 6-digit PIN
   let pin;
   do {
-    pin = Math.floor(1000 + Math.random() * 9000).toString();
+    pin = Math.floor(100000 + Math.random() * 900000).toString();
   } while (rooms[pin]);
   return pin;
 }
@@ -128,6 +129,9 @@ function addDemoBots(room) {
       lastAnswerCorrect: false,
       pointsEarned: 0,
       isBot: true,
+      correctAnswers: 0,
+      responseTimes: [],
+      fastestResponse: null,
     };
     room.players.push(botPlayer);
     addedBots.push(botName);
@@ -172,6 +176,13 @@ function scheduleBotAnswers(room) {
         bot.lastAnswerCorrect = correct;
         bot.pointsEarned = correct ? 10 : 0;
         if (correct) bot.score += 10;
+        // record bot response time and correct count
+        const now = Date.now();
+        const respSec = room.questionStartTime ? Math.max(0, Math.round((now - room.questionStartTime) / 1000)) : Math.round(delay/1000);
+        bot.responseTimes = bot.responseTimes || [];
+        bot.responseTimes.push(respSec);
+        bot.fastestResponse = bot.fastestResponse == null ? respSec : Math.min(bot.fastestResponse, respSec);
+        if (correct) bot.correctAnswers = (bot.correctAnswers || 0) + 1;
 
         broadcastPlayerList(room);
         if (room.players.every((player) => player.answered)) {
@@ -205,7 +216,9 @@ function broadcastPlayerList(room) {
     pin: room.pin,
     players: room.players.map((player) => ({
       username: player.username,
-      score: player.score,
+      // Do not expose live score changes while a question is active to
+      // prevent incremental leaderboard leaks. Show score only when not in 'question'.
+      score: room.status === 'question' ? undefined : player.score,
       isBot: !!player.isBot,
       isHost: player.socketId === room.hostId,
     })),
@@ -222,7 +235,14 @@ function endQuiz(room) {
   const finalRanking = room.players
     .slice()
     .sort((a, b) => b.score - a.score)
-    .map((player, idx) => ({ username: player.username, score: player.score, rank: idx + 1 }));
+    .map((player, idx) => ({
+      username: player.username,
+      score: player.score,
+      rank: idx + 1,
+      correctAnswers: player.correctAnswers || 0,
+      accuracy: room.questions && room.questions.length ? Math.round(((player.correctAnswers || 0) / room.questions.length) * 100) : 0,
+      fastestResponse: player.fastestResponse == null ? null : player.fastestResponse,
+    }));
 
   io.to(`room_${room.pin}`).emit('quiz_ended', { finalRanking });
 
@@ -270,8 +290,14 @@ function endQuestion(room) {
       rank: idx + 1,
       lastAnswerCorrect: player.lastAnswerCorrect,
       pointsEarned: player.pointsEarned,
+      correctAnswers: player.correctAnswers || 0,
+      accuracy: room.questions && room.questions.length ? Math.round(((player.correctAnswers || 0) / room.questions.length) * 100) : 0,
+      fastestResponse: player.fastestResponse == null ? null : player.fastestResponse,
     }));
 
+  // Do NOT auto-advance to next question. Host must explicitly advance.
+  // Provide clients with an indicator if this was the final question.
+  const isLastQuestion = room.currentQuestionIndex + 1 >= room.questions.length;
   io.to(`room_${room.pin}`).emit('question_ended', {
     correctAnswerIndex,
     answerStats,
@@ -283,21 +309,8 @@ function endQuestion(room) {
       lastAnswerCorrect: player.lastAnswerCorrect,
       pointsEarned: player.pointsEarned,
     })),
+    isLastQuestion,
   });
-
-  if (room.nextPhaseTimeout) {
-    clearTimeout(room.nextPhaseTimeout);
-  }
-
-  room.nextPhaseTimeout = setTimeout(() => {
-    if (!rooms[room.pin]) return;
-    if (room.currentQuestionIndex + 1 >= room.questions.length) {
-      endQuiz(room);
-    } else {
-      room.currentQuestionIndex += 1;
-      startQuestion(room);
-    }
-  }, 7000);
 }
 
 function startQuestion(room) {
@@ -367,6 +380,7 @@ io.on('connection', (socket) => {
       pin,
       hostId: socket.id,
       hostUsername: cleanName,
+      host: { socketId: socket.id, username: cleanName },
       players: [
         {
           socketId: socket.id,
@@ -377,6 +391,9 @@ io.on('connection', (socket) => {
           lastAnswerCorrect: false,
           pointsEarned: 0,
           isBot: false,
+          correctAnswers: 0,
+          responseTimes: [],
+          fastestResponse: null,
         },
       ],
       questions: QUESTIONS,
@@ -443,6 +460,9 @@ io.on('connection', (socket) => {
       lastAnswerCorrect: false,
       pointsEarned: 0,
       isBot: false,
+      correctAnswers: 0,
+      responseTimes: [],
+      fastestResponse: null,
     };
 
     room.players.push(newPlayer);
@@ -516,6 +536,12 @@ io.on('connection', (socket) => {
     player.lastAnswerCorrect = isCorrect;
     player.pointsEarned = points;
     player.answerTimestamp = now;
+    // record response time and correct counts
+    const respSec = room.questionStartTime ? Math.max(0, Math.round((now - room.questionStartTime) / 1000)) : 0;
+    player.responseTimes = player.responseTimes || [];
+    player.responseTimes.push(respSec);
+    player.fastestResponse = player.fastestResponse == null ? respSec : Math.min(player.fastestResponse, respSec);
+    if (isCorrect) player.correctAnswers = (player.correctAnswers || 0) + 1;
     if (isCorrect) {
       player.score += points;
     }
@@ -523,9 +549,28 @@ io.on('connection', (socket) => {
     callback?.({ success: true, isCorrect, points });
     broadcastPlayerList(room);
 
+    // Do not emit intermediate leaderboard snapshots. Server will send a single
+    // finalized leaderboard when the question ends to avoid partial rankings.
+
     if (room.players.every((playerData) => playerData.answered)) {
       endQuestion(room);
     }
+  });
+
+  socket.on('end_quiz', (payloadOrCallback, maybeCallback) => {
+    const callback = typeof payloadOrCallback === 'function' ? payloadOrCallback : maybeCallback;
+    console.log(`[SERVER] received end_quiz socket=${socket.id}`);
+    const room = getRoomForSocket(socket.id);
+    if (!room) {
+      callback?.({ success: false, error: 'Room not found.' });
+      return;
+    }
+    if (room.hostId !== socket.id) {
+      callback?.({ success: false, error: 'Only the host can end the quiz.' });
+      return;
+    }
+    endQuiz(room);
+    callback?.({ success: true });
   });
 
   socket.on('next_question', (payloadOrCallback, maybeCallback) => {

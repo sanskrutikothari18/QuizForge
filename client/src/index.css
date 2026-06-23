@@ -1,24 +1,28 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --bg-surface: #ffffff;
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --text: #cbd5e1;
+  --text-h: #f8fafc;
+  --bg: #0f0f1a;
+  --border: rgba(255,255,255,0.04);
+  --code-bg: #0b0b10;
+  --accent: #7c3aed;
+  --accent-bg: rgba(124,58,237,0.08);
+  --accent-border: rgba(124,58,237,0.3);
+  --bg-surface: rgba(255,255,255,0.02);
+  --social-bg: rgba(255,255,255,0.02);
+  --shadow: 0 10px 30px rgba(0,0,0,0.7);
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --answer-red: #ef4444;
+  --answer-blue: #3b82f6;
+  --answer-green: #10b981;
+  --answer-yellow: #f59e0b;
+
+  --sans: 'Nunito', system-ui, Roboto, sans-serif;
+  --heading: 'Fredoka', system-ui, Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
