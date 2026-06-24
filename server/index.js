@@ -64,9 +64,10 @@ const BOT_NAMES = ['Bot 1', 'Bot 2', 'Bot 3', 'Bot 4'];
 const rooms = {};
 
 function generatePIN() {
+  // 6-digit PIN
   let pin;
   do {
-    pin = Math.floor(1000 + Math.random() * 9000).toString();
+    pin = Math.floor(100000 + Math.random() * 900000).toString();
   } while (rooms[pin]);
   return pin;
 }
@@ -187,6 +188,7 @@ function broadcastPlayerList(room) {
   console.log(`[SERVER] broadcastPlayerList room=${room.pin} players=${room.players.length} status=${room.status}`);
   io.to(`room_${room.pin}`).emit('player_list', {
     pin: room.pin,
+    title: room.title || 'QuizForge',
     players: room.players.map((player) => ({ username: player.username, score: player.score })),
     hostSocketId: room.hostId,
     hostUsername: room.hostUsername,
@@ -281,7 +283,8 @@ function endQuestion(room) {
 function startQuestion(room) {
   clearRoomTimers(room);
   room.status = 'question';
-  room.questionDuration = 15;
+  // 10 second questions for the demo
+  room.questionDuration = 10;
   room.timeLeft = room.questionDuration;
   room.questionStartTime = Date.now();
   room.players.forEach((player) => {
@@ -332,7 +335,7 @@ function startQuestion(room) {
 }
 
 io.on('connection', (socket) => {
-  socket.on('create_room', ({ username }, callback) => {
+  socket.on('create_room', ({ username, title }, callback) => {
     console.log(`[SERVER] received create_room username=${username}`);
     const cleanName = String(username || '').trim();
     if (!cleanName) {
@@ -345,6 +348,7 @@ io.on('connection', (socket) => {
       pin,
       hostId: socket.id,
       hostUsername: cleanName,
+      title: String(title || 'QuizForge').trim(),
       players: [
         {
           socketId: socket.id,
@@ -373,7 +377,7 @@ io.on('connection', (socket) => {
     socket.username = cleanName;
     socket.isHost = true;
 
-    callback?.({ success: true, pin, hostUsername: cleanName });
+    callback?.({ success: true, pin, hostUsername: cleanName, title: room.title });
     broadcastPlayerList(room);
     scheduleBotFill(room);
   });
@@ -470,13 +474,13 @@ io.on('connection', (socket) => {
     const currentQuestion = room.questions[room.currentQuestionIndex];
     const isCorrect = selectedIndex === currentQuestion.correctAnswerIndex;
 
-    // compute points based on speed: remaining time ratio * 10 (min 1)
+    // compute points based on speed: remainingTime * 100
     const now = Date.now();
     const elapsedSec = room.questionStartTime ? (now - room.questionStartTime) / 1000 : 0;
-    const remainingSec = Math.max(0, (room.questionDuration || 15) - Math.floor(elapsedSec));
+    const remainingSec = Math.max(0, (room.questionDuration || 10) - Math.floor(elapsedSec));
     let points = 0;
     if (isCorrect) {
-      points = Math.max(1, Math.round((remainingSec / (room.questionDuration || 15)) * 10));
+      points = Math.round(remainingSec * 100);
     }
 
     player.selectedAnswerIndex = selectedIndex;

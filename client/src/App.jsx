@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import './App.css';
 
-const SERVER_URL = 'http://localhost:5000';
+// Connect to server using the current host by default so other devices can join using host IP
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || `${window.location.protocol}//${window.location.hostname}:5000`;
 
 function App() {
   const socketRef = useRef(null);
   const [screen, setScreen] = useState('home');
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
+  const [quizTitle, setQuizTitle] = useState('');
+  const [roomTitle, setRoomTitle] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [players, setPlayers] = useState([]);
@@ -58,6 +61,7 @@ function App() {
     socket.on('player_list', (data) => {
       console.log('[CLIENT] player_list', data);
       setPlayers(data.players);
+      setRoomTitle(data.title || 'QuizForge');
       setHostSocketId(data.hostSocketId);
       setHostUsername(data.hostUsername || 'Host');
       setRoomStatus(data.roomStatus);
@@ -139,12 +143,16 @@ function App() {
       setError('Enter a username to create a room.');
       return;
     }
+    if (!quizTitle.trim()) {
+      setError('Enter a quiz title to create a room.');
+      return;
+    }
     if (!socketRef.current?.connected) {
       setError('Not connected to the server yet.');
       return;
     }
-    console.log('[CLIENT] emit create_room', username.trim());
-    socketRef.current.emit('create_room', { username: username.trim() }, (response) => {
+    console.log('[CLIENT] emit create_room', username.trim(), quizTitle.trim());
+    socketRef.current.emit('create_room', { username: username.trim(), title: quizTitle.trim() }, (response) => {
       console.log('[CLIENT] create_room response', response);
       if (!response?.success) {
         setError(response?.error || 'Unable to create room.');
@@ -152,6 +160,8 @@ function App() {
       }
       setPin(response.pin);
       setHostUsername(username.trim());
+      setRoomTitle(response.title || quizTitle.trim());
+      setMessage(`Quiz: ${response.title || quizTitle.trim()}`);
       setIsHost(true);
       setScreen('lobby');
       setMessage(`Room ${response.pin} created. Waiting for players...`);
@@ -235,7 +245,11 @@ function App() {
   const renderHome = () => (
     <div className="panel">
       <h1>QuizForge Multiplayer Demo</h1>
-      <p>Create a room or join with a 4-digit PIN.</p>
+      <p>Create a room or join with a 6-digit PIN.</p>
+      <div className="form-group">
+        <label>Quiz Title</label>
+        <input value={quizTitle} onChange={(event) => setQuizTitle(event.target.value)} placeholder="e.g. JavaScript Basics" />
+      </div>
       <div className="form-group">
         <label>Username</label>
         <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Your name" />
@@ -248,7 +262,7 @@ function App() {
       <div className="divider">OR</div>
       <div className="form-group">
         <label>Room PIN</label>
-        <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="1234" maxLength={4} />
+        <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="Enter 6-digit PIN" maxLength={6} />
       </div>
       <div className="button-row">
         <button className="button secondary" onClick={handleJoinRoom}>
@@ -262,7 +276,7 @@ function App() {
     <div className="panel">
       <div className="room-header">
         <div>
-          <h2>Room PIN</h2>
+          <h2>{roomTitle || 'QuizForge'}</h2>
           <p className="room-pin">{pin}</p>
         </div>
         <div className="status-chip">{roomStatus === 'lobby' ? 'Waiting' : roomStatus}</div>
