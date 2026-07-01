@@ -1,27 +1,37 @@
 ﻿const express = require('express');
 const cors = require('cors');
-const http = require('http');
-const { Server } = require('socket.io');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+
+dotenv.config();
+connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const MAX_PLAYERS = 5;
 
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    credentials: true
+}));
+
 app.use(express.json());
 
+const authRoutes = require('./routes/authRoutes');
+const quizRoutes = require('./routes/quizRoutes');
+const gameRoutes = require('./routes/gameRoutes');
+const resultRoutes = require('./routes/resultRoutes');
+
+app.use('/auth', authRoutes);
+app.use('/quiz', quizRoutes);
+app.use('/game', gameRoutes);
+app.use('/result', resultRoutes);
+
 app.get('/', (req, res) => {
-  res.json({ message: 'QuizForge server is running!' });
+    res.send('QuizForge API is running...');
 });
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
+const PORT = process.env.PORT || 5000;
 
+<<<<<<< HEAD
 const QUESTIONS = [
   {
     id: 1,
@@ -563,3 +573,8 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`QuizForge server listening on port ${PORT}`);
 });
+=======
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`QuizForge server listening on port ${PORT}`);
+});
+>>>>>>> 7161da2393a86f56deedaf622dd9bcaac3fcb3e7
