@@ -1,122 +1,92 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+// Pages
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import CreateQuiz from './pages/CreateQuiz';
+import MyQuizzes from './pages/MyQuizzes';
+import HostLobby from './pages/HostLobby';
+import JoinGame from './pages/JoinGame';
+import WaitingRoom from './pages/WaitingRoom';
+import LiveQuiz from './pages/LiveQuiz';
+import AnswerResult from './pages/AnswerResult';
+import Leaderboard from './pages/Leaderboard';
+import FinalResult from './pages/FinalResult';
+import ResultsAnalytics from './pages/ResultsAnalytics';
+
+import { GameProvider } from './context/GameContext';
+
+const queryClient = new QueryClient();
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  // Hide Navbar & Footer during gameplay for full immersion
+  const isGameplayView = [
+    '/live', 
+    '/waiting', 
+    '/result/answer', 
+    '/leaderboard', 
+    '/final-result'
+  ].some(path => location.pathname.startsWith(path));
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className="flex flex-col min-h-screen bg-background text-gray-200">
+      {!isGameplayView && <Navbar />}
+      <main className="flex-1 flex flex-col">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/quiz/create" element={<CreateQuiz />} />
+            <Route path="/quiz/my" element={<MyQuizzes />} />
+            <Route path="/host/lobby/:pin" element={<HostLobby />} />
+            <Route path="/join" element={<JoinGame />} />
+            <Route path="/waiting/:pin" element={<WaitingRoom />} />
+            <Route path="/live/:pin" element={<LiveQuiz />} />
+            <Route path="/result/answer/:pin" element={<AnswerResult />} />
+            <Route path="/leaderboard/:pin" element={<Leaderboard />} />
+            <Route path="/final-result/:pin" element={<FinalResult />} />
+            <Route path="/results/:sessionId" element={<ResultsAnalytics />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+      {!isGameplayView && <Footer />}
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GameProvider>
+        <Router>
+          <AnimatedRoutes />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: '#18181b',
+                color: '#fff',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '14px',
+              },
+            }}
+          />
+        </Router>
+      </GameProvider>
+    </QueryClientProvider>
+  );
+}

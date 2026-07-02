@@ -1,0 +1,280 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Play, Sparkles, AlertCircle, Loader2, QrCode, Camera } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { Html5Qrcode } from 'html5-qrcode';
+import AnimatedPage from '../components/AnimatedPage';
+import { joinGame } from '../services/gameService';
+import { useGame } from '../context/GameContext';
+
+export default function JoinGame() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlPin = searchParams.get('pin') || '';
+  const { setPin, setPlayerName } = useGame();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanError, setScanError] = useState(null);
+  const qrCodeRef = useRef(null);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      pin: urlPin,
+      playerName: '',
+    }
+  });
+
+  // Keep PIN value in sync if URL query parameter changes
+  useEffect(() => {
+    if (urlPin) {
+      setValue('pin', urlPin);
+    }
+  }, [urlPin, setValue]);
+
+  // QR Code Scanner mounting
+  useEffect(() => {
+    if (!isScanning) return;
+
+    let html5QrCode = new Html5Qrcode('qr-reader');
+    qrCodeRef.current = html5QrCode;
+
+    html5QrCode.start(
+      { facingMode: 'environment' },
+      {
+        fps: 10,
+        qrbox: { width: 220, height: 220 },
+        aspectRatio: 1.0
+      },
+      (decodedText) => {
+        try {
+          console.log('[QR SCANNER SUCCESS] Decoded text:', decodedText);
+          let pinVal = '';
+          
+          // Case 1: Decoded text is a full URL with search parameter (e.g. ?pin=589231)
+          if (decodedText.includes('?')) {
+            const urlQuery = decodedText.split('?')[1];
+            const urlParams = new URLSearchParams(urlQuery);
+            pinVal = urlParams.get('pin');
+          }
+          
+          // Case 2: Decoded text is raw 6 digits
+          if (!pinVal && /^\d{6}$/.test(decodedText.trim())) {
+            pinVal = decodedText.trim();
+          }
+
+          if (pinVal) {
+            setValue('pin', pinVal);
+            toast.success(`PIN ${pinVal} scanned! 🔍`);
+            setIsScanning(false);
+          } else {
+            toast.error('No valid game PIN found in QR Code.');
+          }
+        } catch (err) {
+          toast.error('Failed to parse QR scan.');
+        }
+      },
+      (errorMessage) => {
+        // Silently catch scan frames without success matches
+      }
+    ).catch((err) => {
+      console.error('[QR START ERROR]', err);
+      setScanError(err.message || 'Camera access blocked or unsupported.');
+    });
+
+    return () => {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch((err) => console.log('Clean scanner error:', err));
+      }
+    };
+  }, [isScanning, setValue]);
+
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      const response = await joinGame(data.pin, data.playerName);
+      if (response.success) {
+        // Update global game contexts
+        setPin(data.pin);
+        setPlayerName(data.playerName);
+
+        toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
+        
+        // Navigate to the Waiting Room page
+        setTimeout(() => {
+          navigate(`/waiting/${data.pin}`);
+        }, 800);
+      } else {
+        toast.error(response.message || 'Lobby join failed. Check the PIN.');
+      }
+    } catch (error) {
+      console.error('[JOIN LOBBY ERROR]', error);
+      const errMsg = error.response?.data?.message || 'Could not join lobby. Check your PIN!';
+      toast.error(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <AnimatedPage>
+      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-12 bg-background">
+        
+        {/* Glow Spheres */}
+        <div className="absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-glow-primary pointer-events-none opacity-45"></div>
+        <div className="absolute bottom-[10%] right-[20%] h-[400px] w-[400px] rounded-full bg-glow-secondary pointer-events-none opacity-30"></div>
+
+        {/* Form Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+          className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
+        >
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-secondary/40 to-transparent"></div>
+
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 border border-secondary/20 text-secondary mb-4">
+              <Play className="h-6 w-6 fill-current" />
+            </div>
+            <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
+              Join the Battle
+            </h2>
+            <p className="mt-2 text-sm text-gray-400">
+              Enter the Game PIN or scan QR code to enter the arena.
+            </p>
+          </div>
+
+          {/* Input Fields */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            
+            {/* PIN WITH SCANNER TOGGLE */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                  Lobby Game PIN
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScanError(null);
+                    setIsScanning(!isScanning);
+                  }}
+                  className="text-xs font-bold text-secondary flex items-center gap-1 hover:underline cursor-pointer"
+                >
+                  <Camera className="h-3.5 w-3.5" />
+                  <span>{isScanning ? 'Close Scanner' : 'Scan QR Code'}</span>
+                </button>
+              </div>
+
+              {/* QR Camera Reader Display */}
+              {isScanning && (
+                <div className="space-y-2 mt-2 border border-white/10 rounded-2xl overflow-hidden p-2 bg-black/40 relative">
+                  {scanError ? (
+                    <div className="p-4 text-center space-y-3">
+                      <AlertCircle className="h-8 w-8 text-accent mx-auto" />
+                      <p className="text-xs text-gray-300 font-bold">
+                        Camera Access Error
+                      </p>
+                      <p className="text-[10px] text-gray-400 leading-relaxed max-w-[240px] mx-auto">
+                        In-app camera scanning requires a secure connection (HTTPS) or localhost.
+                      </p>
+                      <div className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-xl p-2.5 max-w-[240px] mx-auto font-medium">
+                        ✨ Tip: Scan the host's QR code using your phone's native Camera app instead!
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div id="qr-reader" className="w-full rounded-xl overflow-hidden font-sans text-xs text-gray-400 relative">
+                        <div className="absolute inset-x-0 h-0.5 bg-secondary/80 shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-[scan_2s_ease-in-out_infinite] z-20 pointer-events-none"></div>
+                      </div>
+                      <p className="text-[10px] text-gray-500 text-center">Center the QR code in the scanning box.</p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <input
+                type="text"
+                placeholder="e.g. 589231"
+                {...register('pin', {
+                  required: 'Lobby Game PIN is required',
+                  pattern: {
+                    value: /^\d{6}$/,
+                    message: 'Lobby PIN must be a 6-digit number',
+                  },
+                })}
+                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-lg font-black tracking-widest text-secondary placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-secondary/35 focus:border-secondary ${
+                  errors.pin ? 'border-accent/40' : 'border-white/10'
+                }`}
+              />
+              {errors.pin && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.pin.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Nickname */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                Choose Nickname
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. CyberKnight"
+                {...register('playerName', {
+                  required: 'Nickname is required',
+                  minLength: {
+                    value: 2,
+                    message: 'Nickname must be at least 2 characters',
+                  },
+                  maxLength: {
+                    value: 12,
+                    message: 'Nickname cannot exceed 12 characters',
+                  },
+                })}
+                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
+                  errors.playerName ? 'border-accent/40' : 'border-white/10'
+                }`}
+              />
+              {errors.playerName && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.playerName.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full btn-premium btn-secondary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Join Lobby Room</span>
+                </>
+              )}
+            </button>
+          </form>
+
+        </motion.div>
+      </div>
+    </AnimatedPage>
+  );
+}
