@@ -53,7 +53,14 @@ export default function Login() {
       }
     } catch (error) {
       console.error('[LOGIN ERROR]', error);
-      const errMsg = error.response?.data?.message || 'Invalid email or password';
+      let errMsg = 'Invalid email or password';
+      if (error.response) {
+        errMsg = error.response.data?.message || errMsg;
+      } else if (error.request) {
+        errMsg = 'Connection failed. Please ensure the backend server is running.';
+      } else {
+        errMsg = error.message || errMsg;
+      }
       toast.error(errMsg);
     } finally {
       setIsLoading(false);

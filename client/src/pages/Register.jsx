@@ -78,7 +78,14 @@ export default function Register() {
       }
     } catch (error) {
       console.error('[REGISTER ERROR]', error);
-      const errMsg = error.response?.data?.message || 'Email already exists or invalid data';
+      let errMsg = 'Email already exists or invalid data';
+      if (error.response) {
+        errMsg = error.response.data?.message || errMsg;
+      } else if (error.request) {
+        errMsg = 'Connection failed. Please ensure the backend server is running.';
+      } else {
+        errMsg = error.message || errMsg;
+      }
       toast.error(errMsg);
     } finally {
       setIsLoading(false);
