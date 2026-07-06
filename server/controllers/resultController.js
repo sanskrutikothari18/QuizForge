@@ -24,6 +24,10 @@ const saveResult = async (req, res) => {
         }
 
         const sortedPlayers = [...game.players].sort((a, b) => {
+            if (a.totalScore !== b.totalScore) {
+                return b.totalScore - a.totalScore;
+            }
+            
             const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
             const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
             
