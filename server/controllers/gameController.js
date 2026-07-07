@@ -185,15 +185,6 @@ const joinGame = async (req, res) => {
             });
         }
 
-        const io = req.app.get('io');
-        if (io) {
-            io.to(`room_${pin}`).emit('player_list', {
-                pin: game.pin,
-                players: game.players.map(p => ({ username: p.name, score: p.totalScore })),
-                roomStatus: game.status
-            });
-        }
-
         res.status(200).json({
             success: true,
             message: `${playerName} joined successfully!`,
@@ -410,21 +401,6 @@ const submitAnswer = async (req, res) => {
                 answeredCount,
                 totalPlayers: updatedGame.players.length
             });
-        }
-
-        const io = req.app.get('io');
-        if (io) {
-            const answeredCount = game.players.filter(p => 
-                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
-            ).length;
-            
-            io.to(`room_${pin}`).emit('player_answered', {
-                username: playerName,
-                answeredCount,
-                totalPlayers: game.players.length
-            });
-
-            // Just emit the player_answered event for real-time progress bar updates
         }
 
         res.status(200).json({
