@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
+import ThemeBackground from '../components/ThemeBackground';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { startQuestion, endGame, getGame, showLeaderboard } from '../services/gameService';
 import { useGame } from '../context/GameContext';
@@ -177,8 +178,7 @@ export default function AnswerResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const hostedPin = localStorage.getItem('current_hosted_pin');
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+    const isUserHost = !localPlayer && !!hostToken;
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage
@@ -292,18 +292,10 @@ export default function AnswerResult() {
       });
     }
 
-    // 2. Connect Socket and Listen for transition (handle reconnects)
+    // 2. Connect Socket and Listen for transition
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    
-    const joinRoom = () => {
-      emitJoinRoom(pin, roleOrName);
-    };
-
-    socket.on('connect', joinRoom);
-    if (socket.connected) {
-      joinRoom();
-    }
+    emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -320,7 +312,6 @@ export default function AnswerResult() {
     });
 
     return () => {
-      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('show_leaderboard');
       socket.off('quiz_ended');
@@ -393,8 +384,9 @@ export default function AnswerResult() {
   const runnersUp = leaderboard.filter(p => p.rank > 3);
 
   return (
-    <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-hidden`}>
+    <ThemeBackground>
+      <AnimatedPage>
+        <div className={`relative min-h-screen flex flex-col justify-start gap-4 p-4 sm:p-6 overflow-hidden`}>
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -683,7 +675,8 @@ export default function AnswerResult() {
           </div>
 
         </div>
-      </div>
-    </AnimatedPage>
+        </div>
+      </AnimatedPage>
+    </ThemeBackground>
   );
 }

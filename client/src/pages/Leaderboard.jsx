@@ -10,9 +10,10 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+import ThemeBackground from '../components/ThemeBackground';
 import { getLeaderboard, startQuestion, endGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
+import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
@@ -159,7 +160,6 @@ export default function Leaderboard() {
   const { playerName } = useGame();
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
 
-  
   // Component State
   const [leaderboard, setLeaderboard] = useState([]);
   const [isHost, setIsHost] = useState(false);
@@ -170,10 +170,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const hostedPin = localStorage.getItem('current_hosted_pin');
-    
-    // Determine user role
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+    const isUserHost = !localPlayer && !!hostToken;
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
@@ -198,18 +195,10 @@ export default function Leaderboard() {
     };
     fetchLeaderboard();
 
-    // 2. Connect Socket and Listen (handle reconnects)
+    // 2. Connect Socket and Listen
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    
-    const joinRoom = () => {
-      emitJoinRoom(pin, roleOrName);
-    };
-
-    socket.on('connect', joinRoom);
-    if (socket.connected) {
-      joinRoom();
-    }
+    emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -226,7 +215,6 @@ export default function Leaderboard() {
     });
 
     return () => {
-      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('quiz_ended');
       socket.off('room_closed');
@@ -275,8 +263,9 @@ export default function Leaderboard() {
   const theme = getTheme(category);
 
   return (
-    <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-hidden`}>
+    <ThemeBackground>
+      <AnimatedPage>
+        <div className={`relative min-h-screen flex flex-col justify-start gap-4 p-6 overflow-hidden`}>
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -415,6 +404,7 @@ export default function Leaderboard() {
         </div>
 
       </div>
-    </AnimatedPage>
+      </AnimatedPage>
+    </ThemeBackground>
   );
 }

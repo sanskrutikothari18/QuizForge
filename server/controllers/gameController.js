@@ -55,7 +55,6 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
         return {
             name: p.name,
             username: p.name,
-            avatar: p.avatar,
             score: p.totalScore,
             totalScore: p.totalScore,
             rank: idx + 1,
@@ -137,7 +136,7 @@ const createGame = async (req, res) => {
 
 const joinGame = async (req, res) => {
     try {
-        const { pin, playerName, avatar } = req.body;
+        const { pin, playerName } = req.body;
 
         if (!pin || !playerName) {
             return res.status(400).json({
@@ -146,43 +145,45 @@ const joinGame = async (req, res) => {
             });
         }
 
-        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const updatedGame = await GameSession.findOneAndUpdate(
-            { 
-                pin, 
-                status: 'waiting', 
-                'players.name': { $not: new RegExp('^' + escName + '$', 'i') } 
-            },
-            { $push: { players: { name: playerName, avatar: avatar || '👤', totalScore: 0, answers: [] } } },
-            { new: true }
-        );
+        const game = await GameSession.findOne({ pin });
+        if (!game) {
+            return res.status(404).json({
+                success: false,
+                message: 'Game not found. Check your PIN!'
+            });
+        }
 
-        if (!updatedGame) {
-            const checkGame = await GameSession.findOne({ pin });
-            if (!checkGame) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Game not found. Check your PIN!'
-                });
-            }
-            if (checkGame.status !== 'waiting') {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Game has already started!'
-                });
-            }
+        if (game.status !== 'waiting') {
+            return res.status(400).json({
+                success: false,
+                message: 'Game has already started!'
+            });
+        }
+
+        const nameExists = game.players.find(
+            p => p.name.toLowerCase() === playerName.toLowerCase()
+        );
+        if (nameExists) {
             return res.status(400).json({
                 success: false,
                 message: 'This name is already taken!'
             });
         }
 
+        game.players.push({
+            name: playerName,
+            totalScore: 0,
+            answers: []
+        });
+
+        await game.save();
+
         const io = req.app.get('io');
         if (io) {
             io.to(`room_${pin}`).emit('player_list', {
-                pin: updatedGame.pin,
-                players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                roomStatus: updatedGame.status
+                pin: game.pin,
+                players: game.players.map(p => ({ username: p.name, score: p.totalScore })),
+                roomStatus: game.status
             });
         }
 
@@ -190,9 +191,9 @@ const joinGame = async (req, res) => {
             success: true,
             message: `${playerName} joined successfully!`,
             game: {
-                pin: updatedGame.pin,
+                pin: game.pin,
                 playerName: playerName,
-                totalPlayers: updatedGame.players.length
+                totalPlayers: game.players.length
             }
         });
 
@@ -325,83 +326,52 @@ const submitAnswer = async (req, res) => {
         const isCorrect = Number(answerIndex) === Number(currentQuestion.correctAnswer);
         const score = calculateScore(isCorrect, timeTaken, currentQuestion.timeLimit);
 
-        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const updatedGame = await GameSession.findOneAndUpdate(
-            {
-                pin,
-                status: 'active',
-                players: {
-                    $elemMatch: {
-                        name: { $regex: new RegExp('^' + escName + '$', 'i') },
-                        'answers.questionIndex': { $ne: game.currentQuestionIndex }
-                    }
-                }
-            },
-            {
-                $push: {
-                    'players.$.answers': {
-                        questionIndex: game.currentQuestionIndex,
-                        answerIndex: answerIndex,
-                        isCorrect: isCorrect,
-                        timeTaken: timeTaken,
-                        score: score
-                    }
-                },
-                $inc: {
-                    'players.$.totalScore': score
-                }
-            },
-            { new: true }
+        const playerIndex = game.players.findIndex(
+            p => p.name.toLowerCase() === playerName.toLowerCase()
         );
 
-        if (!updatedGame) {
-            // Find why it failed
-            const checkGame = await GameSession.findOne({ pin });
-            if (!checkGame) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Game not found'
-                });
-            }
-            if (checkGame.status !== 'active') {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Game is not active'
-                });
-            }
-            const player = checkGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
-            if (!player) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Player not found in this game'
-                });
-            }
-            const alreadyAnswered = player.answers.find(a => a.questionIndex === checkGame.currentQuestionIndex);
-            if (alreadyAnswered) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'You already answered this question!'
-                });
-            }
-            return res.status(400).json({
+        if (playerIndex === -1) {
+            return res.status(404).json({
                 success: false,
-                message: 'Failed to submit answer'
+                message: 'Player not found in this game'
             });
         }
 
-        const updatedPlayer = updatedGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+        const alreadyAnswered = game.players[playerIndex].answers.find(
+            a => a.questionIndex === game.currentQuestionIndex
+        );
+
+        if (alreadyAnswered) {
+            return res.status(400).json({
+                success: false,
+                message: 'You already answered this question!'
+            });
+        }
+
+        game.players[playerIndex].answers.push({
+            questionIndex: game.currentQuestionIndex,
+            answerIndex: answerIndex,
+            isCorrect: isCorrect,
+            timeTaken: timeTaken,
+            score: score
+        });
+
+        game.players[playerIndex].totalScore += score;
+        await game.save();
 
         const io = req.app.get('io');
         if (io) {
-            const answeredCount = updatedGame.players.filter(p => 
-                p.answers.some(a => a.questionIndex === updatedGame.currentQuestionIndex)
+            const answeredCount = game.players.filter(p => 
+                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
             ).length;
             
             io.to(`room_${pin}`).emit('player_answered', {
                 username: playerName,
                 answeredCount,
-                totalPlayers: updatedGame.players.length
+                totalPlayers: game.players.length
             });
+
+            // Just emit the player_answered event for real-time progress bar updates
         }
 
         res.status(200).json({
@@ -411,7 +381,7 @@ const submitAnswer = async (req, res) => {
             timeTaken: timeTaken,
             timeTakenSeconds: (timeTaken / 1000).toFixed(2),
             score: score,
-            totalScore: updatedPlayer ? updatedPlayer.totalScore : score,
+            totalScore: game.players[playerIndex].totalScore,
             message: isCorrect ? 'Correct Answer! 🎉' : 'Wrong Answer! ❌'
         });
 

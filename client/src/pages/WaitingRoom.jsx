@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ShieldAlert, Zap, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import ThemeBackground from '../components/ThemeBackground';
 import { connectSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { useGame } from '../context/GameContext';
 
@@ -34,15 +35,8 @@ export default function WaitingRoom() {
     const socket = connectSocket();
     setIsConnected(true);
 
-    // 2. Register Player inside Socket Room (handle reconnects)
-    const joinRoom = () => {
-      emitJoinRoom(pin, localPlayerName);
-    };
-    
-    socket.on('connect', joinRoom);
-    if (socket.connected) {
-      joinRoom();
-    }
+    // 2. Register Player inside Socket Room
+    emitJoinRoom(pin, localPlayerName);
 
     // 3. Listen to state updates
     socket.on('player_list', (data) => {
@@ -74,7 +68,6 @@ export default function WaitingRoom() {
     });
 
     return () => {
-      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('question_started');
       socket.off('room_closed');
@@ -84,26 +77,9 @@ export default function WaitingRoom() {
   }, [pin, localPlayerName, playerName, navigate]);
 
   return (
-    <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
-        
-        {/* Glow Spheres */}
-        <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
-        <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
-
-        {/* Ambient floating geometry particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
-          <motion.div 
-            animate={{ y: [-15, 15, -15] }} 
-            transition={{ duration: 6, repeat: Infinity }}
-            className="absolute top-[25%] left-[20%] h-4 w-4 bg-primary/20 rounded-full"
-          />
-          <motion.div 
-            animate={{ y: [15, -15, 15] }} 
-            transition={{ duration: 7, repeat: Infinity }}
-            className="absolute bottom-[25%] right-[25%] h-5.5 w-5.5 bg-secondary/20 rounded-xl"
-          />
-        </div>
+    <ThemeBackground>
+      <AnimatedPage>
+        <div className="relative min-h-screen p-6 sm:p-8 flex flex-col items-center justify-center">
 
         {/* Waiting card */}
         <motion.div
@@ -150,7 +126,7 @@ export default function WaitingRoom() {
               <p className="text-xs text-gray-500 italic text-center py-4">Synchronizing player logs...</p>
             ) : (
               <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pr-1">
-                {players.slice(0, 50).map((p, idx) => (
+                {players.map((p, idx) => (
                   <div 
                     key={idx} 
                     className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
@@ -163,17 +139,13 @@ export default function WaitingRoom() {
                     <span>{p.username}</span>
                   </div>
                 ))}
-                {players.length > 50 && (
-                  <div className="px-3 py-1.5 rounded-lg border border-dashed border-white/10 bg-white/5 text-xs font-semibold text-gray-400">
-                    + {players.length - 50} more challengers...
-                  </div>
-                )}
               </div>
             )}
           </div>
 
         </motion.div>
       </div>
-    </AnimatedPage>
+      </AnimatedPage>
+    </ThemeBackground>
   );
 }

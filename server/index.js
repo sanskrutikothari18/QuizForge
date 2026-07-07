@@ -1,26 +1,68 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
 const http = require('http');
 const { Server } = require('socket.io');
+const connectDB = require('./config/db');
+
+dotenv.config();
+connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const MAX_PLAYERS = 5;
-
-app.use(cors());
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.json({ message: 'QuizForge server is running!' });
-});
-
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
 });
+
+// Save io on app to access it from routes/controllers
+app.set('io', io);
+
+app.use(cors({
+    origin: '*',
+    credentials: true
+}));
+
+app.use(express.json());
+
+const authRoutes = require('./routes/authRoutes');
+const quizRoutes = require('./routes/quizRoutes');
+const gameRoutes = require('./routes/gameRoutes');
+const resultRoutes = require('./routes/resultRoutes');
+
+app.use('/auth', authRoutes);
+app.use('/quiz', quizRoutes);
+app.use('/game', gameRoutes);
+app.use('/result', resultRoutes);
+
+app.get('/', (req, res) => {
+    res.send('QuizForge API is running...');
+});
+
+// Socket connection management
+io.on('connection', (socket) => {
+    console.log(`[SOCKET] Client connected: ${socket.id}`);
+
+    socket.on('join_room', ({ pin, username }) => {
+        const roomName = `room_${pin}`;
+        socket.join(roomName);
+        socket.roomPin = pin;
+        socket.username = username;
+        console.log(`[SOCKET] User ${username} joined ${roomName}`);
+        io.to(roomName).emit('player_connected', { username });
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`[SOCKET] Client disconnected: ${socket.id}`);
+        if (socket.roomPin && socket.username) {
+            io.to(`room_${socket.roomPin}`).emit('player_disconnected', { username: socket.username });
+        }
+    });
+});
+
+const PORT = process.env.PORT || 5000;
 
 const QUESTIONS = [
   {
@@ -60,7 +102,7 @@ const QUESTIONS = [
   },
 ];
 
-const BOT_NAMES = ['Bot 1', 'Bot 2', 'Bot 3', 'Bot 4'];
+const MAX_PLAYERS = 50;
 const rooms = {};
 
 function generatePIN() {
@@ -82,85 +124,6 @@ function clearRoomTimers(room) {
     clearTimeout(room.nextPhaseTimeout);
     room.nextPhaseTimeout = null;
   }
-  if (room.botFillTimeout) {
-    clearTimeout(room.botFillTimeout);
-    room.botFillTimeout = null;
-  }
-  if (room.botAnswerTimers) {
-    room.botAnswerTimers.forEach((timer) => clearTimeout(timer));
-    room.botAnswerTimers = [];
-  }
-}
-
-function addDemoBots(room) {
-  if (!room || room.status !== 'lobby') return;
-  const addedBots = [];
-  let botIndex = 0;
-
-  while (room.players.length < MAX_PLAYERS && botIndex < BOT_NAMES.length) {
-    const botName = BOT_NAMES[botIndex];
-    botIndex += 1;
-    if (room.players.some((player) => player.username === botName)) continue;
-    const botPlayer = {
-      socketId: `bot_${botName.replace(' ', '_')}`,
-      username: botName,
-      score: 0,
-      answered: false,
-      selectedAnswerIndex: null,
-      lastAnswerCorrect: false,
-      pointsEarned: 0,
-      isBot: true,
-    };
-    room.players.push(botPlayer);
-    addedBots.push(botName);
-  }
-
-  if (addedBots.length > 0) {
-    io.to(`room_${room.pin}`).emit('bot_joined', { bots: addedBots });
-    broadcastPlayerList(room);
-  }
-}
-
-function scheduleBotFill(room) {
-  if (!room) return;
-  // After 10 seconds in the lobby, add demo bots to reach MAX_PLAYERS
-  room.botFillTimeout = setTimeout(() => {
-    console.log(`[SERVER] bot fill timeout triggered for room=${room.pin}`);
-    addDemoBots(room);
-  }, 10000);
-}
-
-function scheduleBotAnswers(room) {
-  if (!room || room.status !== 'question') return;
-  room.botAnswerTimers = room.botAnswerTimers || [];
-  const currentQuestion = room.questions[room.currentQuestionIndex];
-
-  room.players
-    .filter((player) => player.isBot && !player.answered)
-    .forEach((bot) => {
-      const delay = 500 + Math.floor(Math.random() * 4500);
-      const timer = setTimeout(() => {
-        if (!room || room.status !== 'question' || bot.answered) return;
-        const correct = Math.random() < 0.7;
-        const selectedIndex = correct
-          ? currentQuestion.correctAnswerIndex
-          : [...Array(currentQuestion.options.length).keys()].filter((i) => i !== currentQuestion.correctAnswerIndex)[
-              Math.floor(Math.random() * (currentQuestion.options.length - 1))
-            ];
-
-        bot.selectedAnswerIndex = selectedIndex;
-        bot.answered = true;
-        bot.lastAnswerCorrect = correct;
-        bot.pointsEarned = correct ? 10 : 0;
-        if (correct) bot.score += 10;
-
-        broadcastPlayerList(room);
-        if (room.players.every((player) => player.answered)) {
-          endQuestion(room);
-        }
-      }, delay);
-      room.botAnswerTimers.push(timer);
-    });
 }
 
 function getRoomForSocket(socketId) {
@@ -222,10 +185,6 @@ function endQuestion(room) {
   if (room.timerInterval) {
     clearInterval(room.timerInterval);
     room.timerInterval = null;
-  }
-  if (room.botAnswerTimers) {
-    room.botAnswerTimers.forEach((timer) => clearTimeout(timer));
-    room.botAnswerTimers = [];
   }
 
   room.status = 'leaderboard';
@@ -308,7 +267,6 @@ function startQuestion(room) {
     timeLeft: room.timeLeft,
   });
 
-  scheduleBotAnswers(room);
 
   if (room.timerInterval) {
     clearInterval(room.timerInterval);
@@ -335,7 +293,7 @@ function startQuestion(room) {
 }
 
 io.on('connection', (socket) => {
-  socket.on('create_room', ({ username, title }, callback) => {
+  socket.on('create_room', ({ username, title, questions }, callback) => {
     console.log(`[SERVER] received create_room username=${username}`);
     const cleanName = String(username || '').trim();
     if (!cleanName) {
@@ -360,15 +318,14 @@ io.on('connection', (socket) => {
           pointsEarned: 0,
         },
       ],
-      questions: QUESTIONS,
+      questions: questions || [],
       currentQuestionIndex: 0,
       status: 'lobby',
       timeLeft: 0,
       timerInterval: null,
       nextPhaseTimeout: null,
       cleanupTimeout: null,
-      botFillTimeout: null,
-      botAnswerTimers: [],
+      
     };
 
     rooms[pin] = room;
@@ -379,7 +336,6 @@ io.on('connection', (socket) => {
 
     callback?.({ success: true, pin, hostUsername: cleanName, title: room.title });
     broadcastPlayerList(room);
-    scheduleBotFill(room);
   });
 
   socket.on('join_room', ({ pin, username }, callback) => {

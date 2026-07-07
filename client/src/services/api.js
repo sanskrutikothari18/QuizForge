@@ -1,28 +1,10 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const getBaseURL = () => {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-  const hostname = window.location.hostname;
-  const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
-  
-  if (!isLocal) {
-    if (hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com')) {
-      return 'https://api.fourisequiz.com';
-    }
-    return '/api';
-  }
-  return `http://${hostname}:5000`;
-};
-
 const API = axios.create({
-  baseURL: getBaseURL(),
+  baseURL: `http://${window.location.hostname}:5000`,
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-    'Bypass-Tunnel-Reminder': 'true'
   },
 });
 
