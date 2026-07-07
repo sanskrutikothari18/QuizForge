@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
 import { getGame } from '../services/gameService';
 import { saveResult } from '../services/resultService';
 import { disconnectSocket } from '../services/socketService';
@@ -277,9 +276,8 @@ export default function FinalResult() {
   const theme = getTheme(category);
 
   return (
-    <ThemeBackground>
-      <AnimatedPage>
-        <div className={`relative min-h-screen flex flex-col justify-between p-6 overflow-hidden`}>
+    <AnimatedPage>
+      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-hidden`}>
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -447,8 +445,7 @@ export default function FinalResult() {
         </div>
 
       </div>
-      </AnimatedPage>
-    </ThemeBackground>
+    </AnimatedPage>
   );
 }
 

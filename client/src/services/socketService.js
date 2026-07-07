@@ -4,7 +4,7 @@ let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
-    const serverUrl = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`;
+    const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     socket = io(serverUrl);
     console.log('[SOCKET] Connected successfully');
   }

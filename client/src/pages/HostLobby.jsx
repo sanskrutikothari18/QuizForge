@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Play, ShieldAlert, Award, QrCode, ArrowLeft, Loader2, Edit2, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
-import ThemeSelector from '../components/ThemeSelector';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 
@@ -189,10 +187,8 @@ export default function HostLobby() {
 
 
   return (
-    <ThemeBackground>
-      <ThemeSelector />
-      <AnimatedPage>
-        <div className="max-w-6xl mx-auto p-4 md:p-8 pt-20">
+    <AnimatedPage>
+      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
         
         {/* Glow Spheres */}
         <div className="absolute top-[5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
@@ -373,8 +369,7 @@ export default function HostLobby() {
           </div>
 
         </div>
-        </div>
-      </AnimatedPage>
-    </ThemeBackground>
+      </div>
+    </AnimatedPage>
   );
 }

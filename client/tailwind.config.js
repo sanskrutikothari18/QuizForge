@@ -7,14 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "var(--theme-primary, #7C3AED)",
-        secondary: "var(--theme-secondary, #06B6D4)",
-        accent: "var(--theme-accent, #F43F5E)",
-        success: "#22C55E",
-        warning: "#FACC15",
-        background: "var(--theme-bg, #09090B)",
-        card: "var(--theme-card-bg, rgba(8, 8, 12, 0.72))",
-        text: "var(--theme-text, #fff)",
+        primary: "#7C3AED",     // Purple
+        secondary: "#06B6D4",   // Cyan
+        accent: "#F43F5E",      // Accent (Rose)
+        success: "#22C55E",     // Success (Green)
+        warning: "#FACC15",     // Warning (Yellow)
+        background: "#09090B",   // Background (Dark Slate)
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

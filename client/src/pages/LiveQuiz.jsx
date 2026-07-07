@@ -10,8 +10,6 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
-import ThemeSelector from '../components/ThemeSelector';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { submitAnswer, getGame, endQuestion } from '../services/gameService';
 import { useGame } from '../context/GameContext';
@@ -436,11 +434,18 @@ export default function LiveQuiz() {
   const theme = getTheme(category);
 
   return (
-    <ThemeBackground>
-      <ThemeSelector />
-      <AnimatedPage>
-        <div className={`relative min-h-screen flex flex-col justify-start gap-6 p-6 transition-all duration-700 overflow-hidden`}>
+    <AnimatedPage>
+      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg flex flex-col justify-start gap-6 p-6 transition-all duration-700 overflow-hidden`}>
+        
+        {/* Ambient Grid overlay */}
+        <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
 
+        {/* Glow Spheres */}
+        <div className={`absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full ${theme.glow1} pointer-events-none filter blur-[100px]`}></div>
+        <div className={`absolute bottom-[10%] right-[20%] h-[400px] w-[400px] rounded-full ${theme.glow2} pointer-events-none filter blur-[120px]`}></div>
+
+        {/* Dynamic theme element floaters */}
+        {theme.ambientElements}
 
         {/* Header Indicator */}
         <div className="flex justify-between items-center border-b border-white/5 pb-4 relative z-10">
@@ -556,8 +561,7 @@ export default function LiveQuiz() {
           ))}
         </div>
 
-        </div>
-      </AnimatedPage>
-    </ThemeBackground>
+      </div>
+    </AnimatedPage>
   );
 }

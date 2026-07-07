@@ -10,10 +10,9 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
+import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { getLeaderboard, startQuestion, endGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
-import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
@@ -263,9 +262,8 @@ export default function Leaderboard() {
   const theme = getTheme(category);
 
   return (
-    <ThemeBackground>
-      <AnimatedPage>
-        <div className={`relative min-h-screen flex flex-col justify-start gap-4 p-6 overflow-hidden`}>
+    <AnimatedPage>
+      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-hidden`}>
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -404,7 +402,6 @@ export default function Leaderboard() {
         </div>
 
       </div>
-      </AnimatedPage>
-    </ThemeBackground>
+    </AnimatedPage>
   );
 }

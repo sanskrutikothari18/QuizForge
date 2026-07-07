@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ShieldAlert, Zap, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
 import { connectSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { useGame } from '../context/GameContext';
 
@@ -77,9 +76,26 @@ export default function WaitingRoom() {
   }, [pin, localPlayerName, playerName, navigate]);
 
   return (
-    <ThemeBackground>
-      <AnimatedPage>
-        <div className="relative min-h-screen p-6 sm:p-8 flex flex-col items-center justify-center">
+    <AnimatedPage>
+      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
+        
+        {/* Glow Spheres */}
+        <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
+        <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
+
+        {/* Ambient floating geometry particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
+          <motion.div 
+            animate={{ y: [-15, 15, -15] }} 
+            transition={{ duration: 6, repeat: Infinity }}
+            className="absolute top-[25%] left-[20%] h-4 w-4 bg-primary/20 rounded-full"
+          />
+          <motion.div 
+            animate={{ y: [15, -15, 15] }} 
+            transition={{ duration: 7, repeat: Infinity }}
+            className="absolute bottom-[25%] right-[25%] h-5.5 w-5.5 bg-secondary/20 rounded-xl"
+          />
+        </div>
 
         {/* Waiting card */}
         <motion.div
@@ -145,7 +161,6 @@ export default function WaitingRoom() {
 
         </motion.div>
       </div>
-      </AnimatedPage>
-    </ThemeBackground>
+    </AnimatedPage>
   );
 }
