@@ -52,6 +52,9 @@ export default function HostLobby() {
   }, [pin, customUrl, hostnameUrl, ipInput]);
 
   useEffect(() => {
+    // Identify as host for this pin in local storage
+    localStorage.setItem('current_hosted_pin', pin);
+
     // 1. Connect Socket
     const socket = connectSocket();
 

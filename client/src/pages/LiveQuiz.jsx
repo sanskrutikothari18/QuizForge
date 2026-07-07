@@ -175,9 +175,10 @@ export default function LiveQuiz() {
   useEffect(() => {
     const localPlayer = playerName || localStorage.getItem('guest_playerName');
     const hostToken = localStorage.getItem('token');
+    const hostedPin = localStorage.getItem('current_hosted_pin');
     
     // Determine user role
-    const isUserHost = !localPlayer && !!hostToken;
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     if (!localPlayer && !isUserHost) {

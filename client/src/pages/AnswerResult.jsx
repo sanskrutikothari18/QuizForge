@@ -177,7 +177,8 @@ export default function AnswerResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage

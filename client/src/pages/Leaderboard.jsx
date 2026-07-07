@@ -159,6 +159,7 @@ export default function Leaderboard() {
   const { playerName } = useGame();
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
 
+  
   // Component State
   const [leaderboard, setLeaderboard] = useState([]);
   const [isHost, setIsHost] = useState(false);
@@ -168,8 +169,12 @@ export default function Leaderboard() {
   const [category, setCategory] = useState('general');
 
   useEffect(() => {
+    const localPlayer = playerName || localStorage.getItem('guest_playerName');
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    
+    // Determine user role
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
