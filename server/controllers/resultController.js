@@ -23,8 +23,27 @@ const saveResult = async (req, res) => {
             });
         }
 
-        const sortedPlayers = [...game.players]
-            .sort((a, b) => b.totalScore - a.totalScore);
+        const sortedPlayers = [...game.players].sort((a, b) => {
+            if (a.totalScore !== b.totalScore) {
+                return b.totalScore - a.totalScore;
+            }
+            
+            const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
+            const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
+            
+            if (aCorrect !== bCorrect) {
+                return bCorrect - aCorrect;
+            }
+            
+            const aTime = a.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
+            const bTime = b.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
+            
+            if (aTime !== bTime) {
+                return aTime - bTime;
+            }
+            
+            return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
+        });
 
         const playerResults = sortedPlayers.map((player, index) => ({
             name: player.name,

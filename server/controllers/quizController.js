@@ -1,4 +1,5 @@
 const Quiz = require('../models/Quiz');
+const GameSession = require('../models/GameSession');
 
 const createQuiz = async (req, res) => {
     try {
@@ -112,7 +113,14 @@ const deleteQuiz = async (req, res) => {
             });
         }
 
-        await Quiz.findByIdAndDelete(req.params.id);
+        quiz.isActive = false;
+        await quiz.save();
+
+        // Also clean up any active or waiting game sessions for this quiz
+        await GameSession.updateMany(
+            { quizId: quiz._id, status: { $ne: 'finished' } },
+            { $set: { status: 'finished' } }
+        );
 
         res.status(200).json({
             success: true,

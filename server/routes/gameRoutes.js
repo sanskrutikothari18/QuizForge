@@ -7,7 +7,9 @@ const {
     submitAnswer,
     getLeaderboard,
     endGame,
-    getGame
+    getGame,
+    endQuestion,
+    showLeaderboard
 } = require('../controllers/gameController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -18,5 +20,7 @@ router.get('/:pin', getGame);
 router.post('/create', protect, createGame);
 router.post('/startquestion', protect, startQuestion);
 router.post('/end', protect, endGame);
+router.post('/endquestion', protect, endQuestion);
+router.post('/showleaderboard', protect, showLeaderboard);
 
 module.exports = router;
