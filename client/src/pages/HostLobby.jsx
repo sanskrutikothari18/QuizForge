@@ -55,8 +55,15 @@ export default function HostLobby() {
     // 1. Connect Socket
     const socket = connectSocket();
 
-    // 2. Join Room as Host
-    emitJoinRoom(pin, 'Host');
+    // 2. Join Room as Host (handle reconnects)
+    const joinRoom = () => {
+      emitJoinRoom(pin, 'Host');
+    };
+    
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     // 3. Listen to player updates
     socket.on('player_list', (data) => {
@@ -79,6 +86,7 @@ export default function HostLobby() {
 
     return () => {
       // Clean up event listeners on unmount
+      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('player_connected');
       socket.off('player_disconnected');

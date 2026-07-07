@@ -246,10 +246,18 @@ export default function LiveQuiz() {
       fetchCurrentState();
     }
 
-    // 2. Connect Socket and Register Listeners
+    // 2. Connect Socket and Register Listeners (handle reconnects)
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    emitJoinRoom(pin, roleOrName);
+    
+    const joinRoom = () => {
+      emitJoinRoom(pin, roleOrName);
+    };
+
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     socket.on('timer_update', ({ timeLeft: time }) => {
       setTimeLeft(time);
@@ -306,6 +314,7 @@ export default function LiveQuiz() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('timer_update');
       socket.off('player_answered');
       socket.off('question_started');

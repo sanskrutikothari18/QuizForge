@@ -194,10 +194,18 @@ export default function Leaderboard() {
     };
     fetchLeaderboard();
 
-    // 2. Connect Socket and Listen
+    // 2. Connect Socket and Listen (handle reconnects)
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    emitJoinRoom(pin, roleOrName);
+    
+    const joinRoom = () => {
+      emitJoinRoom(pin, roleOrName);
+    };
+
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -214,6 +222,7 @@ export default function Leaderboard() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('quiz_ended');
       socket.off('room_closed');
