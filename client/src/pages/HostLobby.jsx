@@ -32,24 +32,13 @@ export default function HostLobby() {
 
   const game = gameData?.game;
 
-  // Sync customUrl when game is loaded
+  // Compute the join URL dynamically based on the current window location
   useEffect(() => {
-    if (game?.joinUrl) {
-      setCustomUrl(game.joinUrl);
-      setHostnameUrl(game.hostnameUrl || '');
-      // Extract IP:port or hostname from the url
-      try {
-        const url = new URL(game.joinUrl);
-        setIpInput(url.host); // e.g. "192.168.1.43:5173"
-      } catch (e) {
-        setIpInput(window.location.host);
-      }
-    } else {
-      setCustomUrl(`${window.location.origin}/join?pin=${pin}`);
-      setHostnameUrl(`${window.location.hostname}.local:5173/join?pin=${pin}`);
-      setIpInput(window.location.host);
-    }
-  }, [game, pin]);
+    const computedUrl = `${window.location.origin}/join?pin=${pin}`;
+    setCustomUrl(computedUrl);
+    setHostnameUrl(computedUrl); // In production, we don't need a separate hostnameUrl with port 5173
+    setIpInput(window.location.host);
+  }, [pin]);
 
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
