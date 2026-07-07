@@ -89,11 +89,21 @@ export default function HostLobby() {
   }, [pin, customUrl, hostnameUrl, ipInput]);
 
   useEffect(() => {
+    // Identify as host for this pin in local storage
+    localStorage.setItem('current_hosted_pin', pin);
+
     // 1. Connect Socket
     const socket = connectSocket();
 
-    // 2. Join Room as Host
-    emitJoinRoom(pin, 'Host');
+    // 2. Join Room as Host (handle reconnects)
+    const joinRoom = () => {
+      emitJoinRoom(pin, 'Host');
+    };
+    
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     // 3. Listen to player updates
     socket.on('player_list', (data) => {
@@ -116,6 +126,7 @@ export default function HostLobby() {
 
     return () => {
       // Clean up event listeners on unmount
+      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('player_connected');
       socket.off('player_disconnected');
@@ -409,7 +420,6 @@ export default function HostLobby() {
                 </svg>
                 <span>Share via WhatsApp</span>
               </a>
-
               {/* Automated tunnel status indicator */}
               <div className="w-full pt-2.5 border-t border-white/5 text-center">
                 {tunnelData && tunnelData.url ? (

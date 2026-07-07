@@ -177,7 +177,8 @@ export default function AnswerResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage
@@ -291,10 +292,18 @@ export default function AnswerResult() {
       });
     }
 
-    // 2. Connect Socket and Listen for transition
+    // 2. Connect Socket and Listen for transition (handle reconnects)
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    emitJoinRoom(pin, roleOrName);
+    
+    const joinRoom = () => {
+      emitJoinRoom(pin, roleOrName);
+    };
+
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -311,6 +320,7 @@ export default function AnswerResult() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('show_leaderboard');
       socket.off('quiz_ended');

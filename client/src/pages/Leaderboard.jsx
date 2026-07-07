@@ -159,6 +159,7 @@ export default function Leaderboard() {
   const { playerName } = useGame();
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
 
+  
   // Component State
   const [leaderboard, setLeaderboard] = useState([]);
   const [isHost, setIsHost] = useState(false);
@@ -169,7 +170,10 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    
+    // Determine user role
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
@@ -194,10 +198,18 @@ export default function Leaderboard() {
     };
     fetchLeaderboard();
 
-    // 2. Connect Socket and Listen
+    // 2. Connect Socket and Listen (handle reconnects)
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    emitJoinRoom(pin, roleOrName);
+    
+    const joinRoom = () => {
+      emitJoinRoom(pin, roleOrName);
+    };
+
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -214,6 +226,7 @@ export default function Leaderboard() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('quiz_ended');
       socket.off('room_closed');

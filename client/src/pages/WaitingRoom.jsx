@@ -34,8 +34,15 @@ export default function WaitingRoom() {
     const socket = connectSocket();
     setIsConnected(true);
 
-    // 2. Register Player inside Socket Room
-    emitJoinRoom(pin, localPlayerName);
+    // 2. Register Player inside Socket Room (handle reconnects)
+    const joinRoom = () => {
+      emitJoinRoom(pin, localPlayerName);
+    };
+    
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     // 3. Listen to state updates
     socket.on('player_list', (data) => {
@@ -67,6 +74,7 @@ export default function WaitingRoom() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('question_started');
       socket.off('room_closed');
