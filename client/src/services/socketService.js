@@ -4,8 +4,27 @@ let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
-    const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    socket = io(serverUrl);
+    if (import.meta.env.VITE_API_URL) {
+      socket = io(import.meta.env.VITE_API_URL);
+    } else {
+      const hostname = window.location.hostname;
+      const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
+      
+      if (!isLocal) {
+        if (hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com')) {
+          socket = io('https://api.fourisequiz.com');
+        } else {
+          socket = io(window.location.origin, {
+            extraHeaders: {
+              'ngrok-skip-browser-warning': 'true',
+              'Bypass-Tunnel-Reminder': 'true'
+            }
+          });
+        }
+      } else {
+        socket = io(`http://${hostname}:5000`);
+      }
+    }
     console.log('[SOCKET] Connected successfully');
   }
   return socket;

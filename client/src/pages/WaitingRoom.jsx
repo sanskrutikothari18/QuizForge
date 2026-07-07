@@ -150,7 +150,7 @@ export default function WaitingRoom() {
               <p className="text-xs text-gray-500 italic text-center py-4">Synchronizing player logs...</p>
             ) : (
               <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pr-1">
-                {players.map((p, idx) => (
+                {players.slice(0, 50).map((p, idx) => (
                   <div 
                     key={idx} 
                     className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
@@ -163,6 +163,11 @@ export default function WaitingRoom() {
                     <span>{p.username}</span>
                   </div>
                 ))}
+                {players.length > 50 && (
+                  <div className="px-3 py-1.5 rounded-lg border border-dashed border-white/10 bg-white/5 text-xs font-semibold text-gray-400">
+                    + {players.length - 50} more challengers...
+                  </div>
+                )}
               </div>
             )}
           </div>

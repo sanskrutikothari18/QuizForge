@@ -169,7 +169,6 @@ export default function Leaderboard() {
   const [category, setCategory] = useState('general');
 
   useEffect(() => {
-    const localPlayer = playerName || localStorage.getItem('guest_playerName');
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
     
