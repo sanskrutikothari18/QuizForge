@@ -1,6 +1,7 @@
 import React from 'react';
 import { Award, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 
 export default function Footer() {
   return (
@@ -10,11 +11,9 @@ export default function Footer() {
           
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-primary to-secondary text-white">
-              <Award className="h-4.5 w-4.5" />
-            </div>
+            <Logo className="h-8 w-8" />
             <span className="font-outfit text-sm font-semibold tracking-tight text-white">
-              Quiz<span className="text-secondary">Forge</span>
+              Fourise <span className="text-secondary">Quiz Hub</span>
             </span>
           </div>
 
@@ -44,7 +43,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 text-[11px] sm:flex-row">
-          <p>© {new Date().getFullYear()} QuizForge. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Made with <Heart className="h-3 w-3 fill-accent text-accent animate-pulse" /> for elite quiz battles
           </p>

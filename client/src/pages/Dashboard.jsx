@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import Logo from '../components/Logo';
 import { getProfile } from '../services/authService';
 import { getMyQuizzes, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
@@ -99,10 +100,8 @@ export default function Dashboard() {
           <div className="space-y-8">
             {/* Logo area */}
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-secondary text-white">
-                <Award className="h-5 w-5" />
-              </div>
-              <span className="font-outfit text-lg font-bold text-white">QuizForge</span>
+              <Logo className="h-9 w-9" />
+              <span className="font-outfit text-lg font-bold text-white">Fourise Quiz Hub</span>
             </div>
 
             {/* Nav links */}

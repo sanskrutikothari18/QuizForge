@@ -74,25 +74,73 @@ export default function ResultsAnalytics() {
     }
 
     try {
-      const headers = ['Rank', 'Player Name', 'Correct Answers', 'Wrong Answers', 'Total Score'];
-      const rows = players.map(p => [
-        p.rank,
-        p.name,
-        p.correctAnswers,
-        p.wrongAnswers,
-        p.totalScore
-      ]);
+      const escapeCSV = (val) => {
+        if (val === undefined || val === null) return '';
+        let str = String(val);
+        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
 
-      const csvContent = "data:text/csv;charset=utf-8," 
-        + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const lines = [];
+      
+      // Metadata Header Block
+      lines.push('=== FOURISE QUIZ HUB REPORT ===');
+      lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Fourise Quiz Hub Match')}`);
+      lines.push(`Played At,${escapeCSV(result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString())}`);
+      lines.push(`Session ID,${escapeCSV(id)}`);
+      lines.push(`Total Questions,${escapeCSV(totalQuestions)}`);
+      lines.push(`Total Challengers,${escapeCSV(totalPlayers)}`);
+      lines.push(`Lobby Accuracy,${escapeCSV(accuracy + '%')}`);
+      lines.push(`Winner Crown,${escapeCSV(winnerName)}`);
+      lines.push(`Average Correct,${escapeCSV(`${avgCorrect} / ${totalQuestions}`)}`);
+      lines.push(''); // blank line divider
+      
+      // Standings Header
+      lines.push('=== PLAYER STANDINGS ===');
+      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
+      
+      // Standings Rows
+      players.forEach(p => {
+        const playerAccuracy = totalQuestions ? Math.round((p.correctAnswers / totalQuestions) * 100) + '%' : '0%';
+        lines.push([
+          p.rank,
+          p.name,
+          p.correctAnswers,
+          p.wrongAnswers,
+          playerAccuracy,
+          p.totalScore
+        ].map(escapeCSV).join(','));
+      });
+      
+      lines.push(''); // blank line divider
+      
+      // Highlights Header
+      lines.push('=== QUESTION HIGHLIGHTS (FASTEST CORRECT SOLVERS) ===');
+      lines.push(['Question', 'Fastest Solver', 'Time Taken'].map(escapeCSV).join(','));
+      
+      // Highlights Rows
+      questionHighlights.forEach(hl => {
+        lines.push([
+          `Question ${hl.questionNumber}`,
+          hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers',
+          hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A'
+        ].map(escapeCSV).join(','));
+      });
 
-      const encodedUri = encodeURI(csvContent);
+      // Prepare UTF-8 CSV blob to support Excel compatibility
+      const csvString = lines.join('\n');
+      const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvString], { type: 'text/csv;charset=utf-8;' });
+      
       const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `QuizForge_Report_${id}.csv`);
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Fourise_Quiz_Hub_Report_${id}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
       
       toast.success('Report exported successfully! 📊');
     } catch (err) {

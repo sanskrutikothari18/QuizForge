@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Award, PlusCircle, LayoutDashboard, LogOut, LogIn, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Logo from './Logo';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -21,11 +22,9 @@ export default function Navbar() {
         
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 transition-transform active:scale-95">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-premium-glow">
-            <Award className="h-5.5 w-5.5" />
-          </div>
+          <Logo className="h-10 w-10" />
           <span className="font-outfit text-xl font-bold tracking-tight text-white">
-            Quiz<span className="text-secondary">Forge</span>
+            Fourise <span className="text-secondary">Quiz Hub</span>
           </span>
         </Link>
 

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+import tunnelData from '../tunnel.json';
 
 export default function HostLobby() {
   const { pin } = useParams();
@@ -18,6 +19,7 @@ export default function HostLobby() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [hostnameUrl, setHostnameUrl] = useState('');
+  const [showTunnelGuide, setShowTunnelGuide] = useState(false);
 
   // Fetch initial game state (e.g. to get QR Code and quiz title)
   const { 
@@ -34,7 +36,26 @@ export default function HostLobby() {
 
   // Sync customUrl when game is loaded
   useEffect(() => {
-    if (game?.joinUrl) {
+    const hostname = window.location.hostname;
+    const isCustomDomain = hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com');
+    const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
+
+    if (isCustomDomain) {
+      const activeUrl = `${window.location.origin}/join?pin=${pin}`;
+      setCustomUrl(activeUrl);
+      setHostnameUrl(activeUrl);
+      setIpInput(window.location.host);
+    } else if (tunnelData && tunnelData.url) {
+      const activeUrl = `${tunnelData.url}/join?pin=${pin}`;
+      setCustomUrl(activeUrl);
+      setHostnameUrl(activeUrl);
+      try {
+        const url = new URL(tunnelData.url);
+        setIpInput(url.host);
+      } catch (e) {
+        setIpInput(window.location.host);
+      }
+    } else if (game?.joinUrl && isLocal) {
       setCustomUrl(game.joinUrl);
       setHostnameUrl(game.hostnameUrl || '');
       // Extract IP:port or hostname from the url
@@ -53,7 +74,12 @@ export default function HostLobby() {
 
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
-    const shareMessage = `Join my QuizForge battle arena! 🚀\n\n📌 *Game PIN*: ${pin}\n\n🔗 *Option A (Hostname Link - Recommended)*:\n${hostnameUrl || customUrl}\n\n🔗 *Option B (IP Link - Use if Option A doesn't load)*:\n${customUrl}\n\n(Ensure your phone is connected to the same Wi-Fi network as the host!)`;
+    const isTunnelActive = tunnelData && tunnelData.url;
+    const wifiNotice = isTunnelActive 
+      ? `(You can join from any Wi-Fi network!)`
+      : `(Ensure your phone is connected to the same Wi-Fi network as the host!)`;
+
+    const shareMessage = `Join my Fourise Quiz Hub arena! 🚀\n\n📌 *Game PIN*: ${pin}\n\n🔗 *Join Link*:\n${customUrl}\n\n${wifiNotice}`;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const baseUrl = isMobile 
       ? 'https://api.whatsapp.com/send' 
@@ -150,15 +176,32 @@ export default function HostLobby() {
   }
 
   const handleSaveIp = () => {
-    if (!ipInput.trim()) {
+    const trimmed = ipInput.trim();
+    if (!trimmed) {
       toast.error('IP/Host cannot be empty');
       return;
     }
-    // Update the customUrl state with the new host/IP
-    const newUrl = `http://${ipInput.trim()}/join?pin=${pin}`;
+    
+    let newUrl;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      const base = trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed;
+      if (base.includes('/join')) {
+        try {
+          const parsed = new URL(base);
+          newUrl = `${parsed.origin}/join?pin=${pin}`;
+        } catch (e) {
+          newUrl = base;
+        }
+      } else {
+        newUrl = `${base}/join?pin=${pin}`;
+      }
+    } else {
+      newUrl = `http://${trimmed}/join?pin=${pin}`;
+    }
+    
     setCustomUrl(newUrl);
     setIsEditingIp(false);
-    toast.success('Join URL updated with new IP! 🌐');
+    toast.success('Join URL updated! 🌐');
   };
 
   const handleCopyLink = () => {
@@ -219,7 +262,7 @@ export default function HostLobby() {
                   Host Lobby Room
                 </span>
                 <h2 className="font-outfit text-xl font-extrabold text-white mt-2">{game?.quiz?.title || 'Commencing Battle'}</h2>
-                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or go to QuizForge Join and enter the PIN below.</p>
+                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or go to Fourise Quiz Hub and enter the PIN below.</p>
               </div>
 
               <div className="space-y-1 text-center shrink-0">
@@ -254,7 +297,7 @@ export default function HostLobby() {
                   /* Connected players badge grid */
                   <div className="flex flex-wrap gap-2.5 max-h-[180px] overflow-y-auto pr-1">
                     <AnimatePresence>
-                      {players.map((player, idx) => (
+                      {players.slice(0, 100).map((player, idx) => (
                         <motion.div
                           key={idx}
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -267,6 +310,11 @@ export default function HostLobby() {
                         </motion.div>
                       ))}
                     </AnimatePresence>
+                    {players.length > 100 && (
+                      <div className="px-3.5 py-2 rounded-xl border border-dashed border-white/10 bg-white/5 text-xs font-bold text-gray-400">
+                        + {players.length - 100} more challengers...
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -361,6 +409,20 @@ export default function HostLobby() {
                 </svg>
                 <span>Share via WhatsApp</span>
               </a>
+
+              {/* Automated tunnel status indicator */}
+              <div className="w-full pt-2.5 border-t border-white/5 text-center">
+                {tunnelData && tunnelData.url ? (
+                  <div className="bg-green-500/10 text-green-400 border border-green-500/20 rounded-xl p-2.5 text-[10px] flex items-center justify-center gap-1.5 font-medium">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>Remote Play Active (Different Wi-Fi supported!)</span>
+                  </div>
+                ) : (
+                  <div className="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-xl p-2.5 text-[10px] flex items-center justify-center gap-1.5 font-medium">
+                    <span>Local Play Only (Same Wi-Fi network required)</span>
+                  </div>
+                )}
+              </div>
             </div>
             
             <p className="text-[9px] text-gray-500 leading-relaxed max-w-[200px]">

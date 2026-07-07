@@ -38,7 +38,7 @@ app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
 
 app.get('/', (req, res) => {
-    res.send('QuizForge API is running...');
+    res.send('Fourise Quiz Hub API is running...');
 });
 
 // Socket connection management
@@ -65,5 +65,5 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`QuizForge server listening on port ${PORT}`);
+    console.log(`Fourise Quiz Hub server listening on port ${PORT}`);
 });

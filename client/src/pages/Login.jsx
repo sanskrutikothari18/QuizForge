@@ -114,7 +114,7 @@ export default function Login() {
               <ShieldCheck className="h-6 w-6" />
             </div>
             <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
-              QuizForge Entry
+              Fourise Quiz Hub Entry
             </h2>
             <p className="mt-2 text-sm text-gray-400 font-medium">
               {activeTab === 'host' ? 'Log in as a host to manage quizzes' : 'Enter a Game PIN to join the arena'}
@@ -361,7 +361,7 @@ export default function Login() {
           {/* Footer link */}
           <div className="mt-8 text-center border-t border-white/5 pt-6">
             <p className="text-xs text-gray-400">
-              New to QuizForge?{' '}
+              New to Fourise Quiz Hub?{' '}
               <Link to="/register" className="font-semibold text-secondary hover:underline">
                 Create an account
               </Link>
