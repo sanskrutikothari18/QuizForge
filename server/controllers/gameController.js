@@ -55,6 +55,7 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
         return {
             name: p.name,
             username: p.name,
+            avatar: p.avatar,
             score: p.totalScore,
             totalScore: p.totalScore,
             rank: idx + 1,
@@ -136,7 +137,7 @@ const createGame = async (req, res) => {
 
 const joinGame = async (req, res) => {
     try {
-        const { pin, playerName } = req.body;
+        const { pin, playerName, avatar } = req.body;
 
         if (!pin || !playerName) {
             return res.status(400).json({
@@ -152,7 +153,7 @@ const joinGame = async (req, res) => {
                 status: 'waiting', 
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') } 
             },
-            { $push: { players: { name: playerName, totalScore: 0, answers: [] } } },
+            { $push: { players: { name: playerName, avatar: avatar || '👤', totalScore: 0, answers: [] } } },
             { new: true }
         );
 
@@ -180,17 +181,8 @@ const joinGame = async (req, res) => {
         if (io) {
             io.to(`room_${pin}`).emit('player_list', {
                 pin: updatedGame.pin,
-                players: updatedGame.players.map(p => ({ username: p.name, score: p.totalScore })),
+                players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
                 roomStatus: updatedGame.status
-            });
-        }
-
-        const io = req.app.get('io');
-        if (io) {
-            io.to(`room_${pin}`).emit('player_list', {
-                pin: game.pin,
-                players: game.players.map(p => ({ username: p.name, score: p.totalScore })),
-                roomStatus: game.status
             });
         }
 
@@ -410,21 +402,6 @@ const submitAnswer = async (req, res) => {
                 answeredCount,
                 totalPlayers: updatedGame.players.length
             });
-        }
-
-        const io = req.app.get('io');
-        if (io) {
-            const answeredCount = game.players.filter(p => 
-                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
-            ).length;
-            
-            io.to(`room_${pin}`).emit('player_answered', {
-                username: playerName,
-                answeredCount,
-                totalPlayers: game.players.length
-            });
-
-            // Just emit the player_answered event for real-time progress bar updates
         }
 
         res.status(200).json({
