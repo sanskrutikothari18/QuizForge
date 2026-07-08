@@ -6,6 +6,7 @@ import { Play, Sparkles, AlertCircle, Loader2, QrCode, Camera } from 'lucide-rea
 import toast from 'react-hot-toast';
 import { Html5Qrcode } from 'html5-qrcode';
 import AnimatedPage from '../components/AnimatedPage';
+import Avatar from '../components/Avatar';
 import { joinGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 
@@ -17,7 +18,10 @@ export default function JoinGame() {
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState('🐶');
   const qrCodeRef = useRef(null);
+
+  const avatars = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮'];
 
   const {
     register,
@@ -98,11 +102,12 @@ export default function JoinGame() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await joinGame(data.pin, data.playerName);
+      const response = await joinGame(data.pin, data.playerName, selectedAvatar);
       if (response.success) {
         // Update global game contexts
         setPin(data.pin);
         setPlayerName(data.playerName);
+        // Assuming we might want to store avatar in context later, for now we just pass it to backend
 
         toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
         
@@ -204,6 +209,10 @@ export default function JoinGame() {
               <input
                 type="text"
                 placeholder="e.g. 589231"
+                maxLength="6"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+                }}
                 {...register('pin', {
                   required: 'Lobby Game PIN is required',
                   pattern: {
@@ -231,6 +240,10 @@ export default function JoinGame() {
               <input
                 type="text"
                 placeholder="e.g. CyberKnight"
+                maxLength="10"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+                }}
                 {...register('playerName', {
                   required: 'Nickname is required',
                   minLength: {
@@ -238,9 +251,13 @@ export default function JoinGame() {
                     message: 'Nickname must be at least 2 characters',
                   },
                   maxLength: {
-                    value: 12,
-                    message: 'Nickname cannot exceed 12 characters',
+                    value: 10,
+                    message: 'Nickname cannot exceed 10 characters',
                   },
+                  pattern: {
+                    value: /^[a-zA-Z0-9]+$/,
+                    message: 'Nickname can only contain letters and numbers',
+                  }
                 })}
                 className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
                   errors.playerName ? 'border-accent/40' : 'border-white/10'
@@ -252,6 +269,36 @@ export default function JoinGame() {
                   <span>{errors.playerName.message}</span>
                 </div>
               )}
+            </div>
+
+            {/* Avatar Selection */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                Choose Avatar
+              </label>
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                {avatars.map((avatar) => (
+                  <button
+                    key={avatar}
+                    type="button"
+                    onClick={() => setSelectedAvatar(avatar)}
+                    className={`relative text-3xl h-14 w-full rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                      selectedAvatar === avatar
+                        ? 'bg-gradient-to-br from-[#864CBF] to-[#46178F] border-2 border-white scale-110 shadow-[0_0_20px_rgba(134,76,191,0.6)] z-10'
+                        : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
+                    }`}
+                  >
+                    <Avatar emoji={avatar} className="w-10 h-10 drop-shadow-md" />
+                    {selectedAvatar === avatar && (
+                      <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
+                        <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Submit Button */}
