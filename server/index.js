@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
@@ -9,16 +9,17 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Create HTTP server
 const server = http.createServer(app);
+
+// Create Socket.IO server
 const io = new Server(server, {
     cors: {
         origin: '*',
         methods: ['GET', 'POST']
     }
 });
-
-// Save io on app to access it from routes/controllers
-app.set('io', io);
 
 app.use(cors({
     origin: '*',
@@ -27,6 +28,13 @@ app.use(cors({
 
 app.use(express.json());
 
+// Make io accessible in controllers
+app.set('io', io);
+
+// Socket.IO events
+require('./socket/index')(io);
+
+// Routes
 const authRoutes = require('./routes/authRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const gameRoutes = require('./routes/gameRoutes');
@@ -38,32 +46,11 @@ app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Fourise Quiz Hub API is running...');
-});
-
-// Socket connection management
-io.on('connection', (socket) => {
-    console.log(`[SOCKET] Client connected: ${socket.id}`);
-
-    socket.on('join_room', ({ pin, username }) => {
-        const roomName = `room_${pin}`;
-        socket.join(roomName);
-        socket.roomPin = pin;
-        socket.username = username;
-        console.log(`[SOCKET] User ${username} joined ${roomName}`);
-        io.to(roomName).emit('player_connected', { username });
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`[SOCKET] Client disconnected: ${socket.id}`);
-        if (socket.roomPin && socket.username) {
-            io.to(`room_${socket.roomPin}`).emit('player_disconnected', { username: socket.username });
-        }
-    });
+    res.send('QuizForge API is running...');
 });
 
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Fourise Quiz Hub server listening on port ${PORT}`);
+    console.log(`QuizForge server listening on port ${PORT}`);
 });
