@@ -6,6 +6,53 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { useGame } from '../context/GameContext';
+import { getGame } from '../services/gameService';
+
+const parseBgConfig = (bgStr) => {
+  if (!bgStr) {
+    return {
+      url: '',
+      blur: 0,
+      brightness: 100,
+      overlayOpacity: 30,
+      gradientOverlay: 'none',
+      gradientColor1: '#7c3aed',
+      gradientColor2: '#06b6d4',
+      position: 'center',
+      fit: 'cover',
+      darkOverlay: true
+    };
+  }
+  try {
+    const config = JSON.parse(bgStr);
+    if (config && typeof config === 'object' && 'url' in config) {
+      return {
+        url: config.url || '',
+        blur: typeof config.blur === 'number' ? config.blur : 0,
+        brightness: typeof config.brightness === 'number' ? config.brightness : 100,
+        overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
+        gradientOverlay: config.gradientOverlay || 'none',
+        gradientColor1: config.gradientColor1 || '#7c3aed',
+        gradientColor2: config.gradientColor2 || '#06b6d4',
+        position: config.position || 'center',
+        fit: config.fit || 'cover',
+        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
+      };
+    }
+  } catch (e) {}
+  return {
+    url: bgStr,
+    blur: 0,
+    brightness: 100,
+    overlayOpacity: 30,
+    gradientOverlay: 'none',
+    gradientColor1: '#7c3aed',
+    gradientColor2: '#06b6d4',
+    position: 'center',
+    fit: 'cover',
+    darkOverlay: true
+  };
+};
 
 export default function WaitingRoom() {
   const { pin } = useParams();
@@ -13,6 +60,18 @@ export default function WaitingRoom() {
   const { playerName, setPin, setPlayerName } = useGame();
   const [players, setPlayers] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
+
+  // Fetch quiz background image on mount
+  useEffect(() => {
+    getGame(pin).then(res => {
+      if (res.success) {
+        const bg = res.game?.quiz?.backgroundImage || '';
+        setBgImage(bg);
+        localStorage.setItem('last_bg_image', bg);
+      }
+    }).catch(() => {});
+  }, [pin]);
 
   // Fallback if player refresh and context gets cleared
   const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
@@ -83,27 +142,55 @@ export default function WaitingRoom() {
     };
   }, [pin, localPlayerName, playerName, navigate]);
 
+  const bgConfig = parseBgConfig(bgImage);
+
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
+      <div className="relative min-h-screen text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center overflow-hidden">
+        
+        {/* Customized Background Layer */}
+        {bgConfig.url ? (
+          <div className="fixed inset-0 z-0 pointer-events-none transition-all duration-700">
+            <div
+              style={{
+                backgroundImage: `url(${bgConfig.url})`,
+                backgroundPosition: bgConfig.position,
+                backgroundSize: bgConfig.fit,
+                backgroundRepeat: 'no-repeat',
+                filter: `blur(${bgConfig.blur}px) brightness(${bgConfig.brightness}%)`,
+                position: 'fixed',
+                inset: '-20px',
+              }}
+            />
+            {bgConfig.darkOverlay && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
+                }}
+              />
+            )}
+            {bgConfig.gradientOverlay !== 'none' && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    bgConfig.gradientOverlay === 'linear'
+                      ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
+                      : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
+                }}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-background z-0 pointer-events-none" />
+        )}
         
         {/* Glow Spheres */}
         <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
         <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* Ambient floating geometry particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
-          <motion.div 
-            animate={{ y: [-15, 15, -15] }} 
-            transition={{ duration: 6, repeat: Infinity }}
-            className="absolute top-[25%] left-[20%] h-4 w-4 bg-primary/20 rounded-full"
-          />
-          <motion.div 
-            animate={{ y: [15, -15, 15] }} 
-            transition={{ duration: 7, repeat: Infinity }}
-            className="absolute bottom-[25%] right-[25%] h-5.5 w-5.5 bg-secondary/20 rounded-xl"
-          />
-        </div>
+
 
         {/* Waiting card */}
         <motion.div

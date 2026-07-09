@@ -12,7 +12,7 @@ export default {
         accent: "#F43F5E",      // Accent (Rose)
         success: "#22C55E",     // Success (Green)
         warning: "#FACC15",     // Warning (Yellow)
-        background: "#09090B",   // Background (Dark Slate)
+        background: "var(--background)",   // Background (Dynamic slate/light-gray)
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

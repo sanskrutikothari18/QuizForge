@@ -20,136 +20,108 @@ const getTheme = (category) => {
   
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
-      bg: 'bg-[#1e114a] bg-gradient-to-br from-[#3b0764] via-[#6b21a8] to-[#ec4899]',
-      glow1: 'bg-pink-500/50',
-      glow2: 'bg-fuchsia-500/40',
+      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
+      glow1: 'bg-purple-600/25',
+      glow2: 'bg-fuchsia-600/15',
       accentText: 'text-fuchsia-400',
       badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      titleGradient: 'from-purple-300 via-indigo-200 to-fuchsia-400',
-      cardBorder: 'border-fuchsia-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-fuchsia-400/50">
-            <Atom className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-pink-400/45">
-            <Dna className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-indigo-400/40">
-            <FlaskConical className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-purple-400/50">
-            <Telescope className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-fuchsia-300/40">
-            <Orbit className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-indigo-300/40">
-            <Microscope className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-fuchsia-500/20',
+      ambientElements: null
     };
   }
   
   if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
     return {
-      bg: 'bg-[#022c22] bg-gradient-to-br from-[#065f46] via-[#0d9488] to-[#10b981]',
-      glow1: 'bg-emerald-400/50',
-      glow2: 'bg-teal-400/40',
+      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
+      glow1: 'bg-emerald-600/20',
+      glow2: 'bg-teal-600/15',
       accentText: 'text-emerald-400 font-mono',
       badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      titleGradient: 'from-emerald-400 via-green-200 to-teal-400',
-      cardBorder: 'border-emerald-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-emerald-400/50">
-            <Monitor className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-teal-400/45">
-            <Cpu className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-green-400/40">
-            <Server className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-emerald-300/50">
-            <Keyboard className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-teal-300/40">
-            <Code2 className="h-10 w-10 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-green-300/40">
-            <Database className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[18%] left-[45%] animate-float-orbit text-emerald-400/35">
-            <Terminal className="h-8 w-8 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[10%] left-[40%] animate-float-pulse text-teal-400/35">
-            <Wifi className="h-10 w-10 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-emerald-500/20',
+      ambientElements: null
     };
   }
 
   if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
     return {
-      bg: 'bg-[#0b3c5d] bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#f59e0b]',
-      glow1: 'bg-sky-400/50',
-      glow2: 'bg-amber-400/45',
+      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
+      glow1: 'bg-blue-600/20',
+      glow2: 'bg-amber-600/10',
       accentText: 'text-amber-400',
       badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      titleGradient: 'from-amber-400 via-amber-200 to-teal-400',
-      cardBorder: 'border-amber-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[10%] left-[8%] animate-float-orbit text-sky-400/50">
-            <Globe className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-amber-400/45">
-            <Map className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-orange-400/40">
-            <Scroll className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-yellow-400/50">
-            <Compass className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-sky-300/40">
-            <Landmark className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-amber-300/40">
-            <Anchor className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-amber-500/20',
+      ambientElements: null
     };
   }
 
   return {
-    bg: 'bg-[#1e1b4b] bg-gradient-to-br from-[#312e81] via-[#4f46e5] to-[#f43f5e]',
-    glow1: 'bg-rose-500/50',
-    glow2: 'bg-indigo-400/40',
+    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
+    glow1: 'bg-indigo-600/25',
+    glow2: 'bg-violet-600/15',
     accentText: 'text-primary',
     badgeBg: 'bg-primary/10 text-primary',
-    titleGradient: 'from-white via-gray-200 to-gray-400',
     cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-        <div className="absolute top-[10%] left-[8%] animate-float-orbit text-pink-400/50">
-          <Sparkles className="h-16 w-16 stroke-[1.5]" />
-        </div>
-        <div className="absolute top-[25%] right-[10%] animate-float-drift text-indigo-400/45">
-          <Lightbulb className="h-20 w-20 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-rose-400/40">
-          <BookOpen className="h-24 w-24 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-violet-400/50">
-          <Gamepad2 className="h-14 w-14 stroke-[1.5]" />
-        </div>
-      </div>
-    )
+    ambientElements: null
+  };
+};
+const parseBgConfig = (bgStr) => {
+  if (!bgStr) {
+    return {
+      url: '',
+      blur: 0,
+      brightness: 100,
+      overlayOpacity: 30,
+      gradientOverlay: 'none',
+      gradientColor1: '#7c3aed',
+      gradientColor2: '#06b6d4',
+      position: 'center',
+      fit: 'cover',
+      darkOverlay: true,
+      textColor: '#ffffff',
+      textBold: true,
+      letterStyle: 'colored',
+      optionColor: '#7c3aed',
+      optionTextColor: '#ffffff'
+    };
+  }
+  try {
+    const config = JSON.parse(bgStr);
+    if (config && typeof config === 'object' && 'url' in config) {
+      return {
+        url: config.url || '',
+        blur: typeof config.blur === 'number' ? config.blur : 0,
+        brightness: typeof config.brightness === 'number' ? config.brightness : 100,
+        overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
+        gradientOverlay: config.gradientOverlay || 'none',
+        gradientColor1: config.gradientColor1 || '#7c3aed',
+        gradientColor2: config.gradientColor2 || '#06b6d4',
+        position: config.position || 'center',
+        fit: config.fit || 'cover',
+        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true,
+        textColor: config.textColor || '#ffffff',
+        textBold: config.textBold !== undefined ? !!config.textBold : true,
+        letterStyle: config.letterStyle || 'colored',
+        optionColor: config.optionColor || '#7c3aed',
+        optionTextColor: config.optionTextColor || '#ffffff'
+      };
+    }
+  } catch (e) {}
+  return {
+    url: bgStr,
+    blur: 0,
+    brightness: 100,
+    overlayOpacity: 30,
+    gradientOverlay: 'none',
+    gradientColor1: '#7c3aed',
+    gradientColor2: '#06b6d4',
+    position: 'center',
+    fit: 'cover',
+    darkOverlay: true,
+    textColor: '#ffffff',
+    textBold: true,
+    letterStyle: 'colored',
+    optionColor: '#7c3aed',
+    optionTextColor: '#ffffff'
   };
 };
 
@@ -158,6 +130,7 @@ export default function AnswerResult() {
   const navigate = useNavigate();
   const { playerName } = useGame();
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
+  const optionLetters = ['A', 'B', 'C', 'D'];
 
   // Retrieved stats from local storage
   const [isHost, setIsHost] = useState(false);
@@ -171,6 +144,7 @@ export default function AnswerResult() {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [category, setCategory] = useState('general');
+  const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
   const [mobileTab, setMobileTab] = useState('feedback'); // 'feedback' or 'standings'
 
   const myLeaderboardEntry = leaderboard.find(p => p.username?.toLowerCase() === localPlayer?.toLowerCase());
@@ -214,6 +188,9 @@ export default function AnswerResult() {
         if (response.success && response.game) {
           const game = response.game;
           setCategory(game.quiz?.category || 'general');
+          const bg = game.quiz?.backgroundImage || '';
+          setBgImage(bg);
+          localStorage.setItem('last_bg_image', bg);
           setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
           
           const currentIdx = game.currentQuestion - 1;
@@ -254,6 +231,10 @@ export default function AnswerResult() {
 
           // Build leaderboard
           const sortedPlayers = [...(game.players || [])].sort((a, b) => {
+            const aScore = a.totalScore || 0;
+            const bScore = b.totalScore || 0;
+            if (aScore !== bScore) return bScore - aScore;
+
             const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
             const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
             if (aCorrect !== bCorrect) return bCorrect - aCorrect;
@@ -271,6 +252,7 @@ export default function AnswerResult() {
               username: p.name,
               rank: idx + 1,
               correctAnswers: totalCorrect,
+              totalScore: p.totalScore,
               timeCorrect: (totalTimeCorrect / 1000).toFixed(2),
               lastTimeTaken: currentAns && currentAns.isCorrect ? (currentAns.timeTaken / 1000).toFixed(2) : '0.00'
             };
@@ -386,6 +368,7 @@ export default function AnswerResult() {
   ];
 
   const theme = getTheme(category);
+  const bgConfig = parseBgConfig(bgImage);
 
   const firstPlace = leaderboard.find(p => p.rank === 1);
   const secondPlace = leaderboard.find(p => p.rank === 2);
@@ -394,7 +377,45 @@ export default function AnswerResult() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-hidden`}>
+      <div className="relative min-h-screen text-gray-200 p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-hidden">
+        
+        {/* Customized Background Layer */}
+        {bgConfig.url ? (
+          <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ease-out animate-fade-in">
+            <div
+              style={{
+                backgroundImage: `url(${bgConfig.url})`,
+                backgroundPosition: bgConfig.position,
+                backgroundSize: bgConfig.fit,
+                backgroundRepeat: 'no-repeat',
+                filter: `blur(${bgConfig.blur}px) brightness(${bgConfig.brightness}%)`,
+                position: 'fixed',
+                inset: '-20px',
+              }}
+            />
+            {bgConfig.darkOverlay && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
+                }}
+              />
+            )}
+            {bgConfig.gradientOverlay !== 'none' && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    bgConfig.gradientOverlay === 'linear'
+                      ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
+                      : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
+                }}
+              />
+            )}
+          </div>
+        ) : (
+          <div className={`absolute inset-0 ${theme.bg} z-0 pointer-events-none`} />
+        )}
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -463,7 +484,7 @@ export default function AnswerResult() {
                 {/* Vertical Bar Chart */}
                 <div className="space-y-4">
                   {answerStats.map((count, idx) => {
-                    const optionLabels = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+                    const optionLabels = ['Option A', 'Option B', 'Option C', 'Option D'];
                     const maxCount = Math.max(...answerStats, 1);
                     const percentage = (count / maxCount) * 100;
                     const isCorrectOption = correctAnswerIdx === idx;
@@ -552,7 +573,7 @@ export default function AnswerResult() {
                     {isCorrect ? 'Correct Answer!' : 'Incorrect Answer'}
                   </h3>
                   <p className="text-xs sm:text-sm font-bold text-gray-200">
-                    {isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${correctAnswerIdx + 1}`}
+                    {isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`}
                   </p>
                 </div>
 
@@ -582,7 +603,7 @@ export default function AnswerResult() {
                 {/* Overall Rank badge */}
                 {myLeaderboardEntry && (
                   <div className="text-xs text-gray-300 font-bold bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl inline-block mt-2">
-                    Lobby rank: <span className="text-secondary font-black">#{myLeaderboardEntry.rank}</span> &bull; Total correct: <span className="text-success font-black">{myLeaderboardEntry.correctAnswers}</span> ({myLeaderboardEntry.timeCorrect}s total)
+                    Lobby rank: <span className="text-secondary font-black">#{myLeaderboardEntry.rank}</span> &bull; Total score: <span className="text-primary font-black">{myLeaderboardEntry.totalScore !== undefined ? myLeaderboardEntry.totalScore : currentScore} pts</span>
                   </div>
                 )}
 
@@ -612,7 +633,7 @@ export default function AnswerResult() {
                   {secondPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
                       <span className="text-[10px] font-bold text-gray-300 truncate w-full text-center">{secondPlace.username}</span>
-                      <span className="text-[8px] text-gray-400 font-semibold">{secondPlace.correctAnswers || 0} Correct ({secondPlace.lastTimeTaken || '0.00'}s)</span>
+                      <span className="text-[8px] text-gray-400 font-semibold">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 50 }}
@@ -629,7 +650,7 @@ export default function AnswerResult() {
                     <div className="flex flex-col items-center flex-1 min-w-0">
                       <Crown className="h-3 w-3 text-warning animate-bounce mb-0.5" />
                       <span className="text-[11px] font-extrabold text-white truncate w-full text-center">{firstPlace.username}</span>
-                      <span className="text-[8px] text-warning font-bold">{firstPlace.correctAnswers || 0} Correct ({firstPlace.lastTimeTaken || '0.00'}s)</span>
+                      <span className="text-[8px] text-warning font-bold">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 80 }}
@@ -645,7 +666,7 @@ export default function AnswerResult() {
                   {thirdPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
                       <span className="text-[10px] font-bold text-gray-300 truncate w-full text-center">{thirdPlace.username}</span>
-                      <span className="text-[8px] text-gray-400 font-semibold">{thirdPlace.correctAnswers || 0} Correct ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
+                      <span className="text-[8px] text-gray-400 font-semibold">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 35 }}
@@ -673,7 +694,7 @@ export default function AnswerResult() {
                         <span className="font-mono text-gray-500 font-bold">#{player.rank}</span>
                         <span className="font-bold truncate">{player.username}</span>
                       </div>
-                      <span className="font-outfit font-black shrink-0">{player.correctAnswers || 0} Correct ({player.lastTimeTaken || '0.00'}s)</span>
+                      <span className="font-outfit font-black shrink-0">{player.totalScore || 0} pts ({player.lastTimeTaken || '0.00'}s)</span>
                     </div>
                   ))}
                 </div>

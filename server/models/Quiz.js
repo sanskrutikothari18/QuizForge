@@ -62,6 +62,10 @@ const quizSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    backgroundImage: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

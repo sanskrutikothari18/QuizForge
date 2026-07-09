@@ -206,9 +206,9 @@ export default function MyQuizzes() {
                     transition={{ duration: 0.3 }}
                     className="glass-panel rounded-2xl p-5.5 flex flex-col justify-between h-52 border border-white/5 hover:border-primary/25 transition-all group relative"
                   >
-                    <div>
+                    <div className="flex flex-col gap-2">
                       {/* Badge / Header bar */}
-                      <div className="flex justify-between items-start gap-2">
+                      <div className="flex justify-between items-center gap-2">
                         <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
                           {quiz.category || 'General'}
                         </span>
@@ -226,13 +226,18 @@ export default function MyQuizzes() {
                         </div>
                       </div>
 
-                      {/* Info titles */}
-                      <h3 className="font-outfit font-extrabold text-white text-base mt-3 group-hover:text-primary transition-colors line-clamp-1">
-                        {quiz.title}
-                      </h3>
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
-                        {quiz.description || 'No description provided.'}
-                      </p>
+                      {/* Title & Description */}
+                      <div className="px-1 pt-2">
+                        <h3
+                          className="font-outfit text-white text-base group-hover:text-primary transition-colors line-clamp-2 leading-snug"
+                          style={{ fontWeight: 900, letterSpacing: '-0.02em' }}
+                        >
+                          {quiz.title}
+                        </h3>
+                        <p className="text-xs font-semibold text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">
+                          {quiz.description || 'No description provided.'}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Launch button */}

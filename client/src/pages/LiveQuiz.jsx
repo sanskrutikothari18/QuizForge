@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
+import {
   Clock, HelpCircle, Loader2, ArrowRight, ArrowLeft, XCircle,
   Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
   Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
@@ -16,139 +16,97 @@ import { useGame } from '../context/GameContext';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
-  
+
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
-      bg: 'bg-[#1e114a] bg-gradient-to-br from-[#3b0764] via-[#6b21a8] to-[#ec4899]',
-      glow1: 'bg-pink-500/50',
-      glow2: 'bg-fuchsia-500/40',
+      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
+      glow1: 'bg-purple-600/25',
+      glow2: 'bg-fuchsia-600/15',
       accentText: 'text-fuchsia-400',
       badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      titleGradient: 'from-purple-300 via-indigo-200 to-fuchsia-400',
-      cardBorder: 'border-fuchsia-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-fuchsia-400/50">
-            <Atom className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-pink-400/45">
-            <Dna className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-indigo-400/40">
-            <FlaskConical className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-purple-400/50">
-            <Telescope className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-fuchsia-300/40">
-            <Orbit className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-indigo-300/40">
-            <Microscope className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-fuchsia-500/20',
+      ambientElements: null
     };
   }
-  
+
   if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
     return {
-      bg: 'bg-[#022c22] bg-gradient-to-br from-[#065f46] via-[#0d9488] to-[#10b981]',
-      glow1: 'bg-emerald-400/50',
-      glow2: 'bg-teal-400/40',
+      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
+      glow1: 'bg-emerald-600/20',
+      glow2: 'bg-teal-600/15',
       accentText: 'text-emerald-400 font-mono',
       badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      titleGradient: 'from-emerald-400 via-green-200 to-teal-400',
-      cardBorder: 'border-emerald-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-emerald-400/50">
-            <Monitor className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-teal-400/45">
-            <Cpu className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-green-400/40">
-            <Server className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-emerald-300/50">
-            <Keyboard className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-teal-300/40">
-            <Code2 className="h-10 w-10 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-green-300/40">
-            <Database className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[18%] left-[45%] animate-float-orbit text-emerald-400/35">
-            <Terminal className="h-8 w-8 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[10%] left-[40%] animate-float-pulse text-teal-400/35">
-            <Wifi className="h-10 w-10 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-emerald-500/20',
+      ambientElements: null
     };
   }
 
   if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
     return {
-      bg: 'bg-[#0b3c5d] bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#f59e0b]',
-      glow1: 'bg-sky-400/50',
-      glow2: 'bg-amber-400/45',
+      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
+      glow1: 'bg-blue-600/20',
+      glow2: 'bg-amber-600/10',
       accentText: 'text-amber-400',
       badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      titleGradient: 'from-amber-400 via-amber-200 to-teal-400',
-      cardBorder: 'border-amber-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[10%] left-[8%] animate-float-orbit text-sky-400/50">
-            <Globe className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-amber-400/45">
-            <Map className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-orange-400/40">
-            <Scroll className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-yellow-400/50">
-            <Compass className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-sky-300/40">
-            <Landmark className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-amber-300/40">
-            <Anchor className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-amber-500/20',
+      ambientElements: null
     };
   }
 
   return {
-    bg: 'bg-[#1e1b4b] bg-gradient-to-br from-[#312e81] via-[#4f46e5] to-[#f43f5e]',
-    glow1: 'bg-rose-500/50',
-    glow2: 'bg-indigo-400/40',
+    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
+    glow1: 'bg-indigo-600/25',
+    glow2: 'bg-violet-600/15',
     accentText: 'text-primary',
     badgeBg: 'bg-primary/10 text-primary',
-    titleGradient: 'from-white via-gray-200 to-gray-400',
     cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-        <div className="absolute top-[10%] left-[8%] animate-float-orbit text-pink-400/50">
-          <Sparkles className="h-16 w-16 stroke-[1.5]" />
-        </div>
-        <div className="absolute top-[25%] right-[10%] animate-float-drift text-indigo-400/45">
-          <Lightbulb className="h-20 w-20 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-rose-400/40">
-          <BookOpen className="h-24 w-24 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-violet-400/50">
-          <Gamepad2 className="h-14 w-14 stroke-[1.5]" />
-        </div>
-      </div>
-    )
+    ambientElements: null
+  };
+};
+
+const parseBgConfig = (bgStr) => {
+  if (!bgStr) {
+    return {
+      url: '',
+      blur: 0,
+      brightness: 100,
+      overlayOpacity: 30,
+      gradientOverlay: 'none',
+      gradientColor1: '#7c3aed',
+      gradientColor2: '#06b6d4',
+      position: 'center',
+      fit: 'cover',
+      darkOverlay: true
+    };
+  }
+  try {
+    const config = JSON.parse(bgStr);
+    if (config && typeof config === 'object' && 'url' in config) {
+      return {
+        url: config.url || '',
+        blur: typeof config.blur === 'number' ? config.blur : 0,
+        brightness: typeof config.brightness === 'number' ? config.brightness : 100,
+        overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
+        gradientOverlay: config.gradientOverlay || 'none',
+        gradientColor1: config.gradientColor1 || '#7c3aed',
+        gradientColor2: config.gradientColor2 || '#06b6d4',
+        position: config.position || 'center',
+        fit: config.fit || 'cover',
+        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
+      };
+    }
+  } catch (e) { }
+  return {
+    url: bgStr,
+    blur: 0,
+    brightness: 100,
+    overlayOpacity: 30,
+    gradientOverlay: 'none',
+    gradientColor1: '#7c3aed',
+    gradientColor2: '#06b6d4',
+    position: 'center',
+    fit: 'cover',
+    darkOverlay: true
   };
 };
 
@@ -157,7 +115,7 @@ export default function LiveQuiz() {
   const navigate = useNavigate();
   const location = useLocation();
   const { playerName, setPin, setPlayerName, setCurrentQuestion, setLeaderboard } = useGame();
-  
+
   // Game state
   const [question, setQuestion] = useState(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -166,7 +124,8 @@ export default function LiveQuiz() {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [category, setCategory] = useState('general');
-  
+  const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
+
   // Player state
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
@@ -176,7 +135,7 @@ export default function LiveQuiz() {
     const localPlayer = playerName || localStorage.getItem('guest_playerName');
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    
+
     // Determine user role
     const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
@@ -194,7 +153,7 @@ export default function LiveQuiz() {
         if (response.success && response.game) {
           const game = response.game;
           setTotalPlayers(game.players?.length || 0);
-          
+
           if (game.status === 'active' && game.quiz?.questions) {
             const currentIdx = game.currentQuestion - 1;
             const q = game.quiz.questions[currentIdx];
@@ -202,8 +161,10 @@ export default function LiveQuiz() {
             setQuestionNumber(game.currentQuestion);
             setTotalQuestions(game.quiz.questions.length);
             setCategory(game.quiz.category || 'general');
+            setBgImage(game.quiz.backgroundImage || '');
             localStorage.setItem('last_category', game.quiz.category || 'general');
-            
+            localStorage.setItem('last_bg_image', game.quiz.backgroundImage || '');
+
             if (game.questionStartTime) {
               const elapsedSeconds = Math.floor((Date.now() - new Date(game.questionStartTime).getTime()) / 1000);
               const limit = q.timeLimit || 20;
@@ -241,6 +202,7 @@ export default function LiveQuiz() {
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
+      setBgImage(localStorage.getItem('last_bg_image') || '');
       setHasAnswered(false);
       setSelectedIdx(null);
     } else {
@@ -250,7 +212,7 @@ export default function LiveQuiz() {
     // 2. Connect Socket and Register Listeners (handle reconnects)
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    
+
     const joinRoom = () => {
       emitJoinRoom(pin, roleOrName);
     };
@@ -278,20 +240,21 @@ export default function LiveQuiz() {
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
+      setBgImage(localStorage.getItem('last_bg_image') || '');
       setHasAnswered(false);
       setSelectedIdx(null);
     });
 
     socket.on('question_ended', (data) => {
       console.log('[SOCKET CLIENT] Question ended:', data);
-      
+
       // Save stats to context and local storage for results page
       localStorage.setItem('last_correctAnswerIndex', data.correctAnswerIndex);
       localStorage.setItem('last_answerStats', JSON.stringify(data.answerStats));
       localStorage.setItem('last_leaderboard', JSON.stringify(data.leaderboard));
       localStorage.setItem('last_isLastQuestion', data.isLastQuestion ? 'true' : 'false');
       localStorage.setItem('last_category', category);
-      
+
       // If player, save if their answer was correct and points earned
       if (!isUserHost) {
         const myData = data.leaderboard?.find(p => p.username?.toLowerCase() === localPlayer?.toLowerCase());
@@ -354,7 +317,7 @@ export default function LiveQuiz() {
     try {
       const player = playerName || localStorage.getItem('guest_playerName');
       const response = await submitAnswer(pin, player, index);
-      
+
       if (response.success) {
         toast.success('Answer locked! 🔒');
       } else {
@@ -419,34 +382,82 @@ export default function LiveQuiz() {
     );
   }
 
-  // Answer Options Grid styling variables (unified glassmorphic design)
+  // Answer Options Grid styling variables (Kahoot-style solid colors)
   const optionColors = [
-    'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-200 shadow-glass hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.02)]',
-    'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-200 shadow-glass hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.02)]',
-    'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-200 shadow-glass hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.02)]',
-    'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-200 shadow-glass hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.02)]'
+    'bg-[#e21b3c] border-[#e21b3c] hover:bg-[#c91230] text-white shadow-lg cursor-pointer hover:shadow-xl',
+    'bg-[#1368ce] border-[#1368ce] hover:bg-[#1059b0] text-white shadow-lg cursor-pointer hover:shadow-xl',
+    'bg-[#d89e00] border-[#d89e00] hover:bg-[#b88500] text-white shadow-lg cursor-pointer hover:shadow-xl',
+    'bg-[#26890c] border-[#26890c] hover:bg-[#1f6f0a] text-white shadow-lg cursor-pointer hover:shadow-xl'
   ];
 
   const optionHostColors = [
-    'bg-white/5 border-white/10 text-gray-300 shadow-glass cursor-default',
-    'bg-white/5 border-white/10 text-gray-300 shadow-glass cursor-default',
-    'bg-white/5 border-white/10 text-gray-300 shadow-glass cursor-default',
-    'bg-white/5 border-white/10 text-gray-300 shadow-glass cursor-default'
+    'bg-[#e21b3c] border-[#e21b3c] text-white shadow-lg cursor-default',
+    'bg-[#1368ce] border-[#1368ce] text-white shadow-lg cursor-default',
+    'bg-[#d89e00] border-[#d89e00] text-white shadow-lg cursor-default',
+    'bg-[#26890c] border-[#26890c] text-white shadow-lg cursor-default'
   ];
 
-  const optionSelectedColors = [
-    'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary text-white shadow-[0_0_25px_rgba(124,58,237,0.35)]',
-    'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary text-white shadow-[0_0_25px_rgba(124,58,237,0.35)]',
-    'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary text-white shadow-[0_0_25px_rgba(124,58,237,0.35)]',
-    'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary text-white shadow-[0_0_25px_rgba(124,58,237,0.35)]'
+  const optionShapes = [
+    // Triangle (Red)
+    <svg className="h-5 w-5 sm:h-6.5 sm:w-6.5 fill-white stroke-transparent shrink-0" viewBox="0 0 24 24" key="triangle">
+      <path d="M12 3l10 17H2L12 3z" />
+    </svg>,
+    // Diamond (Blue)
+    <svg className="h-4.5 w-4.5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0 rotate-45" viewBox="0 0 24 24" key="diamond">
+      <rect x="5" y="5" width="14" height="14" />
+    </svg>,
+    // Circle (Yellow)
+    <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded-full bg-white shrink-0 shadow-sm" key="circle" />,
+    // Square (Green)
+    <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded bg-white shrink-0 shadow-sm" key="square" />
   ];
 
   const theme = getTheme(category);
+  const bgConfig = parseBgConfig(bgImage);
+
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg flex flex-col justify-start gap-6 p-6 transition-all duration-700 overflow-hidden`}>
-        
+      <div className="relative h-[100dvh] flex flex-col justify-between gap-3 p-3 sm:p-6 transition-all duration-700 overflow-hidden select-none">
+
+        {/* Customized Background Layer */}
+        {bgConfig.url ? (
+          <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ease-out animate-fade-in">
+            <div
+              style={{
+                backgroundImage: `url(${bgConfig.url})`,
+                backgroundPosition: bgConfig.position,
+                backgroundSize: bgConfig.fit,
+                backgroundRepeat: 'no-repeat',
+                filter: `blur(${bgConfig.blur}px) brightness(${bgConfig.brightness}%)`,
+                position: 'fixed',
+                inset: '-20px',
+              }}
+            />
+            {bgConfig.darkOverlay && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
+                }}
+              />
+            )}
+            {bgConfig.gradientOverlay !== 'none' && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    bgConfig.gradientOverlay === 'linear'
+                      ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
+                      : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
+                }}
+              />
+            )}
+          </div>
+        ) : (
+          <div className={`absolute inset-0 ${theme.bg} z-0 pointer-events-none`} />
+        )}
+
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
 
@@ -458,115 +469,114 @@ export default function LiveQuiz() {
         {theme.ambientElements}
 
         {/* Header Indicator */}
-        <div className="flex justify-between items-center border-b border-white/5 pb-4 relative z-10">
-          <div className="flex items-center gap-3">
+        <div className="flex justify-between items-center pb-2 sm:pb-4 relative z-10 shrink-0">
+          <div className="flex items-center gap-2">
             {isHost && (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-xs font-black uppercase tracking-wider mr-2"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-wider mr-1"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
+                <ArrowLeft className="h-3 w-3" />
                 <span>Dashboard</span>
               </button>
             )}
-            <span className={`text-xs font-bold px-3 py-1 rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>
+            <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>
               Question {questionNumber} of {totalQuestions}
             </span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hidden sm:inline">{category}</span>
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest hidden sm:inline">{category}</span>
           </div>
-          
+
           {/* Timer Display */}
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-1.5 font-bold">
-            <Clock className="h-4.5 w-4.5 text-secondary animate-pulse" />
-            <span className="text-sm font-mono">{timeLeft}s</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 px-2.5 py-1 sm:px-4 sm:py-1.5 font-bold shrink-0">
+            <Clock className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 text-secondary animate-pulse" />
+            <span className="text-xs sm:text-sm font-mono">{timeLeft}s</span>
           </div>
         </div>
 
         {/* QUESTION TEXT PANEL */}
-        <div className="mt-4 mb-2 max-w-4xl mx-auto text-center space-y-4 relative z-10">
-          <div className="flex justify-center">
-            <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-gray-500">
-              <HelpCircle className="h-5 w-5" />
-            </div>
-          </div>
-          <h2 className={`font-outfit text-2xl sm:text-3.5xl font-black bg-gradient-to-r ${theme.titleGradient} bg-clip-text text-transparent leading-tight`}>
+        <div className="my-1 sm:my-4 max-w-4xl mx-auto text-center relative z-10 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-gray-200 shadow-xl shrink-0 w-full">
+          <h2 className="font-outfit text-lg sm:text-2xl md:text-3.5xl text-gray-900 font-black leading-tight">
             {question.questionText}
           </h2>
         </div>
 
         {/* CENTRAL STATE VIEW (PROGRESS FOR HOST / WAITING FOR PLAYER) */}
-        <div className="flex items-center justify-center max-w-xl mx-auto w-full my-2 relative z-10">
+        <div className="flex items-center justify-center max-w-xl mx-auto w-full my-1 sm:my-4 relative z-10 shrink-0">
           {isHost ? (
             /* HOST PANEL */
-            <div className={`w-full glass-panel rounded-3xl p-6 border ${theme.cardBorder} text-center space-y-4`}>
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Lobby Statistics</span>
-              <div className="font-outfit text-4xl font-extrabold text-white">
-                {answeredCount} <span className="text-sm font-medium text-gray-400">/ {totalPlayers} Answered</span>
+            <div className={`w-full glass-panel rounded-2xl p-4 border ${theme.cardBorder} text-center space-y-2`}>
+              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Lobby Statistics</span>
+              <div className="font-outfit text-2xl font-extrabold text-white">
+                {answeredCount} <span className="text-xs font-medium text-gray-400">/ {totalPlayers} Answered</span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/10">
-                <div 
-                  className="bg-primary h-full transition-all duration-500" 
+              <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/10">
+                <div
+                  className="bg-primary h-full transition-all duration-500"
                   style={{ width: `${totalPlayers ? (answeredCount / totalPlayers) * 100 : 0}%` }}
                 />
               </div>
               <button
                 onClick={handleManualEndQuestion}
                 disabled={isEnding}
-                className="w-full btn-premium btn-primary-gradient py-2.5 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer mt-4"
+                className="w-full btn-premium btn-primary-gradient py-2 flex items-center justify-center gap-1.5 text-[10px] font-bold shadow-premium-glow cursor-pointer mt-2"
               >
                 <span>End Question / Skip to Standings</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-3 w-3" />
               </button>
             </div>
           ) : hasAnswered ? (
             /* PLAYER WAITING PANEL */
-            <div className={`text-center space-y-4 glass-panel rounded-3xl p-8 w-full border ${theme.cardBorder}`}>
-              <div className="h-10 w-10 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
-                <Loader2 className="h-5 w-5 animate-spin" />
+            <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
+              <div className="h-8 w-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
+                <Loader2 className="h-4.5 w-4.5 animate-spin" />
               </div>
-              <h3 className="font-outfit text-lg font-bold text-white">Answer Locked!</h3>
-              <p className="text-xs text-gray-400">Waiting for other challengers to submit their choices...</p>
+              <h3 className="font-outfit text-sm font-bold text-white">Answer Locked!</h3>
+              <p className="text-[10px] text-gray-400">Waiting for other challengers to submit their choices...</p>
             </div>
           ) : timeLeft <= 0 ? (
             /* PLAYER TIME'S UP PANEL */
-            <div className={`text-center space-y-4 glass-panel rounded-3xl p-8 w-full border ${theme.cardBorder}`}>
-              <div className="h-10 w-10 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto text-red-500">
-                <XCircle className="h-5 w-5" />
+            <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
+              <div className="h-8 w-8 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto text-red-500">
+                <XCircle className="h-4.5 w-4.5" />
               </div>
-              <h3 className="font-outfit text-lg font-bold text-white">Time's Up!</h3>
-              <p className="text-xs text-gray-400">Waiting for the teacher to end the question...</p>
+              <h3 className="font-outfit text-sm font-bold text-white">Time's Up!</h3>
+              <p className="text-[10px] text-gray-400">Waiting for the teacher to end the question...</p>
             </div>
           ) : null}
         </div>
 
         {/* ANSWERS LAYOUT (HOST SEES ONLY GRID, PLAYER SEES LARGE TAP BUTTONS) */}
-        <div className="w-full max-w-5xl mx-auto grid gap-4 sm:grid-cols-2 mt-4 relative z-10">
+        <div className="w-full max-w-5xl mx-auto grid gap-1.5 sm:gap-4 grid-cols-1 sm:grid-cols-2 relative z-10 flex-1 my-1 sm:my-4 pb-2 sm:pb-0">
           {question.options.map((opt, idx) => (
             <button
               key={idx}
               disabled={hasAnswered || isHost || timeLeft <= 0}
               onClick={() => handleSelectAnswer(idx)}
-              className={`rounded-2xl border px-8 py-6 flex items-center gap-5 text-left transition-all active:scale-[0.98] ${
-                isHost 
-                  ? optionHostColors[idx] + ' opacity-90' 
-                  : hasAnswered 
-                    ? selectedIdx === idx 
-                      ? optionSelectedColors[idx] + ' opacity-100 scale-[1.02] border-white/50'
-                      : 'bg-white/5 border-white/10 text-gray-500 opacity-40 cursor-not-allowed'
+              className={`rounded-xl sm:rounded-2xl border-2 px-4 py-2.5 sm:px-8 sm:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] ${isHost
+                  ? optionHostColors[idx]
+                  : hasAnswered
+                    ? selectedIdx === idx
+                      ? optionColors[idx] + ' opacity-100 scale-[1.01] ring-2 ring-white/50 border-white'
+                      : optionColors[idx] + ' opacity-30 cursor-not-allowed scale-[0.99]'
                     : timeLeft <= 0
-                      ? 'bg-white/5 border-white/10 text-gray-500 opacity-45 cursor-not-allowed'
-                      : optionColors[idx] + ' text-white cursor-pointer'
-              }`}
+                      ? optionColors[idx] + ' opacity-35 cursor-not-allowed scale-[0.99]'
+                      : optionColors[idx]
+                }`}
             >
-              {/* Option Number Badge */}
-              <div className={`h-9 w-9 rounded-xl flex items-center justify-center text-xs font-black font-mono shrink-0 transition-all ${
-                hasAnswered && selectedIdx === idx
-                  ? 'bg-white text-primary shadow-premium-glow'
-                  : 'bg-white/10 border border-white/10 text-gray-300'
-              }`}>
-                {idx + 1}
+              <div className="flex items-center gap-3 sm:gap-5">
+                {/* Kahoot Solid White Shape Icon */}
+                {optionShapes[idx]}
+                <span className="text-xs sm:text-lg md:text-xl font-black tracking-wide text-white line-clamp-1">
+                  {opt}
+                </span>
               </div>
-              <span className="text-base font-extrabold tracking-wide">{opt}</span>
+
+              {/* Selection Circle Outline on the right */}
+              <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white/70 flex items-center justify-center shrink-0">
+                {hasAnswered && selectedIdx === idx && (
+                  <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-white" />
+                )}
+              </div>
             </button>
           ))}
         </div>

@@ -19,136 +19,48 @@ const getTheme = (category) => {
   
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
-      bg: 'bg-[#1e114a] bg-gradient-to-br from-[#3b0764] via-[#6b21a8] to-[#ec4899]',
-      glow1: 'bg-pink-500/50',
-      glow2: 'bg-fuchsia-500/40',
+      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
+      glow1: 'bg-purple-600/25',
+      glow2: 'bg-fuchsia-600/15',
       accentText: 'text-fuchsia-400',
       badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      titleGradient: 'from-purple-300 via-indigo-200 to-fuchsia-400',
-      cardBorder: 'border-fuchsia-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-fuchsia-400/50">
-            <Atom className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-pink-400/45">
-            <Dna className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-indigo-400/40">
-            <FlaskConical className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-purple-400/50">
-            <Telescope className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-fuchsia-300/40">
-            <Orbit className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-indigo-300/40">
-            <Microscope className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-fuchsia-500/20',
+      ambientElements: null
     };
   }
   
   if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
     return {
-      bg: 'bg-[#022c22] bg-gradient-to-br from-[#065f46] via-[#0d9488] to-[#10b981]',
-      glow1: 'bg-emerald-400/50',
-      glow2: 'bg-teal-400/40',
+      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
+      glow1: 'bg-emerald-600/20',
+      glow2: 'bg-teal-600/15',
       accentText: 'text-emerald-400 font-mono',
       badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      titleGradient: 'from-emerald-400 via-green-200 to-teal-400',
-      cardBorder: 'border-emerald-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-emerald-400/50">
-            <Monitor className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-teal-400/45">
-            <Cpu className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-green-400/40">
-            <Server className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-emerald-300/50">
-            <Keyboard className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-teal-300/40">
-            <Code2 className="h-10 w-10 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-green-300/40">
-            <Database className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[18%] left-[45%] animate-float-orbit text-emerald-400/35">
-            <Terminal className="h-8 w-8 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[10%] left-[40%] animate-float-pulse text-teal-400/35">
-            <Wifi className="h-10 w-10 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-emerald-500/20',
+      ambientElements: null
     };
   }
 
   if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
     return {
-      bg: 'bg-[#0b3c5d] bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#f59e0b]',
-      glow1: 'bg-sky-400/50',
-      glow2: 'bg-amber-400/45',
+      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
+      glow1: 'bg-blue-600/20',
+      glow2: 'bg-amber-600/10',
       accentText: 'text-amber-400',
       badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      titleGradient: 'from-amber-400 via-amber-200 to-teal-400',
-      cardBorder: 'border-amber-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[10%] left-[8%] animate-float-orbit text-sky-400/50">
-            <Globe className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-amber-400/45">
-            <Map className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-orange-400/40">
-            <Scroll className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-yellow-400/50">
-            <Compass className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-sky-300/40">
-            <Landmark className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-amber-300/40">
-            <Anchor className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-amber-500/20',
+      ambientElements: null
     };
   }
 
   return {
-    bg: 'bg-[#1e1b4b] bg-gradient-to-br from-[#312e81] via-[#4f46e5] to-[#f43f5e]',
-    glow1: 'bg-rose-500/50',
-    glow2: 'bg-indigo-400/40',
+    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
+    glow1: 'bg-indigo-600/25',
+    glow2: 'bg-violet-600/15',
     accentText: 'text-primary',
     badgeBg: 'bg-primary/10 text-primary',
-    titleGradient: 'from-white via-gray-200 to-gray-400',
     cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-        <div className="absolute top-[10%] left-[8%] animate-float-orbit text-pink-400/50">
-          <Sparkles className="h-16 w-16 stroke-[1.5]" />
-        </div>
-        <div className="absolute top-[25%] right-[10%] animate-float-drift text-indigo-400/45">
-          <Lightbulb className="h-20 w-20 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-rose-400/40">
-          <BookOpen className="h-24 w-24 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-violet-400/50">
-          <Gamepad2 className="h-14 w-14 stroke-[1.5]" />
-        </div>
-      </div>
-    )
+    ambientElements: null
   };
 };
 
@@ -321,7 +233,7 @@ export default function Leaderboard() {
             {secondPlace ? (
               <div className="flex flex-col items-center flex-1">
                 <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{secondPlace.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{secondPlace.correctAnswers || 0} Correct ({secondPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 100 }}
@@ -338,7 +250,7 @@ export default function Leaderboard() {
               <div className="flex flex-col items-center flex-1">
                 <Crown className="h-5 w-5 text-warning animate-bounce mb-1" />
                 <span className="text-sm font-bold text-white truncate max-w-[90px]">{firstPlace.name}</span>
-                <span className="text-[10px] text-warning font-bold">{firstPlace.correctAnswers || 0} Correct ({firstPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className="text-[10px] text-warning font-bold">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 140 }}
@@ -355,7 +267,7 @@ export default function Leaderboard() {
             {thirdPlace ? (
               <div className="flex flex-col items-center flex-1">
                 <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{thirdPlace.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{thirdPlace.correctAnswers || 0} Correct ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 75 }}
@@ -378,7 +290,7 @@ export default function Leaderboard() {
                     <span className="font-mono text-gray-500 font-bold">#{player.rank}</span>
                     <span className="font-bold text-gray-300">{player.name}</span>
                   </div>
-                  <span className="font-semibold text-gray-400">{player.correctAnswers || 0} Correct ({player.lastTimeTaken || '0.00'}s)</span>
+                  <span className="font-semibold text-gray-400">{player.totalScore || 0} pts ({player.lastTimeTaken || '0.00'}s)</span>
                 </div>
               ))}
             </div>

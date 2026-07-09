@@ -7,149 +7,63 @@ import {
   Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
   Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
   Globe, Compass, Map, Scroll, Landmark, Anchor, History,
-  Lightbulb, Gamepad2, BookOpen
+  Lightbulb, Gamepad2, BookOpen, XCircle, AlertCircle, Clock, Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
 import { getGame } from '../services/gameService';
 import { saveResult } from '../services/resultService';
 import { disconnectSocket } from '../services/socketService';
+import toast from 'react-hot-toast';
+
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
   
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
-      bg: 'bg-[#1e114a] bg-gradient-to-br from-[#3b0764] via-[#6b21a8] to-[#ec4899]',
-      glow1: 'bg-pink-500/50',
-      glow2: 'bg-fuchsia-500/40',
+      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
+      glow1: 'bg-purple-600/25',
+      glow2: 'bg-fuchsia-600/15',
       accentText: 'text-fuchsia-400',
       badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      titleGradient: 'from-purple-300 via-indigo-200 to-fuchsia-400',
-      cardBorder: 'border-fuchsia-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-fuchsia-400/50">
-            <Atom className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-pink-400/45">
-            <Dna className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-indigo-400/40">
-            <FlaskConical className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-purple-400/50">
-            <Telescope className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-fuchsia-300/40">
-            <Orbit className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-indigo-300/40">
-            <Microscope className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-fuchsia-500/20',
+      ambientElements: null
     };
   }
   
   if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
     return {
-      bg: 'bg-[#022c22] bg-gradient-to-br from-[#065f46] via-[#0d9488] to-[#10b981]',
-      glow1: 'bg-emerald-400/50',
-      glow2: 'bg-teal-400/40',
+      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
+      glow1: 'bg-emerald-600/20',
+      glow2: 'bg-teal-600/15',
       accentText: 'text-emerald-400 font-mono',
       badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      titleGradient: 'from-emerald-400 via-green-200 to-teal-400',
-      cardBorder: 'border-emerald-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[12%] left-[8%] animate-float-orbit text-emerald-400/50">
-            <Monitor className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-teal-400/45">
-            <Cpu className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-green-400/40">
-            <Server className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-emerald-300/50">
-            <Keyboard className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-teal-300/40">
-            <Code2 className="h-10 w-10 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-green-300/40">
-            <Database className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[18%] left-[45%] animate-float-orbit text-emerald-400/35">
-            <Terminal className="h-8 w-8 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[10%] left-[40%] animate-float-pulse text-teal-400/35">
-            <Wifi className="h-10 w-10 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-emerald-500/20',
+      ambientElements: null
     };
   }
 
   if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
     return {
-      bg: 'bg-[#0b3c5d] bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#f59e0b]',
-      glow1: 'bg-sky-400/50',
-      glow2: 'bg-amber-400/45',
+      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
+      glow1: 'bg-blue-600/20',
+      glow2: 'bg-amber-600/10',
       accentText: 'text-amber-400',
       badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      titleGradient: 'from-amber-400 via-amber-200 to-teal-400',
-      cardBorder: 'border-amber-500/25',
-      ambientElements: (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-          <div className="absolute top-[10%] left-[8%] animate-float-orbit text-sky-400/50">
-            <Globe className="h-16 w-16 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[25%] right-[10%] animate-float-drift text-amber-400/45">
-            <Map className="h-20 w-20 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-orange-400/40">
-            <Scroll className="h-24 w-24 stroke-[1.2]" />
-          </div>
-          <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-yellow-400/50">
-            <Compass className="h-14 w-14 stroke-[1.5]" />
-          </div>
-          <div className="absolute top-[45%] left-[25%] animate-float-pulse text-sky-300/40">
-            <Landmark className="h-12 w-12 stroke-[1.5]" />
-          </div>
-          <div className="absolute bottom-[45%] right-[28%] animate-float-drift text-amber-300/40">
-            <Anchor className="h-12 w-12 stroke-[1.5]" />
-          </div>
-        </div>
-      )
+      cardBorder: 'border-amber-500/20',
+      ambientElements: null
     };
   }
 
   return {
-    bg: 'bg-[#1e1b4b] bg-gradient-to-br from-[#312e81] via-[#4f46e5] to-[#f43f5e]',
-    glow1: 'bg-rose-500/50',
-    glow2: 'bg-indigo-400/40',
+    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
+    glow1: 'bg-indigo-600/25',
+    glow2: 'bg-violet-600/15',
     accentText: 'text-primary',
     badgeBg: 'bg-primary/10 text-primary',
-    titleGradient: 'from-white via-gray-200 to-gray-400',
     cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35 select-none z-0">
-        <div className="absolute top-[10%] left-[8%] animate-float-orbit text-pink-400/50">
-          <Sparkles className="h-16 w-16 stroke-[1.5]" />
-        </div>
-        <div className="absolute top-[25%] right-[10%] animate-float-drift text-indigo-400/45">
-          <Lightbulb className="h-20 w-20 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[30%] left-[12%] animate-float-pulse text-rose-400/40">
-          <BookOpen className="h-24 w-24 stroke-[1.2]" />
-        </div>
-        <div className="absolute bottom-[15%] right-[15%] animate-float-orbit text-violet-400/50">
-          <Gamepad2 className="h-14 w-14 stroke-[1.5]" />
-        </div>
-      </div>
-    )
+    ambientElements: null
   };
 };
 
@@ -219,6 +133,10 @@ export default function FinalResult() {
     };
     triggerConfetti();
 
+    // Clean up temporary gameplay theme state from localStorage
+    localStorage.removeItem('last_bg_image');
+    localStorage.removeItem('last_category');
+
     return () => {
       disconnectSocket();
     };
@@ -226,9 +144,15 @@ export default function FinalResult() {
 
   const players = game?.players || [];
   
-  // Sort players by accuracy and speed
+  // Sort players by total score (points) first, then accuracy and speed
   const rankedPlayers = [...players]
     .sort((a, b) => {
+      const aScore = a.totalScore || 0;
+      const bScore = b.totalScore || 0;
+      if (aScore !== bScore) {
+        return bScore - aScore;
+      }
+      
       const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
       const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
       
@@ -260,6 +184,10 @@ export default function FinalResult() {
   const second = rankedPlayers[1];
   const third = rankedPlayers[2];
 
+  const localPlayerName = localStorage.getItem('guest_playerName');
+  const currentPlayer = rankedPlayers.find(p => p.name.toLowerCase() === localPlayerName?.toLowerCase());
+  const questions = game?.quiz?.questions || [];
+
   if (isLoading) {
     return (
       <AnimatedPage>
@@ -277,7 +205,7 @@ export default function FinalResult() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-hidden`}>
+      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-y-auto`}>
         
         {/* Ambient Grid overlay */}
         <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
@@ -329,7 +257,7 @@ export default function FinalResult() {
             {second ? (
               <div className="flex flex-col items-center flex-1">
                 <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{second.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{second.correctAnswers || 0} Correct ({second.timeCorrect || '0.00'}s)</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{second.totalScore || 0} pts ({second.timeCorrect || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 100 }}
@@ -346,7 +274,7 @@ export default function FinalResult() {
               <div className="flex flex-col items-center flex-1">
                 <CrownIcon className="h-6 w-6 text-yellow-500 animate-bounce mb-1" />
                 <span className="text-sm font-bold text-white truncate max-w-[90px]">{winner.name}</span>
-                <span className="text-[10px] text-warning font-bold">{winner.correctAnswers || 0} Correct ({winner.timeCorrect || '0.00'}s)</span>
+                <span className="text-[10px] text-warning font-bold">{winner.totalScore || 0} pts ({winner.timeCorrect || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 140 }}
@@ -363,7 +291,7 @@ export default function FinalResult() {
             {third ? (
               <div className="flex flex-col items-center flex-1">
                 <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{third.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{third.correctAnswers || 0} Correct ({third.timeCorrect || '0.00'}s)</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{third.totalScore || 0} pts ({third.timeCorrect || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 75 }}
@@ -376,6 +304,107 @@ export default function FinalResult() {
             ) : <div className="flex-1" />}
 
           </div>
+
+          {/* Detailed Question Review for Student */}
+          {!isHost && currentPlayer && questions.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="w-full max-w-2xl mx-auto mt-8 p-6 bg-white/5 border border-white/10 rounded-2xl text-left relative z-10"
+            >
+              <h2 className="font-outfit text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-primary animate-pulse" />
+                <span>Your Performance Breakdown</span>
+              </h2>
+              <p className="text-xs text-gray-400 mb-6">
+                Review your answers below to see where you excelled and where you can improve.
+              </p>
+
+              <div className="space-y-6">
+                {questions.map((q, idx) => {
+                  const userAnswer = currentPlayer.answers?.find(a => a.questionIndex === idx);
+                  const isUserCorrect = userAnswer?.isCorrect;
+                  const hasAnswered = userAnswer !== undefined && userAnswer.answerIndex !== -1;
+
+                  return (
+                    <div key={idx} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                            Question {idx + 1}
+                          </span>
+                          <h3 className="text-sm font-semibold text-white mt-0.5">{q.questionText}</h3>
+                        </div>
+                        <div>
+                          {hasAnswered ? (
+                            isUserCorrect ? (
+                              <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                <CheckCircle className="h-3 w-3" /> Correct
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                <XCircle className="h-3 w-3" /> Incorrect
+                              </span>
+                            )
+                          ) : (
+                            <span className="inline-flex items-center gap-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                              <AlertCircle className="h-3 w-3" /> Unanswered
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Answer Options Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                        {q.options.map((opt, optIdx) => {
+                          const isCorrectOption = optIdx === q.correctAnswer;
+                          const isSelectedOption = userAnswer && Number(userAnswer.answerIndex) === optIdx;
+
+                          let optClass = "border-white/5 bg-white/5 text-gray-400";
+                          let icon = null;
+
+                          if (isCorrectOption) {
+                            optClass = "border-green-500/30 bg-green-500/10 text-green-300 font-medium";
+                            icon = <CheckCircle className="h-3.5 w-3.5 text-green-400 shrink-0" />;
+                          } else if (isSelectedOption && !isUserCorrect) {
+                            optClass = "border-red-500/30 bg-red-500/10 text-red-300 font-medium";
+                            icon = <XCircle className="h-3.5 w-3.5 text-red-400 shrink-0" />;
+                          }
+
+                          return (
+                            <div
+                              key={optIdx}
+                              className={`flex items-center justify-between gap-2 p-2.5 rounded-lg border text-xs ${optClass}`}
+                            >
+                              <span>{opt}</span>
+                              {icon}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Extra Info (Score & Time) */}
+                      {hasAnswered && (
+                        <div className="flex gap-4 text-[10px] text-gray-400 pt-1">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-gray-500" />
+                            Time taken: {(userAnswer.timeTaken / 1000).toFixed(2)}s
+                          </span>
+                          {isUserCorrect && (
+                            <span className="flex items-center gap-1 text-yellow-500/80 font-bold">
+                              <Award className="h-3 w-3" />
+                              +{userAnswer.score} pts
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
 
         </div>
 

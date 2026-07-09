@@ -1,5 +1,5 @@
-const Result = require('../models/Result');
-const GameSession = require('../models/GameSession');
+const Result = require('../../models/Result');
+const GameSession = require('../../models/GameSession');
 
 const saveResult = async (req, res) => {
     try {

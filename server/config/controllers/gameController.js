@@ -1,5 +1,5 @@
-const GameSession = require('../models/GameSession');
-const Quiz = require('../models/Quiz');
+const GameSession = require('../../models/GameSession');
+const Quiz = require('../../models/Quiz');
 const QRCode = require('qrcode');
 const os = require('os');
 
@@ -24,12 +24,16 @@ const calculateScore = (isCorrect, timeTaken, timeLimit) => {
     const timeLimitMs = timeLimit * 1000;
     const timeRemaining = timeLimitMs - timeTaken;
     const baseScore = 1000;
-    const timeBonus = Math.round((timeRemaining / timeLimitMs) * 1000);
+    const timeBonus = Math.max(0, Math.round((timeRemaining / timeLimitMs) * 1000));
     return baseScore + timeBonus;
 };
 
 const sortAndRankPlayers = (players, currentQuestionIndex) => {
     const sorted = [...players].sort((a, b) => {
+        if (b.totalScore !== a.totalScore) {
+            return b.totalScore - a.totalScore;
+        }
+        
         const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
         const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
         
@@ -516,7 +520,7 @@ const getGame = async (req, res) => {
         const { pin } = req.params;
 
         const game = await GameSession.findOne({ pin })
-            .populate('quizId', 'title category description questions')
+            .populate('quizId', 'title category description questions backgroundImage')
             .populate('hostId', 'name email');
 
         if (!game) {
