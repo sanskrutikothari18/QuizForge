@@ -164,41 +164,43 @@ export default function ResultsAnalytics() {
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 14;
 
-      // ── Brand Header ────────────────────────────────────────────
-      doc.setFillColor(22, 22, 40);
-      doc.rect(0, 0, pageW, 38, 'F');
-
+      // ── Brand Header (Simple) ────────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.setTextColor(168, 85, 247);   // purple
-      doc.text('Fourise Quiz Hub', margin, 16);
+      doc.setFontSize(22);
+      doc.setTextColor(30, 30, 30);
+      doc.text('Fourise Quiz Hub', margin, 20);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(160, 160, 180);
-      doc.text('Battle Report', margin, 23);
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Battle Report', margin, 27);
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(255, 255, 255);
-      doc.text(result.quizTitle || 'Quiz Match', margin, 31);
+      doc.setFontSize(12);
+      doc.setTextColor(50, 50, 50);
+      doc.text(result.quizTitle || 'Quiz Match', margin, 35);
 
       const dateStr = result.playedAt
         ? new Date(result.playedAt).toLocaleString()
         : new Date().toLocaleString();
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(130, 130, 150);
-      doc.text(dateStr, pageW - margin, 31, { align: 'right' });
-
-      let cursorY = 46;
-
-      // ── Summary Cards ───────────────────────────────────────────
-      doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
-      doc.setTextColor(168, 85, 247);
+      doc.setTextColor(120, 120, 120);
+      doc.text(dateStr, pageW - margin, 35, { align: 'right' });
+
+      // Add a simple line separator
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(margin, 40, pageW - margin, 40);
+
+      let cursorY = 50;
+
+      // ── Summary Cards (Simple) ───────────────────────────────────────────
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(40, 40, 40);
       doc.text('MATCH SUMMARY', margin, cursorY);
-      cursorY += 5;
+      cursorY += 8;
 
       const summaryItems = [
         ['Winner', winnerName],
@@ -208,31 +210,34 @@ export default function ResultsAnalytics() {
         ['Lobby Accuracy', `${accuracy}%`],
       ];
 
-      const cardW = (pageW - margin * 2 - 4) / summaryItems.length;
+      const cardW = (pageW - margin * 2 - 12) / summaryItems.length;
       summaryItems.forEach(([label, val], i) => {
-        const x = margin + i * (cardW + 1);
-        doc.setFillColor(30, 30, 50);
-        doc.roundedRect(x, cursorY, cardW, 20, 2, 2, 'F');
+        const x = margin + i * (cardW + 3);
+        
+        // Simple border
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(250, 250, 250);
+        doc.roundedRect(x, cursorY, cardW, 18, 1, 1, 'FD');
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(13);
-        doc.setTextColor(230, 230, 255);
+        doc.setFontSize(11);
+        doc.setTextColor(30, 30, 30);
         const maxValWidth = cardW - 4;
         const valLines = doc.splitTextToSize(val, maxValWidth);
-        doc.text(valLines[0], x + cardW / 2, cursorY + 11, { align: 'center' });
+        doc.text(valLines[0], x + cardW / 2, cursorY + 8, { align: 'center' });
 
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(6.5);
-        doc.setTextColor(120, 120, 150);
-        doc.text(label.toUpperCase(), x + cardW / 2, cursorY + 17, { align: 'center' });
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
+        doc.text(label.toUpperCase(), x + cardW / 2, cursorY + 14, { align: 'center' });
       });
       cursorY += 28;
 
-      // ── Fastest Solvers ─────────────────────────────────────────
+      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
       if (questionHighlights.length > 0) {
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.setTextColor(168, 85, 247);
+        doc.setFontSize(11);
+        doc.setTextColor(40, 40, 40);
         doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
         cursorY += 4;
 
@@ -247,39 +252,37 @@ export default function ResultsAnalytics() {
           theme: 'grid',
           styles: {
             font: 'helvetica',
-            fontSize: 8,
-            cellPadding: 3,
-            textColor: [220, 220, 240],
-            fillColor: [22, 22, 40],
-            lineColor: [50, 50, 70],
-            lineWidth: 0.3,
+            fontSize: 9,
+            cellPadding: 4,
+            textColor: [50, 50, 50],
+            lineColor: [220, 220, 220],
+            lineWidth: 0.1,
           },
           headStyles: {
-            fillColor: [60, 20, 100],
-            textColor: [200, 160, 255],
+            fillColor: [240, 240, 240],
+            textColor: [40, 40, 40],
             fontStyle: 'bold',
-            fontSize: 7.5,
           },
-          alternateRowStyles: { fillColor: [28, 28, 46] },
+          alternateRowStyles: { fillColor: [250, 250, 250] },
           margin: { left: margin, right: margin },
         });
-        cursorY = doc.lastAutoTable.finalY + 8;
+        cursorY = doc.lastAutoTable.finalY + 10;
       }
 
-      // ── Player Rankings Table ────────────────────────────────────
+      // ── Player Rankings Table (Simple) ────────────────────────────────────
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(168, 85, 247);
+      doc.setFontSize(11);
+      doc.setTextColor(40, 40, 40);
       doc.text('PLAYER RANKINGS', margin, cursorY);
       cursorY += 4;
 
-      const rankMedals = ['🥇', '🥈', '🥉'];
+      const rankMedals = ['1st', '2nd', '3rd'];
       autoTable(doc, {
         startY: cursorY,
         head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
         body: players.map(p => {
           const notAnswered = Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
-          const medal = p.rank <= 3 ? `${rankMedals[p.rank - 1]} #${p.rank}` : `#${p.rank}`;
+          const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
           return [
             medal,
             p.name,
@@ -292,44 +295,46 @@ export default function ResultsAnalytics() {
         theme: 'grid',
         styles: {
           font: 'helvetica',
-          fontSize: 8,
-          cellPadding: 3.5,
-          textColor: [220, 220, 240],
-          fillColor: [18, 18, 36],
-          lineColor: [50, 50, 70],
-          lineWidth: 0.3,
+          fontSize: 9,
+          cellPadding: 4,
+          textColor: [50, 50, 50],
+          lineColor: [220, 220, 220],
+          lineWidth: 0.1,
         },
         headStyles: {
-          fillColor: [60, 20, 100],
-          textColor: [200, 160, 255],
+          fillColor: [240, 240, 240],
+          textColor: [40, 40, 40],
           fontStyle: 'bold',
-          fontSize: 8,
         },
         columnStyles: {
-          0: { cellWidth: 22, halign: 'center' },
-          2: { halign: 'center', textColor: [74, 222, 128] },
-          3: { halign: 'center', textColor: [248, 113, 113] },
-          4: { halign: 'center', textColor: [120, 120, 150] },
-          5: { halign: 'right', textColor: [167, 139, 250], fontStyle: 'bold' },
+          0: { cellWidth: 20, halign: 'center' },
+          2: { halign: 'center' },
+          3: { halign: 'center' },
+          4: { halign: 'center' },
+          5: { halign: 'right', fontStyle: 'bold' },
         },
-        alternateRowStyles: { fillColor: [26, 26, 44] },
+        alternateRowStyles: { fillColor: [250, 250, 250] },
         rowPageBreak: 'auto',
         margin: { left: margin, right: margin },
       });
 
-      // ── Footer ──────────────────────────────────────────────────
+      // ── Footer (Simple) ──────────────────────────────────────────────────
       const totalPages = doc.internal.getNumberOfPages();
       for (let pg = 1; pg <= totalPages; pg++) {
         doc.setPage(pg);
-        doc.setFillColor(22, 22, 40);
-        doc.rect(0, doc.internal.pageSize.getHeight() - 10, pageW, 10, 'F');
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 120);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        
+        // Simple line above footer
+        doc.setDrawColor(230, 230, 230);
+        doc.setLineWidth(0.5);
+        doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
+        
         doc.text(
           `Fourise Quiz Hub  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
           pageW / 2,
-          doc.internal.pageSize.getHeight() - 3.5,
+          doc.internal.pageSize.getHeight() - 8,
           { align: 'center' }
         );
       }
