@@ -32,21 +32,22 @@
 }
 
 .light {
-  --background: #f0f7ff;
-  --text-main: #334155;
-  --text-muted: #64748b;
-  --text-heading: #0f172a;
-  --card-bg: rgba(255, 255, 255, 0.92);
-  --card-border: rgba(99, 179, 237, 0.15);
-  --header-bg: rgba(240, 247, 255, 0.85);
-  --header-border: rgba(99, 179, 237, 0.12);
-  --glass-panel-bg: rgba(255, 255, 255, 0.88);
-  --glass-panel-border: rgba(99, 179, 237, 0.18);
-  --glass-panel-shadow: 0 12px 40px 0 rgba(59, 130, 246, 0.06);
+  /* Warm ivory-lavender base — easy on eyes, premium feel */
+  --background: #faf8ff;
+  --text-main: #3d3557;
+  --text-muted: #7b6fa0;
+  --text-heading: #1e1840;
+  --card-bg: rgba(255, 253, 255, 0.95);
+  --card-border: rgba(139, 92, 246, 0.12);
+  --header-bg: rgba(250, 248, 255, 0.88);
+  --header-border: rgba(139, 92, 246, 0.10);
+  --glass-panel-bg: rgba(255, 253, 255, 0.90);
+  --glass-panel-border: rgba(139, 92, 246, 0.14);
+  --glass-panel-shadow: 0 12px 40px 0 rgba(109, 40, 217, 0.07), 0 2px 8px 0 rgba(109, 40, 217, 0.04);
   --glass-panel-bg-hover: rgba(255, 255, 255, 0.98);
-  --glass-panel-border-hover: rgba(124, 58, 237, 0.25);
-  --glass-panel-shadow-hover: 0 12px 40px 0 rgba(124, 58, 237, 0.08);
-  --ambient-grid-color: rgba(59, 130, 246, 0.04);
+  --glass-panel-border-hover: rgba(124, 58, 237, 0.30);
+  --glass-panel-shadow-hover: 0 16px 48px 0 rgba(124, 58, 237, 0.12);
+  --ambient-grid-color: rgba(139, 92, 246, 0.05);
 }
 
 @layer base {
@@ -181,7 +182,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f1f23;
+  background: #3a3a4a;
   border-radius: 4px;
 }
 
@@ -688,66 +689,114 @@
     .navbar { padding: 12px 16px; }
 }
 
-/* ── Light Mode Color Class Overrides ── */
-/* Override text colors globally for light mode */
-.light .text-gray-200, 
+/* ═══════════════════════════════════════════════════════════
+   LIGHT MODE — Warm Ivory / Soft Lavender Premium Theme
+   Easy on the eyes, visually attractive, high contrast for readability
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Global Background ── */
+.light,
+.light body,
+.light html {
+  background-color: #faf8ff !important;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(216, 180, 254, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(165, 180, 252, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(196, 181, 253, 0.14) 0%, transparent 60%),
+    linear-gradient(160deg, #faf7ff 0%, #f5f0ff 30%, #fdfcff 60%, #f0f4ff 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+}
+
+.light .bg-background {
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(216, 180, 254, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(165, 180, 252, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(196, 181, 253, 0.14) 0%, transparent 60%),
+    linear-gradient(160deg, #faf7ff 0%, #f5f0ff 30%, #fdfcff 60%, #f0f4ff 100%) !important;
+  background-attachment: fixed !important;
+}
+
+/* ── Text Color Overrides ── */
+.light .text-gray-100,
+.light .text-gray-200,
 .light .text-gray-300 {
   color: var(--text-main) !important;
 }
-.light .text-gray-400 {
+.light .text-gray-400,
+.light .text-gray-500 {
   color: var(--text-muted) !important;
 }
 .light .text-white {
   color: var(--text-heading) !important;
 }
-.light .text-gray-100 {
-  color: var(--text-heading) !important;
-}
 
-/* Overrides for backgrounds */
-.light body,
-.light html {
-  background-image: linear-gradient(145deg, #dbeafe 0%, #eff6ff 25%, #ffffff 55%, #f0f9ff 80%, #e0f2fe 100%) !important;
-  background-attachment: fixed !important;
-  min-height: 100vh;
-}
-.light .bg-background {
-  background-color: transparent !important;
-  background-image: linear-gradient(145deg, #dbeafe 0%, #eff6ff 25%, #ffffff 55%, #f0f9ff 80%, #e0f2fe 100%) !important;
-  background-attachment: fixed !important;
-}
-
+/* ── Background Utility Overrides ── */
 .light .bg-white\/5 {
-  background-color: rgba(15, 23, 42, 0.04) !important;
+  background-color: rgba(109, 40, 217, 0.04) !important;
 }
 .light .bg-white\/10 {
-  background-color: rgba(15, 23, 42, 0.08) !important;
+  background-color: rgba(109, 40, 217, 0.07) !important;
 }
 .light .bg-white\/20 {
-  background-color: rgba(15, 23, 42, 0.15) !important;
+  background-color: rgba(109, 40, 217, 0.10) !important;
 }
 .light .bg-white\/\[0\.02\] {
-  background-color: rgba(15, 23, 42, 0.015) !important;
+  background-color: rgba(109, 40, 217, 0.02) !important;
 }
 .light .bg-black {
   background-color: #ffffff !important;
 }
 .light .bg-background\/60 {
-  background-color: rgba(248, 250, 252, 0.7) !important;
+  background-color: rgba(250, 248, 255, 0.82) !important;
 }
 
-/* Overrides for borders */
+/* ── Border Utility Overrides ── */
 .light .border-white\/5 {
-  border-color: rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(139, 92, 246, 0.08) !important;
 }
 .light .border-white\/10 {
-  border-color: rgba(15, 23, 42, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.13) !important;
 }
 .light .border-white\/20 {
-  border-color: rgba(15, 23, 42, 0.18) !important;
+  border-color: rgba(139, 92, 246, 0.20) !important;
 }
 
-/* Keep text white inside primary and secondary buttons & gradient cards */
+/* ── Glass Panel ── */
+.light .glass-panel {
+  background: rgba(255, 253, 255, 0.90) !important;
+  border-color: rgba(139, 92, 246, 0.14) !important;
+  box-shadow: 0 8px 32px rgba(109, 40, 217, 0.07), 0 1px 4px rgba(109, 40, 217, 0.04) !important;
+}
+.light .glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(124, 58, 237, 0.28) !important;
+  box-shadow: 0 16px 48px rgba(124, 58, 237, 0.10) !important;
+}
+
+/* ── Header / Navbar ── */
+.light header {
+  background: rgba(250, 248, 255, 0.88) !important;
+  border-bottom-color: rgba(139, 92, 246, 0.10) !important;
+  box-shadow: 0 1px 12px rgba(109, 40, 217, 0.05) !important;
+}
+
+/* Navbar text in light mode */
+.light header a,
+.light header nav a,
+.light header span {
+  color: var(--text-main) !important;
+}
+.light header a:hover,
+.light header nav a:hover {
+  color: var(--text-heading) !important;
+}
+.light header .font-outfit {
+  color: var(--text-heading) !important;
+}
+
+/* ── Buttons — keep white text on colored buttons ── */
 .light .btn-premium,
 .light .btn-premium *,
 .light .btn-primary-gradient,
@@ -773,56 +822,151 @@
   color: #ffffff !important;
 }
 
-/* Make sure inputs and select options are readable in light mode */
-.light input, 
-.light select, 
+/* ── Inputs / Forms ── */
+.light input,
+.light select,
 .light textarea {
-  color: #0f172a !important;
-  background-color: rgba(15, 23, 42, 0.03) !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #1e1840 !important;
+  background-color: rgba(255, 253, 255, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.18) !important;
+  box-shadow: inset 0 1px 3px rgba(109, 40, 217, 0.04);
+}
+.light input:focus,
+.light select:focus,
+.light textarea:focus {
+  border-color: rgba(124, 58, 237, 0.45) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10) !important;
 }
 .light input::placeholder,
 .light select::placeholder,
 .light textarea::placeholder {
-  color: #94a3b8 !important;
+  color: #a99bc7 !important;
 }
 .light select option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background-color: #faf8ff !important;
+  color: #1e1840 !important;
 }
 
-/* Dashboard Stats / custom cards */
+/* ── Stat Cards ── */
 .light .stat-card {
-  background: rgba(15, 23, 42, 0.03) !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
+  background: rgba(255, 253, 255, 0.92) !important;
+  border-color: rgba(139, 92, 246, 0.10) !important;
+  box-shadow: 0 2px 12px rgba(109, 40, 217, 0.05) !important;
 }
 .light .stat-card .stat-label {
-  color: #64748b !important;
+  color: #7b6fa0 !important;
 }
 
-/* Quiz Card adjustments */
+/* ── Quiz Cards ── */
 .light .quiz-card {
-  background: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  background: rgba(255, 253, 255, 0.95) !important;
+  border-color: rgba(139, 92, 246, 0.10) !important;
+  box-shadow: 0 4px 20px rgba(109, 40, 217, 0.05) !important;
 }
 .light .quiz-card:hover {
-  border-color: rgba(124, 58, 237, 0.25) !important;
-  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.08) !important;
+  border-color: rgba(124, 58, 237, 0.28) !important;
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.09) !important;
 }
 
-/* Custom Scrollbar */
-.light ::-webkit-scrollbar-track {
-  background: #ffffff !important;
-}
-.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1 !important;
+/* ── Old-style .card class ── */
+.light .card {
+  background: rgba(255, 253, 255, 0.93) !important;
+  border-color: rgba(139, 92, 246, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(109, 40, 217, 0.07) !important;
 }
 
-/* Glow Spheres overrides for white background */
+/* ── Leaderboard rows ── */
+.light .lb-row {
+  background: rgba(255, 253, 255, 0.88) !important;
+  border-color: rgba(139, 92, 246, 0.10) !important;
+}
+.light .lb-row.me {
+  background: rgba(139, 92, 246, 0.08) !important;
+  border-color: rgba(124, 58, 237, 0.30) !important;
+}
+
+/* ── Navbar / old .navbar ── */
+.light .navbar {
+  background: rgba(250, 248, 255, 0.88) !important;
+  border-bottom-color: rgba(139, 92, 246, 0.10) !important;
+  box-shadow: 0 1px 12px rgba(109, 40, 217, 0.05) !important;
+}
+
+/* ── Divider ── */
+.light .divider {
+  background: rgba(139, 92, 246, 0.10) !important;
+}
+
+/* ── Badge ── */
+.light .badge {
+  background: rgba(139, 92, 246, 0.08) !important;
+  color: #6d28d9 !important;
+  border-color: rgba(139, 92, 246, 0.20) !important;
+}
+
+/* ── Statistics section dark strip ── */
+.light section.bg-\[\#0c0c0e\]\/30 {
+  background: rgba(237, 233, 254, 0.35) !important;
+  border-color: rgba(139, 92, 246, 0.10) !important;
+}
+
+/* border-y override in stats strip */
+.light .border-y {
+  border-color: rgba(139, 92, 246, 0.10) !important;
+}
+.light .border-t {
+  border-color: rgba(139, 92, 246, 0.10) !important;
+}
+.light .border-b {
+  border-color: rgba(139, 92, 246, 0.10) !important;
+}
+
+/* ── Feature card icon containers ── */
+.light .bg-white\/5.border.border-white\/10 {
+  background-color: rgba(139, 92, 246, 0.07) !important;
+  border-color: rgba(139, 92, 246, 0.14) !important;
+}
+
+/* ── Step circles in How-it-works ── */
+.light .bg-white\/5.border-white\/10 {
+  background-color: rgba(139, 92, 246, 0.07) !important;
+  border-color: rgba(139, 92, 246, 0.14) !important;
+}
+
+/* ── Glow Spheres ── */
 .light .bg-glow-primary {
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, rgba(255, 255, 255, 0) 70%) !important;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%) !important;
 }
 .light .bg-glow-secondary {
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(255, 255, 255, 0) 70%) !important;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.10) 0%, transparent 70%) !important;
+}
+
+/* ── Custom Scrollbar ── */
+.light ::-webkit-scrollbar-track {
+  background: #f5f0ff !important;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #c4b5fd !important;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #7C3AED !important;
+}
+
+/* ── Skeleton loading in light mode ── */
+.light .skeleton-loading {
+  background: linear-gradient(90deg, #ede9fe 25%, #f5f0ff 50%, #ede9fe 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* ── Timer bar track ── */
+.light .timer-bar {
+  background: rgba(139, 92, 246, 0.12) !important;
+}
+
+/* ── Toast overrides (for React Hot Toast in light mode) ── */
+.light-toast {
+  background: #ffffff !important;
+  color: #1e1840 !important;
+  border: 1px solid rgba(139, 92, 246, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.10) !important;
 }
