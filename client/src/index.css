@@ -5,13 +5,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #09090B;
+  --background: #000000;
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --text-heading: #ffffff;
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
-  --header-bg: rgba(9, 9, 11, 0.6);
+  --header-bg: rgba(0, 0, 0, 0.6);
   --header-border: rgba(255, 255, 255, 0.05);
   --glass-panel-bg: rgba(8, 8, 12, 0.72);
   --glass-panel-border: rgba(255, 255, 255, 0.08);
@@ -25,24 +25,24 @@
   --theme-primary: #7C3AED;
   --theme-secondary: #06B6D4;
   --theme-accent: #F43F5E;
-  --theme-bg: #09090B;
+  --theme-bg: #000000;
   --theme-card-bg: rgba(255, 255, 255, 0.05);
   --theme-text: #e2e8f0;
   --theme-font: 'Inter', sans-serif;
 }
 
 .light {
-  /* Warm ivory-lavender base — easy on eyes, premium feel */
-  --background: #faf8ff;
-  --theme-bg: #faf8ff;
+  /* Pure white light mode */
+  --background: #ffffff;
+  --theme-bg: #ffffff;
   --text-main: #3d3557;
   --text-muted: #7b6fa0;
   --text-heading: #1e1840;
-  --card-bg: rgba(255, 253, 255, 0.95);
+  --card-bg: rgba(255, 255, 255, 0.95);
   --card-border: rgba(139, 92, 246, 0.12);
-  --header-bg: rgba(250, 248, 255, 0.88);
+  --header-bg: rgba(255, 255, 255, 0.88);
   --header-border: rgba(139, 92, 246, 0.10);
-  --glass-panel-bg: rgba(255, 253, 255, 0.90);
+  --glass-panel-bg: rgba(255, 255, 255, 0.90);
   --glass-panel-border: rgba(139, 92, 246, 0.14);
   --glass-panel-shadow: 0 12px 40px 0 rgba(109, 40, 217, 0.07), 0 2px 8px 0 rgba(109, 40, 217, 0.04);
   --glass-panel-bg-hover: rgba(255, 255, 255, 0.98);
@@ -179,7 +179,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090B;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -699,24 +699,14 @@
 .light,
 .light body,
 .light html {
-  background-color: #faf8ff !important;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(216, 180, 254, 0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(165, 180, 252, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(196, 181, 253, 0.14) 0%, transparent 60%),
-    linear-gradient(160deg, #faf7ff 0%, #f5f0ff 30%, #fdfcff 60%, #f0f4ff 100%) !important;
-  background-attachment: fixed !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
   min-height: 100vh;
 }
 
 .light .bg-background {
-  background-color: transparent !important;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(216, 180, 254, 0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(165, 180, 252, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(196, 181, 253, 0.14) 0%, transparent 60%),
-    linear-gradient(160deg, #faf7ff 0%, #f5f0ff 30%, #fdfcff 60%, #f0f4ff 100%) !important;
-  background-attachment: fixed !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
 }
 
 /* ── Text Color Overrides ── */
