@@ -34,6 +34,7 @@
 .light {
   /* Warm ivory-lavender base — easy on eyes, premium feel */
   --background: #faf8ff;
+  --theme-bg: #faf8ff;
   --text-main: #3d3557;
   --text-muted: #7b6fa0;
   --text-heading: #1e1840;
