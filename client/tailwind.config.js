@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      spacing: {
+        '4.5': '1.125rem',
+      },
       colors: {
         primary: "#7C3AED",     // Purple
         secondary: "#06B6D4",   // Cyan

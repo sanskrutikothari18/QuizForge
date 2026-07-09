@@ -196,13 +196,14 @@ export default function AnswerResult() {
         if (response.success && response.game) {
           const game = response.game;
           setCategory(game.quiz?.category || 'general');
-          const bg = game.quiz?.backgroundImage || '';
-          setBgImage(bg);
-          localStorage.setItem('last_bg_image', bg);
-          setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
-          
           const currentIdx = game.currentQuestion - 1;
           const currentQuestion = game.quiz?.questions?.[currentIdx];
+          const globalBg = game.quiz?.backgroundImage || '';
+          const currentBg = currentQuestion?.backgroundImage || globalBg;
+          setBgImage(currentBg);
+          localStorage.setItem('quiz_global_bg_image', globalBg);
+          localStorage.setItem('last_bg_image', currentBg);
+          setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
           if (currentQuestion) {
             setCorrectAnswerIdx(Number(currentQuestion.correctAnswer || 0));
             
@@ -354,7 +355,8 @@ export default function AnswerResult() {
             question: response.question,
             questionNumber: response.question.questionNumber,
             totalQuestions: response.question.totalQuestions,
-            timeLeft: response.question.timeLimit
+            timeLeft: response.question.timeLimit,
+            quizBackgroundImage: response.quizBackgroundImage || ''
           };
           navigate(`/live/${pin}`, { state: { socketQuestionData } });
         } else {
