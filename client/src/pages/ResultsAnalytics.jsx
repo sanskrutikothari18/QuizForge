@@ -1,9 +1,11 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
-  Users, CheckCircle, Percent, Calendar, FileSpreadsheet 
+  Users, CheckCircle, Percent, Calendar, FileSpreadsheet, FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -36,7 +38,7 @@ export default function ResultsAnalytics() {
     ? Math.round((players.reduce((sum, p) => sum + (p.correctAnswers || 0), 0) / totalPlayers) * 10) / 10
     : 0;
 
-  const totalQuestions = result?.totalQuestions || (players.length ? Math.max(...players.map(p => p.answers?.length || 0)) : 0);
+  const totalQuestions = players[0]?.answers?.length || 0;
   const accuracy = totalPlayers && totalQuestions
     ? Math.round((players.reduce((sum, p) => sum + (p.correctAnswers || 0), 0) / (totalPlayers * totalQuestions)) * 100)
     : 0;
@@ -99,20 +101,18 @@ export default function ResultsAnalytics() {
       
       // Standings Header
       lines.push('=== PLAYER STANDINGS ===');
-      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Unanswered Questions', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
+      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
       players.forEach(p => {
+        const playerNotAnswered = Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
         const playerAccuracy = totalQuestions ? Math.round((p.correctAnswers / totalQuestions) * 100) + '%' : '0%';
-        const unanswered = typeof p.unansweredQuestions === 'number'
-          ? p.unansweredQuestions
-          : Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
         lines.push([
           p.rank,
           p.name,
           p.correctAnswers,
           p.wrongAnswers,
-          unanswered,
+          playerNotAnswered,
           playerAccuracy,
           p.totalScore
         ].map(escapeCSV).join(','));
@@ -149,6 +149,201 @@ export default function ResultsAnalytics() {
       toast.success('Report exported successfully! 📊');
     } catch (err) {
       toast.error('Error generating CSV export');
+    }
+  };
+
+  // ── PDF Export ────────────────────────────────────────────────────────────
+  const handleExportPDF = () => {
+    if (players.length === 0) {
+      toast.error('No player data to export');
+      return;
+    }
+
+    try {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const margin = 14;
+
+      // ── Brand Header (Simple) ────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(30, 30, 30);
+      doc.text('Fourise Quiz Hub', margin, 20);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Battle Report', margin, 27);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(50, 50, 50);
+      doc.text(result.quizTitle || 'Quiz Match', margin, 35);
+
+      const dateStr = result.playedAt
+        ? new Date(result.playedAt).toLocaleString()
+        : new Date().toLocaleString();
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(120, 120, 120);
+      doc.text(dateStr, pageW - margin, 35, { align: 'right' });
+
+      // Add a simple line separator
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(margin, 40, pageW - margin, 40);
+
+      let cursorY = 50;
+
+      // ── Summary Cards (Simple) ───────────────────────────────────────────
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(40, 40, 40);
+      doc.text('MATCH SUMMARY', margin, cursorY);
+      cursorY += 8;
+
+      const summaryItems = [
+        ['Winner', winnerName],
+        ['Total Players', String(totalPlayers)],
+        ['Total Questions', String(totalQuestions)],
+        ['Avg Correct', `${avgCorrect} / ${totalQuestions}`],
+        ['Lobby Accuracy', `${accuracy}%`],
+      ];
+
+      const cardW = (pageW - margin * 2 - 12) / summaryItems.length;
+      summaryItems.forEach(([label, val], i) => {
+        const x = margin + i * (cardW + 3);
+        
+        // Simple border
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(250, 250, 250);
+        doc.roundedRect(x, cursorY, cardW, 18, 1, 1, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(30, 30, 30);
+        const maxValWidth = cardW - 4;
+        const valLines = doc.splitTextToSize(val, maxValWidth);
+        doc.text(valLines[0], x + cardW / 2, cursorY + 8, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
+        doc.text(label.toUpperCase(), x + cardW / 2, cursorY + 14, { align: 'center' });
+      });
+      cursorY += 28;
+
+      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
+      if (questionHighlights.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(40, 40, 40);
+        doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
+        cursorY += 4;
+
+        autoTable(doc, {
+          startY: cursorY,
+          head: [['Question', 'Fastest Solver', 'Time Taken']],
+          body: questionHighlights.map(hl => [
+            `Q${hl.questionNumber}`,
+            hl.fastestPlayer ? hl.fastestPlayer.name : '—',
+            hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A',
+          ]),
+          theme: 'grid',
+          styles: {
+            font: 'helvetica',
+            fontSize: 9,
+            cellPadding: 4,
+            textColor: [50, 50, 50],
+            lineColor: [220, 220, 220],
+            lineWidth: 0.1,
+          },
+          headStyles: {
+            fillColor: [240, 240, 240],
+            textColor: [40, 40, 40],
+            fontStyle: 'bold',
+          },
+          alternateRowStyles: { fillColor: [250, 250, 250] },
+          margin: { left: margin, right: margin },
+        });
+        cursorY = doc.lastAutoTable.finalY + 10;
+      }
+
+      // ── Player Rankings Table (Simple) ────────────────────────────────────
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(40, 40, 40);
+      doc.text('PLAYER RANKINGS', margin, cursorY);
+      cursorY += 4;
+
+      const rankMedals = ['1st', '2nd', '3rd'];
+      autoTable(doc, {
+        startY: cursorY,
+        head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
+        body: players.map(p => {
+          const notAnswered = Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
+          const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
+          return [
+            medal,
+            p.name,
+            String(p.correctAnswers || 0),
+            String(p.wrongAnswers || 0),
+            String(notAnswered),
+            `${p.totalScore || 0} pts`,
+          ];
+        }),
+        theme: 'grid',
+        styles: {
+          font: 'helvetica',
+          fontSize: 9,
+          cellPadding: 4,
+          textColor: [50, 50, 50],
+          lineColor: [220, 220, 220],
+          lineWidth: 0.1,
+        },
+        headStyles: {
+          fillColor: [240, 240, 240],
+          textColor: [40, 40, 40],
+          fontStyle: 'bold',
+        },
+        columnStyles: {
+          0: { cellWidth: 20, halign: 'center' },
+          2: { halign: 'center' },
+          3: { halign: 'center' },
+          4: { halign: 'center' },
+          5: { halign: 'right', fontStyle: 'bold' },
+        },
+        alternateRowStyles: { fillColor: [250, 250, 250] },
+        rowPageBreak: 'auto',
+        margin: { left: margin, right: margin },
+      });
+
+      // ── Footer (Simple) ──────────────────────────────────────────────────
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let pg = 1; pg <= totalPages; pg++) {
+        doc.setPage(pg);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        
+        // Simple line above footer
+        doc.setDrawColor(230, 230, 230);
+        doc.setLineWidth(0.5);
+        doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
+        
+        doc.text(
+          `Fourise Quiz Hub  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
+          pageW / 2,
+          doc.internal.pageSize.getHeight() - 8,
+          { align: 'center' }
+        );
+      }
+
+      doc.save(`Fourise_Quiz_Hub_Report_${id}.pdf`);
+      toast.success('PDF report downloaded! 📄');
+    } catch (err) {
+      console.error(err);
+      toast.error('Error generating PDF report');
     }
   };
 
@@ -208,13 +403,22 @@ export default function ResultsAnalytics() {
               </div>
             </div>
 
-            <button
-              onClick={handleExportCSV}
-              className="btn-premium btn-secondary-gradient px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow"
-            >
-              <Download className="h-4 w-4" />
-              <span>Export CSV Report</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExportCSV}
+                className="btn-premium btn-secondary-gradient px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export CSV</span>
+              </button>
+              <button
+                onClick={handleExportPDF}
+                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-red-600 to-rose-500 text-white rounded-xl hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <FileText className="h-4 w-4" />
+                <span>Export PDF</span>
+              </button>
+            </div>
           </div>
 
           {/* SUMMARY CARDS GRID */}
@@ -281,31 +485,30 @@ export default function ResultsAnalytics() {
                     <th className="px-6 py-4">Player Nickname</th>
                     <th className="px-6 py-4 text-center">Correct</th>
                     <th className="px-6 py-4 text-center">Wrong</th>
-                    <th className="px-6 py-4 text-center">Unanswered</th>
+                    <th className="px-6 py-4 text-center">Not Answered</th>
                     <th className="px-6 py-4 text-right">Final Score</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-white/5 font-semibold">
-                  {players.map((player) => (
-                    <tr 
-                      key={player.rank} 
-                      className="hover:bg-white/2 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-mono text-gray-400 font-bold">
-                        {player.rank === 1 ? '🥇 #1' : player.rank === 2 ? '🥈 #2' : player.rank === 3 ? '🥉 #3' : `#${player.rank}`}
-                      </td>
-                      <td className="px-6 py-4 text-white font-bold">{player.name}</td>
-                      <td className="px-6 py-4 text-center text-green-400">{player.correctAnswers}</td>
-                      <td className="px-6 py-4 text-center text-accent">{player.wrongAnswers}</td>
-                      <td className="px-6 py-4 text-center text-yellow-400">
-                        {typeof player.unansweredQuestions === 'number'
-                          ? player.unansweredQuestions
-                          : Math.max(0, totalQuestions - (player.correctAnswers || 0) - (player.wrongAnswers || 0))}
-                      </td>
-                      <td className="px-6 py-4 text-right font-outfit text-secondary font-black">{player.totalScore} pts</td>
-                    </tr>
-                  ))}
+                  {players.map((player) => {
+                    const notAnswered = Math.max(0, result?.totalQuestions - (player.correctAnswers || 0) - (player.wrongAnswers || 0));
+                    return (
+                      <tr
+                        key={player.rank}
+                        className="hover:bg-white/2 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-mono text-gray-400 font-bold">
+                          {player.rank === 1 ? '🥇 #1' : player.rank === 2 ? '🥈 #2' : player.rank === 3 ? '🥉 #3' : `#${player.rank}`}
+                        </td>
+                        <td className="px-6 py-4 text-white font-bold">{player.name}</td>
+                        <td className="px-6 py-4 text-center text-green-400">{player.correctAnswers}</td>
+                        <td className="px-6 py-4 text-center text-accent">{player.wrongAnswers}</td>
+                        <td className="px-6 py-4 text-center text-gray-500">{notAnswered}</td>
+                        <td className="px-6 py-4 text-right font-outfit text-secondary font-black">{player.totalScore} pts</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
 
               </table>

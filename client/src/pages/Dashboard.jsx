@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import Logo from '../components/Logo';
 import { getProfile } from '../services/authService';
 import { getMyQuizzes, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
@@ -18,6 +17,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [openReportMenuId, setOpenReportMenuId] = useState(null);
+
+  // Clear any lingering guest credentials so Host testing doesn't get bugged
+  useEffect(() => {
+    localStorage.removeItem('guest_playerName');
+    localStorage.removeItem('guest_pin');
+  }, []);
 
   // React Queries
   const { 
@@ -100,8 +105,10 @@ export default function Dashboard() {
           <div className="space-y-8">
             {/* Logo area */}
             <div className="flex items-center gap-2.5">
-              <Logo className="h-9 w-9" />
-              <span className="font-outfit text-lg font-bold text-white">Fourise Quiz Hub</span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-secondary text-white">
+                <Award className="h-5 w-5" />
+              </div>
+              <span className="font-outfit text-lg font-bold text-white">QuizForge</span>
             </div>
 
             {/* Nav links */}

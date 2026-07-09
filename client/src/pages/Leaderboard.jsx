@@ -10,59 +10,25 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { getLeaderboard, startQuestion, endGame } from '../services/gameService';
-import { useGame } from '../context/GameContext';
 
-const getTheme = (category) => {
-  const cat = String(category || 'general').toLowerCase();
-  
-  if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
-    return {
-      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
-      glow1: 'bg-purple-600/25',
-      glow2: 'bg-fuchsia-600/15',
-      accentText: 'text-fuchsia-400',
-      badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      cardBorder: 'border-fuchsia-500/20',
-      ambientElements: null
-    };
-  }
-  
-  if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
-    return {
-      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
-      glow1: 'bg-emerald-600/20',
-      glow2: 'bg-teal-600/15',
-      accentText: 'text-emerald-400 font-mono',
-      badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      cardBorder: 'border-emerald-500/20',
-      ambientElements: null
-    };
-  }
-
-  if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
-    return {
-      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
-      glow1: 'bg-blue-600/20',
-      glow2: 'bg-amber-600/10',
-      accentText: 'text-amber-400',
-      badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      cardBorder: 'border-amber-500/20',
-      ambientElements: null
-    };
-  }
-
+// Generate static config for 15 colorful balloons floating in the background
+const BALLOONS_CONFIG = Array.from({ length: 15 }).map((_, idx) => {
+  const colors = ['#f43f5e', '#3b82f6', '#eab308', '#ec4899', '#10b981', '#a855f7'];
   return {
-    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
-    glow1: 'bg-indigo-600/25',
-    glow2: 'bg-violet-600/15',
-    accentText: 'text-primary',
-    badgeBg: 'bg-primary/10 text-primary',
-    cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: null
+    color: colors[idx % colors.length],
+    left: Math.random() * 90 + 5,
+    size: Math.random() * 20 + 25,
+    duration: Math.random() * 8 + 8,
+    delay: Math.random() * 6,
+    drift: Math.random() * 40 - 20,
+    rot: Math.random() * 60 - 30,
   };
-};
+});
+import { useGame } from '../context/GameContext';
+import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+
+
 
 export default function Leaderboard() {
   const { pin } = useParams();
@@ -71,7 +37,6 @@ export default function Leaderboard() {
   const { playerName } = useGame();
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
 
-  
   // Component State
   const [leaderboard, setLeaderboard] = useState([]);
   const [isHost, setIsHost] = useState(false);
@@ -82,10 +47,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const hostedPin = localStorage.getItem('current_hosted_pin');
-    
-    // Determine user role
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+    const isUserHost = !localPlayer && !!hostToken;
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
@@ -110,18 +72,10 @@ export default function Leaderboard() {
     };
     fetchLeaderboard();
 
-    // 2. Connect Socket and Listen (handle reconnects)
+    // 2. Connect Socket and Listen
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    
-    const joinRoom = () => {
-      emitJoinRoom(pin, roleOrName);
-    };
-
-    socket.on('connect', joinRoom);
-    if (socket.connected) {
-      joinRoom();
-    }
+    emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
       toast.success('Commencing next question! ⚔️');
@@ -138,7 +92,6 @@ export default function Leaderboard() {
     });
 
     return () => {
-      socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('quiz_ended');
       socket.off('room_closed');
@@ -164,7 +117,8 @@ export default function Leaderboard() {
             question: response.question,
             questionNumber: response.question.questionNumber,
             totalQuestions: response.question.totalQuestions,
-            timeLeft: response.question.timeLimit
+            timeLeft: response.question.timeLimit,
+            quizBackgroundImage: response.quizBackgroundImage || ''
           };
           navigate(`/live/${pin}`, { state: { socketQuestionData } });
         } else {
@@ -183,22 +137,84 @@ export default function Leaderboard() {
   const secondPlace = leaderboard.find(p => p.rank === 2);
   const thirdPlace = leaderboard.find(p => p.rank === 3);
   const runnersUp = leaderboard.filter(p => p.rank > 3);
-
-  const theme = getTheme(category);
-
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen ${theme.bg} animate-gradient-bg text-gray-200 p-6 flex flex-col justify-between transition-all duration-700 overflow-hidden`}>
+      {/* Background with blur and vignette */}
+      <div className="relative min-h-screen bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] font-outfit overflow-hidden flex flex-col justify-start gap-4 p-6">
         
-        {/* Ambient Grid overlay */}
-        <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
+        {/* Component specific animations and keyframes */}
+        <style>{`
+          @keyframes sweepLeft {
+            0%, 100% { transform: rotate(-35deg) scaleX(0.85); }
+            50% { transform: rotate(-15deg) scaleX(1.15); }
+          }
+          @keyframes sweepRight {
+            0%, 100% { transform: rotate(35deg) scaleX(0.85); }
+            50% { transform: rotate(15deg) scaleX(1.15); }
+          }
+          @keyframes floatUpBalloon {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.85; }
+            90% { opacity: 0.85; }
+            100% { transform: translateY(-20vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0; }
+          }
+        `}</style>
 
-        {/* Glow Spheres */}
-        <div className={`absolute top-[10%] left-[10%] h-[350px] w-[350px] rounded-full ${theme.glow1} pointer-events-none filter blur-[100px]`}></div>
-        <div className={`absolute bottom-[10%] right-[10%] h-[400px] w-[400px] rounded-full ${theme.glow2} pointer-events-none filter blur-[120px]`}></div>
+        {/* Sweeping stage spotlights */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div 
+            className="absolute top-[-20%] left-[10%] w-[320px] h-[120vh] bg-gradient-to-r from-transparent via-white/10 to-transparent origin-top"
+            style={{
+              transform: 'rotate(-25deg)',
+              animation: 'sweepLeft 8s ease-in-out infinite',
+            }}
+          />
+          <div 
+            className="absolute top-[-20%] right-[10%] w-[320px] h-[120vh] bg-gradient-to-l from-transparent via-white/10 to-transparent origin-top"
+            style={{
+              transform: 'rotate(25deg)',
+              animation: 'sweepRight 8s ease-in-out infinite',
+            }}
+          />
+        </div>
 
-        {/* Dynamic theme ambient elements */}
-        {theme.ambientElements}
+        {/* Floating celebratory balloons */}
+        {BALLOONS_CONFIG.map((b, i) => (
+          <div 
+            key={i}
+            className="absolute pointer-events-none rounded-full"
+            style={{
+              left: `${b.left}%`,
+              width: `${b.size}px`,
+              height: `${b.size * 1.3}px`,
+              background: `radial-gradient(circle at 30% 30%, ${b.color}99, ${b.color}ff)`,
+              boxShadow: 'inset -3px -3px 8px rgba(0,0,0,0.4), 0 6px 12px rgba(0,0,0,0.35)',
+              animation: `floatUpBalloon ${b.duration}s linear infinite`,
+              animationDelay: `${b.delay}s`,
+              '--drift': `${b.drift}px`,
+              '--rot': `${b.rot}deg`,
+              zIndex: 5,
+              bottom: '-10%'
+            }}
+          >
+            <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px]" style={{ borderBottomColor: b.color }} />
+            <div className="absolute bottom-[-25px] left-1/2 -translate-x-1/2 w-[1.5px] h-5 bg-white/20" />
+          </div>
+        ))}
+
+        {/* Radial vignette overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c051e]/40 to-[#0a0216] pointer-events-none z-0"></div>
+        
+        {/* Animated Torch Spotlight for Suspense */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.6, 0.8, 1, 1, 0] }}
+          transition={{ delay: 1, duration: 2.6, ease: "easeInOut", times: [0, 0.1, 0.3, 0.7, 0.85, 1] }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[80vh] bg-gradient-to-b from-white/70 via-white/20 to-transparent z-10 pointer-events-none mix-blend-overlay"
+          style={{ clipPath: 'polygon(35% 0, 65% 0, 100% 100%, 0% 100%)' }}
+        />
+        
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#864CBF]/30 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
         {/* Header Indicator */}
         <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4 relative z-10">

@@ -4,27 +4,16 @@ let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
-    if (import.meta.env.VITE_API_URL) {
-      socket = io(import.meta.env.VITE_API_URL);
-    } else {
-      const hostname = window.location.hostname;
-      const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
-      
-      if (!isLocal) {
-        if (hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com')) {
-          socket = io('https://api.fourisequiz.com');
-        } else {
-          socket = io(window.location.origin, {
-            extraHeaders: {
-              'ngrok-skip-browser-warning': 'true',
-              'Bypass-Tunnel-Reminder': 'true'
-            }
-          });
-        }
+    let serverUrl = import.meta.env.VITE_API_URL;
+    if (!serverUrl) {
+      const host = window.location.hostname;
+      if (host.includes('vercel.app') || host.includes('github.io')) {
+        serverUrl = 'http://localhost:5000';
       } else {
-        socket = io(`http://${hostname}:5000`);
+        serverUrl = `http://${host}:5000`;
       }
     }
+    socket = io(serverUrl);
     console.log('[SOCKET] Connected successfully');
   }
   return socket;

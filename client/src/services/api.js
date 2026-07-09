@@ -5,24 +5,17 @@ const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  const hostname = window.location.hostname;
-  const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
-  
-  if (!isLocal) {
-    if (hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com')) {
-      return 'https://api.fourisequiz.com';
-    }
-    return '/api';
+  const host = window.location.hostname;
+  if (host.includes('vercel.app') || host.includes('github.io')) {
+    return 'http://localhost:5000';
   }
-  return `http://${hostname}:5000`;
+  return `http://${host}:5000`;
 };
 
 const API = axios.create({
   baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-    'Bypass-Tunnel-Reminder': 'true'
   },
 });
 

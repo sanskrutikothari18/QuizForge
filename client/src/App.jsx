@@ -31,6 +31,7 @@ import Leaderboard from './pages/Leaderboard';
 import FinalResult from './pages/FinalResult';
 import ResultsAnalytics from './pages/ResultsAnalytics';
 
+import { ThemeProvider } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
 
 const queryClient = new QueryClient();
@@ -78,23 +79,25 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <GameProvider>
-        <Router>
-          <AnimatedRoutes />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: '#18181b',
-                color: '#fff',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '14px',
-              },
-            }}
-          />
-        </Router>
-      </GameProvider>
+      <ThemeProvider>
+        <GameProvider>
+          <Router>
+            <AnimatedRoutes />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: '#18181b',
+                  color: '#fff',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '14px',
+                },
+              }}
+            />
+          </Router>
+        </GameProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

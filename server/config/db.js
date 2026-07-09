@@ -1,10 +1,3 @@
-const dns = require('dns');
-try {
-    dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (err) {
-    console.warn("Could not set DNS servers:", err.message);
-}
-
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
@@ -32,14 +25,25 @@ const writeDB = (data) => {
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
 };
 
+// Collection name override: model 'Quiz' stores in 'quizzes' (not 'quizs')
+const collectionName = (modelName) => {
+    const lower = modelName.toLowerCase();
+    if (lower === 'quiz') return 'quizzes';
+    return lower + 's';
+};
+
 const getCollection = (modelName) => {
-    const name = modelName.toLowerCase() + 's';
+    const name = collectionName(modelName);
     const db = readDB();
+    // fallback: migrate legacy 'quizs' key to 'quizzes' on the fly
+    if (name === 'quizzes' && !db.quizzes && db.quizs) {
+        db.quizzes = db.quizs;
+    }
     return db[name] || [];
 };
 
 const saveCollection = (modelName, docs) => {
-    const name = modelName.toLowerCase() + 's';
+    const name = collectionName(modelName);
     const db = readDB();
     db[name] = docs;
     writeDB(db);
@@ -50,6 +54,10 @@ const matchQuery = (item, query) => {
     for (const key of Object.keys(query)) {
         let qVal = query[key];
         let itemVal = item[key];
+
+        // If the document field is missing/undefined and query expects true,
+        // treat the absence as the truthy default (e.g. isActive not stored → treat as true)
+        if (itemVal === undefined && qVal === true) continue;
         
         if (qVal && typeof qVal === 'object' && !Array.isArray(qVal)) {
             if ('$ne' in qVal) {
@@ -208,7 +216,8 @@ function wrapDocument(doc, modelName) {
     wrapped.id = wrapped._id;
     wrapped._id = {
         toString: () => wrapped.id,
-        valueOf: () => wrapped.id
+        valueOf: () => wrapped.id,
+        toJSON: () => wrapped.id
     };
     wrapped.isModified = () => false;
 
@@ -257,7 +266,8 @@ const setupMockMongoose = () => {
         const id = Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 11);
         return {
             toString: () => id,
-            valueOf: () => id
+            valueOf: () => id,
+            toJSON: () => id
         };
     };
     mongoose.Types.ObjectId.isValid = (id) => typeof id === 'string';
@@ -348,6 +358,121 @@ const setupMockMongoose = () => {
         } else {
             Object.assign(newItem, update);
         }
+        newItem.updatedAt = new Date().toISOString();
+        collection[idx] = newItem;
+        saveCollection(this.modelName, collection);
+
+        return wrapDocument(options?.new ? newItem : item, this.modelName);
+    };
+
+    mongoose.Model.findOneAndUpdate = async function(query, update, options) {
+        const collection = getCollection(this.modelName);
+        let idx = -1;
+        
+        if (this.modelName === 'GameSession') {
+            const pinVal = query.pin;
+            const statusVal = query.status;
+            
+            idx = collection.findIndex(item => {
+                if (item.pin !== pinVal) return false;
+                if (statusVal && item.status !== statusVal) return false;
+                
+                if ('players.name' in query) {
+                    const notCond = query['players.name'];
+                    if (notCond && notCond.$not instanceof RegExp) {
+                        const hasMatchingPlayer = item.players.some(p => notCond.$not.test(p.name));
+                        if (hasMatchingPlayer) return false;
+                    }
+                }
+                
+                if (query.players && query.players.$elemMatch) {
+                    const match = query.players.$elemMatch;
+                    const nameRegex = match.name?.$regex;
+                    const neVal = match['answers.questionIndex']?.$ne;
+                    
+                    const hasPlayer = item.players.some(p => {
+                        const nameMatches = nameRegex ? nameRegex.test(p.name) : true;
+                        const notAnswered = neVal !== undefined 
+                            ? !p.answers.some(ans => ans.questionIndex === neVal) 
+                            : true;
+                        return nameMatches && notAnswered;
+                    });
+                    if (!hasPlayer) return false;
+                }
+                
+                return true;
+            });
+        } else {
+            idx = collection.findIndex(item => matchQuery(item, query));
+        }
+
+        if (idx === -1) return null;
+
+        const item = collection[idx];
+        const newItem = JSON.parse(JSON.stringify(item));
+
+        if (update.$push) {
+            for (const key of Object.keys(update.$push)) {
+                const pushVal = update.$push[key];
+                if (key === 'players') {
+                    newItem.players = newItem.players || [];
+                    newItem.players.push(pushVal);
+                } else if (key.startsWith('players.$.')) {
+                    let playerName = '';
+                    if (query.players && query.players.$elemMatch && query.players.$elemMatch.name) {
+                        const nameObj = query.players.$elemMatch.name;
+                        if (nameObj.$regex instanceof RegExp) {
+                            const pattern = nameObj.$regex.source;
+                            playerName = pattern.replace(/^\^|\$$/g, '').replace(/\\(.)/g, '$1');
+                        } else if (typeof nameObj === 'string') {
+                            playerName = nameObj;
+                        }
+                    }
+                    
+                    const playerIdx = newItem.players.findIndex(p => p.name.toLowerCase() === playerName.toLowerCase());
+                    if (playerIdx !== -1) {
+                        const subKey = key.replace('players.$.', '');
+                        if (subKey === 'answers') {
+                            newItem.players[playerIdx].answers = newItem.players[playerIdx].answers || [];
+                            newItem.players[playerIdx].answers.push(pushVal);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (update.$inc) {
+            for (const key of Object.keys(update.$inc)) {
+                const incVal = update.$inc[key];
+                if (key.startsWith('players.$.')) {
+                    let playerName = '';
+                    if (query.players && query.players.$elemMatch && query.players.$elemMatch.name) {
+                        const nameObj = query.players.$elemMatch.name;
+                        if (nameObj.$regex instanceof RegExp) {
+                            const pattern = nameObj.$regex.source;
+                            playerName = pattern.replace(/^\^|\$$/g, '').replace(/\\(.)/g, '$1');
+                        } else if (typeof nameObj === 'string') {
+                            playerName = nameObj;
+                        }
+                    }
+                    
+                    const playerIdx = newItem.players.findIndex(p => p.name.toLowerCase() === playerName.toLowerCase());
+                    if (playerIdx !== -1) {
+                        const subKey = key.replace('players.$.', '');
+                        if (subKey === 'totalScore') {
+                            newItem.players[playerIdx].totalScore = (newItem.players[playerIdx].totalScore || 0) + incVal;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (update.$set) {
+            Object.assign(newItem, update.$set);
+        } else if (!update.$push && !update.$inc) {
+            Object.assign(newItem, update);
+        }
+
         newItem.updatedAt = new Date().toISOString();
         collection[idx] = newItem;
         saveCollection(this.modelName, collection);
