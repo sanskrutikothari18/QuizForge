@@ -146,6 +146,7 @@ export default function AnswerResult() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [currentScore, setCurrentScore] = useState(0);
+  const [hasAnswered, setHasAnswered] = useState(true);
   const [correctAnswerIdx, setCorrectAnswerIdx] = useState(0);
   const [timeTaken, setTimeTaken] = useState('0.00');
   const [answerStats, setAnswerStats] = useState([]);
@@ -178,11 +179,18 @@ export default function AnswerResult() {
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
 
+    // Only set hasAnswered to true if the player actually answered (last_isCorrect is 'true')
+    // If last_isCorrect is 'false', it means they didn't answer, so hasAnswered should be false
     if (savedIsCorrect !== null) {
-      setIsCorrect(savedIsCorrect === 'true');
-      setPointsEarned(Number(savedPoints || 0));
+      const playerAnswered = savedIsCorrect === 'true';
+      setHasAnswered(playerAnswered);
+      setIsCorrect(playerAnswered);
+      setPointsEarned(playerAnswered ? Number(savedPoints || 0) : 0);
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
+    } else {
+      // No saved answer -> mark as not answered by default until we fetch live state
+      setHasAnswered(false);
     }
     const savedTimeTaken = localStorage.getItem('last_timeTaken');
     if (savedTimeTaken !== null) {
@@ -234,13 +242,15 @@ export default function AnswerResult() {
               const myPlayerRecord = game.players?.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
               if (myPlayerRecord) {
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
+                const answered = !!myAnswer;
+                setHasAnswered(answered);
                 const correct = myAnswer ? myAnswer.isCorrect : false;
                 setIsCorrect(correct);
                 setPointsEarned(myAnswer ? myAnswer.score : 0);
                 setCurrentScore(myPlayerRecord.totalScore || 0);
                 setTimeTaken(myAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : '0.00');
-                
-                if (correct) {
+
+                if (answered && correct) {
                   confetti({
                     particleCount: 150,
                     spread: 80,
@@ -287,8 +297,8 @@ export default function AnswerResult() {
     };
     fetchLiveState();
 
-    // 1. Play Confetti on Correct answer
-    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true') {
+    // 1. Play Confetti on Correct answer (only if player actually answered)
+    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true' && localStorage.getItem('last_timeTaken') !== null) {
       confetti({
         particleCount: 150,
         spread: 80,
@@ -567,19 +577,26 @@ export default function AnswerResult() {
                 </div>
               </div>
             ) : (
-              /* PLAYER SCREEN: CORRECT / INCORRECT FEEDBACK */
+              /* PLAYER SCREEN: CORRECT / INCORRECT / NOT ANSWERED FEEDBACK */
               <motion.div
                 initial={!isCorrect ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
                 className={`glass-panel rounded-3xl p-8 border text-center space-y-6 relative overflow-hidden ${
-                  isCorrect 
-                    ? 'border-green-500/20 shadow-[0_8px_32px_0_rgba(34,197,94,0.15)] bg-green-500/5' 
-                    : 'border-red-500/20 shadow-[0_8px_32px_0_rgba(244,63,94,0.15)] bg-red-500/5'
+                  // If not answered show neutral info, if answered show correct/incorrect styles
+                  !hasAnswered
+                    ? 'border-white/10 bg-white/3'
+                    : isCorrect 
+                      ? 'border-green-500/20 shadow-[0_8px_32px_0_rgba(34,197,94,0.15)] bg-green-500/5' 
+                      : 'border-red-500/20 shadow-[0_8px_32px_0_rgba(244,63,94,0.15)] bg-red-500/5'
                 }`}
               >
                 {/* Header Icon */}
                 <div className="flex justify-center">
-                  {isCorrect ? (
+                  {!hasAnswered ? (
+                    <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center text-white shadow-sm">
+                      <AlertCircle className="h-9 w-9 stroke-[2.5] text-gray-300" />
+                    </div>
+                  ) : isCorrect ? (
                     <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-white shadow-premium-glow">
                       <CheckCircle className="h-9 w-9 stroke-[2.5]" />
                     </div>
@@ -592,11 +609,11 @@ export default function AnswerResult() {
 
                 {/* Title */}
                 <div className="space-y-1">
-                  <h3 className={`font-outfit text-3xl font-black ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                    {isCorrect ? 'Correct Answer!' : 'Incorrect Answer'}
+                  <h3 className={`font-outfit text-3xl font-black ${!hasAnswered ? 'text-gray-300' : (isCorrect ? 'text-green-400' : 'text-red-400')}`}>
+                    {!hasAnswered ? 'No Answer Submitted' : (isCorrect ? 'Correct Answer!' : 'Incorrect Answer')}
                   </h3>
                   <p className="text-xs sm:text-sm font-bold text-gray-200">
-                    {isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`}
+                    {!hasAnswered ? 'You did not answer this question.' : (isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`)}
                   </p>
                 </div>
 
@@ -611,8 +628,8 @@ export default function AnswerResult() {
                   {/* Points gained */}
                   <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
                     <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">POINTS RECEIVED</span>
-                    <span className={`font-outfit text-sm font-black mt-1 ${isCorrect ? 'text-green-400' : 'text-gray-400'}`}>
-                      {isCorrect ? `+${pointsEarned}` : '+0'}
+                    <span className={`font-outfit text-sm font-black mt-1 ${!hasAnswered ? 'text-gray-400' : (isCorrect ? 'text-green-400' : 'text-gray-400')}`}>
+                      { !hasAnswered ? '—' : (isCorrect ? `+${pointsEarned}` : '+0') }
                     </span>
                   </div>
 
