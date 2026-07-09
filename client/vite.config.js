@@ -89,13 +89,17 @@ function ngrokPlugin() {
           const session = await new ngrok.SessionBuilder()
             .authtoken(authtoken)
             .connect();
-          
-          const tunnelBuilder = session.httpTunnelBuilder();
+
+          const tunnelConfig = {
+            port,
+            proto: 'http'
+          };
+
           if (domain) {
-            tunnelBuilder.domain(domain);
+            tunnelConfig.domain = domain;
           }
-          
-          const ngrokTunnel = await tunnelBuilder.port(port).connect();
+
+          const ngrokTunnel = await session.httpEndpoint(tunnelConfig).listen();
           const url = ngrokTunnel.url();
           
           console.log(`\n==================================================`);

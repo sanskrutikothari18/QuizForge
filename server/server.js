@@ -31,14 +31,26 @@ app.get('/', (req, res) => {
 // connect DB + start server
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+const mongoUri = process.env.MONGO_URI;
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log("DB connection error:", err);
+if (!mongoUri) {
+  console.warn('MONGO_URI is not set. Starting without MongoDB connection.');
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+} else {
+  mongoose.connect(mongoUri)
+    .then(() => {
+      console.log('MongoDB connected');
+
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('DB connection error:', err.message);
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    });
+}

@@ -1,5 +1,30 @@
 {
-  "users": [],
+  "users": [
+    {
+      "_id": "gtl2mgfgtqwsuvqw0k",
+      "createdAt": "2026-07-09T09:30:29.736Z",
+      "updatedAt": "2026-07-09T09:30:29.737Z",
+      "name": "Rucha Kamble",
+      "email": "rucha123@gmail.com",
+      "password": "$2b$10$t/A.d99i5em0sZnRr8pOC.4u29.kzrwyTCd08HcS8ZC1ObnLZp8Rm"
+    },
+    {
+      "_id": "qqj13zrv05droi4tru",
+      "createdAt": "2026-07-09T09:31:51.746Z",
+      "updatedAt": "2026-07-09T09:31:51.746Z",
+      "name": "Rucha",
+      "email": "rucha1134@gmail.com",
+      "password": "$2b$10$x1gvPKRphsWtn1GC.H1.Ae.FB8zViHIHEqpCKIY1r8eKRu6V1oBJ6"
+    },
+    {
+      "_id": "d4eppq6w16gqoblgcp",
+      "createdAt": "2026-07-09T09:38:37.675Z",
+      "updatedAt": "2026-07-09T09:38:37.675Z",
+      "name": "Rucha",
+      "email": "Hi@gmail.com",
+      "password": "$2b$10$HGtRzA3D7sAouX1swIbkQOJkLzuqoZjz3cPpel.0aHWyoW4k6TSOS"
+    }
+  ],
   "quizzes": [],
   "gamesessions": [],
   "results": []

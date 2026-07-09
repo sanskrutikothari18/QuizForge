@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ngrok/ngrok": "^1.7.0",
+    "@ngrok/ngrok": "^0.7.0",
     "@tanstack/react-query": "^5.101.2",
     "axios": "^1.18.1",
     "canvas-confetti": "^1.9.4",
