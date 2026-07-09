@@ -165,6 +165,51 @@ const parseBgConfig = (bgStr) => {
   };
 };
 
+const compressAndResizeImage = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 1000;
+
+        if (width > height) {
+          if (width > maxDimension) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          }
+        } else {
+          if (height > maxDimension) {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress as JPEG with 0.6 quality (looks great for blurred backgrounds, extremely small size)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+        resolve(compressedBase64);
+      };
+      img.onerror = (err) => {
+        reject(new Error('Failed to load image for compression'));
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = (err) => {
+      reject(err);
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function BackgroundPicker({ value, onChange, showPreview = true }) {
   const config = parseBgConfig(value);
 
@@ -288,17 +333,26 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                 onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
                 onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
                 onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
-                onDrop={(e) => {
+                onDrop={async (e) => {
                   e.preventDefault();
                   setDragActive(false);
                   const file = e.dataTransfer.files?.[0];
                   if (file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                      updateField('url', ev.target.result);
-                      toast.success(`Custom image "${file.name}" uploaded successfully! 🚀`);
-                    };
-                    reader.readAsDataURL(file);
+                    const toastId = toast.loading('Processing and compressing background image...');
+                    try {
+                      const compressedUrl = await compressAndResizeImage(file);
+                      updateField('url', compressedUrl);
+                      toast.success(`Custom image "${file.name}" uploaded successfully! 🚀`, { id: toastId });
+                    } catch (error) {
+                      console.error('[IMAGE COMPRESSION ERROR]', error);
+                      toast.error('Failed to compress image. Using raw upload.', { id: toastId });
+                      // Fallback
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        updateField('url', ev.target.result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
                   } else {
                     toast.error('Please drop a valid JPG, PNG or WebP image file.');
                   }
@@ -323,15 +377,24 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (ev) => {
-                            updateField('url', ev.target.result);
-                            toast.success(`Custom image "${file.name}" uploaded!`);
-                          };
-                          reader.readAsDataURL(file);
+                          const toastId = toast.loading('Processing and compressing background image...');
+                          try {
+                            const compressedUrl = await compressAndResizeImage(file);
+                            updateField('url', compressedUrl);
+                            toast.success(`Custom image "${file.name}" uploaded!`, { id: toastId });
+                          } catch (error) {
+                            console.error('[IMAGE COMPRESSION ERROR]', error);
+                            toast.error('Failed to compress image. Using raw upload.', { id: toastId });
+                            // Fallback
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                              updateField('url', ev.target.result);
+                            };
+                            reader.readAsDataURL(file);
+                          }
                         }
                       }}
                     />
