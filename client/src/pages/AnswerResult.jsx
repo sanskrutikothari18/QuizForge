@@ -85,8 +85,17 @@ const parseBgConfig = (bgStr) => {
     };
   }
   try {
-    const config = JSON.parse(bgStr);
-    if (config && typeof config === 'object' && 'url' in config) {
+    let config = bgStr;
+    // Recursively parse string if it's double serialized or nested JSON
+    while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
+      const parsed = JSON.parse(config);
+      if (typeof parsed === 'string' && parsed === config) {
+        break; // Prevent infinite loop
+      }
+      config = parsed;
+    }
+
+    if (config && typeof config === 'object') {
       return {
         url: config.url || '',
         blur: typeof config.blur === 'number' ? config.blur : 0,
@@ -105,9 +114,9 @@ const parseBgConfig = (bgStr) => {
         optionTextColor: config.optionTextColor || '#ffffff'
       };
     }
-  } catch (e) {}
+  } catch (e) { }
   return {
-    url: bgStr,
+    url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
     brightness: 100,
     overlayOpacity: 30,
@@ -159,8 +168,8 @@ export default function AnswerResult() {
       console.error('Failed to parse user from localStorage', e);
     }
     
-    // The player is the host if they are logged in and their ID matches the game's hostId.
-    const isUserHost = !!hostToken && (game && user && game.hostId === user.id);
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage
@@ -195,6 +204,10 @@ export default function AnswerResult() {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
+          const hostId = game.host?._id || game.host?.id || game.host;
+          if (hostId && user && hostId === user.id) {
+            setIsHost(true);
+          }
           setCategory(game.quiz?.category || 'general');
           const currentIdx = game.currentQuestion - 1;
           const currentQuestion = game.quiz?.questions?.[currentIdx];

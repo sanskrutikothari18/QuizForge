@@ -24,8 +24,17 @@ const parseBgConfig = (bgStr) => {
     };
   }
   try {
-    const config = JSON.parse(bgStr);
-    if (config && typeof config === 'object' && 'url' in config) {
+    let config = bgStr;
+    // Recursively parse string if it's double serialized or nested JSON
+    while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
+      const parsed = JSON.parse(config);
+      if (typeof parsed === 'string' && parsed === config) {
+        break; // Prevent infinite loop
+      }
+      config = parsed;
+    }
+
+    if (config && typeof config === 'object') {
       return {
         url: config.url || '',
         blur: typeof config.blur === 'number' ? config.blur : 0,
@@ -39,9 +48,9 @@ const parseBgConfig = (bgStr) => {
         darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
       };
     }
-  } catch (e) {}
+  } catch (e) { }
   return {
-    url: bgStr,
+    url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
     brightness: 100,
     overlayOpacity: 30,
