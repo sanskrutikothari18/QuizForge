@@ -151,8 +151,16 @@ export default function AnswerResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const hostedPin = localStorage.getItem('current_hosted_pin');
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+    let user = null;
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) user = JSON.parse(userStr);
+    } catch (e) {
+      console.error('Failed to parse user from localStorage', e);
+    }
+    
+    // The player is the host if they are logged in and their ID matches the game's hostId.
+    const isUserHost = !!hostToken && (game && user && game.hostId === user.id);
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage
