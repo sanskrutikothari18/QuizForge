@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
 // Initialize Theme to prevent flicker
-const savedTheme = localStorage.getItem('theme') || 'dark';
+const savedTheme = localStorage.getItem('theme') || 'light';
 if (savedTheme === 'light') {
   document.documentElement.classList.add('light');
 } else {
@@ -77,6 +77,20 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
+
+  // Sync theme state when it changes (Navbar updates localStorage + html class)
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isLight = document.documentElement.classList.contains('light');
+      setTheme(isLight ? 'light' : 'dark');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  const isLight = theme === 'light';
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -87,9 +101,14 @@ export default function App() {
               position="top-right"
               toastOptions={{
                 style: {
-                  background: '#18181b',
-                  color: '#fff',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background: isLight ? '#faf8ff' : '#18181b',
+                  color: isLight ? '#1e1840' : '#fff',
+                  border: isLight
+                    ? '1px solid rgba(139, 92, 246, 0.18)'
+                    : '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: isLight
+                    ? '0 4px 16px rgba(109, 40, 217, 0.10)'
+                    : '0 4px 16px rgba(0,0,0,0.4)',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '14px',
                 },

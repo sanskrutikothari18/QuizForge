@@ -15,7 +15,7 @@ export default {
         accent: "var(--theme-accent, #F43F5E)",      // Accent (Rose) (Dynamic)
         success: "#22C55E",     // Success (Green)
         warning: "#FACC15",     // Warning (Yellow)
-        background: "var(--theme-bg, var(--background))",   // Background (Dynamic Theme)
+        background: "var(--background)",   // Background (Dark/Light Mode)
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

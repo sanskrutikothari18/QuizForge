@@ -38,7 +38,7 @@ app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
 
 app.get('/', (req, res) => {
-    res.send('QuizForge API is running...');
+    res.send('Fourise Quiz Hub API is running...');
 });
 
 // Socket connection management
@@ -151,7 +151,7 @@ function broadcastPlayerList(room) {
   console.log(`[SERVER] broadcastPlayerList room=${room.pin} players=${room.players.length} status=${room.status}`);
   io.to(`room_${room.pin}`).emit('player_list', {
     pin: room.pin,
-    title: room.title || 'QuizForge',
+    title: room.title || 'Fourise Quiz Hub',
     players: room.players.map((player) => ({ username: player.username, score: player.score })),
     hostSocketId: room.hostId,
     hostUsername: room.hostUsername,
@@ -306,7 +306,7 @@ io.on('connection', (socket) => {
       pin,
       hostId: socket.id,
       hostUsername: cleanName,
-      title: String(title || 'QuizForge').trim(),
+      title: String(title || 'Fourise Quiz Hub').trim(),
       players: [
         {
           socketId: socket.id,
@@ -517,5 +517,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`QuizForge server listening on port ${PORT}`);
+  console.log(`Fourise Quiz Hub server listening on port ${PORT}`);
 });

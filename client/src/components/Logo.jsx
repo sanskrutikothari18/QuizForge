@@ -10,16 +10,12 @@ export default function Logo({ className = 'h-10 w-10', ...props }) {
       {...props}
     >
       <defs>
-        {/* Define the mask to create a clean gap around the red circle */}
         <mask id="logo-red-dot-mask">
-          {/* Everything white is visible */}
           <rect x="0" y="0" width="100" height="100" fill="white" />
-          {/* Black circle cuts a hole of radius 12 around the red dot center */}
           <circle cx="42" cy="35" r="12" fill="black" />
         </mask>
       </defs>
 
-      {/* L-Shaped Corners */}
       {/* Top-Left: Purple */}
       <path
         d="M 44 8 H 8 V 44"
@@ -56,7 +52,7 @@ export default function Logo({ className = 'h-10 w-10', ...props }) {
         strokeLinejoin="round"
       />
 
-      {/* Masked central elements (Orange Pill & Green Shape) */}
+      {/* Masked central elements */}
       <g mask="url(#logo-red-dot-mask)">
         {/* Orange Pill */}
         <rect x="50" y="29" width="24" height="12" rx="6" fill="#F58220" />
@@ -68,7 +64,7 @@ export default function Logo({ className = 'h-10 w-10', ...props }) {
         />
       </g>
 
-      {/* Red Dot (outside mask to remain fully visible) */}
+      {/* Red Dot */}
       <circle cx="42" cy="35" r="8.5" fill="#E52424" />
     </svg>
   );
