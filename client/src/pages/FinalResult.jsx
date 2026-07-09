@@ -200,51 +200,55 @@ export default function FinalResult() {
           <div className="flex items-end justify-center w-full max-w-3xl h-[450px] mt-12 mb-8 gap-1 md:gap-4">
             
             {/* 2ND PLACE */}
-            {second ? (
-              <div className="flex flex-col items-center flex-1 z-10 w-1/3">
-                <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: [0, -5, 0], opacity: 1 }}
-                  transition={{ delay: 1.6, y: { repeat: Infinity, duration: 3, ease: "easeInOut" } }}
-                  className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform -rotate-2 w-11/12 max-w-[140px]"
-                >
-                  <div className="font-bold text-black text-sm md:text-base truncate">{second.name}</div>
-                  <div className="font-black text-gray-600 text-xs md:text-sm">{second.totalScore || 0} pts</div>
-                </motion.div>
+            <div className="flex flex-col items-center flex-1 z-10 w-1/3">
+              {second ? (
+                <>
+                  <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: [0, -5, 0], opacity: 1 }}
+                    transition={{ delay: 1.6, y: { repeat: Infinity, duration: 3, ease: "easeInOut" } }}
+                    className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform -rotate-2 w-11/12 max-w-[140px]"
+                  >
+                    <div className="font-bold text-black text-sm md:text-base truncate">{second.name}</div>
+                    <div className="font-black text-gray-600 text-xs md:text-sm">{second.totalScore || 0} pts</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', delay: 1.5 }}
+                    className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
+                  >
+                    {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : '👤'}
+                  </motion.div>
+                </>
+              ) : (
+                <div className="h-[96px] md:h-[128px] mb-5"></div>
+              )}
                 
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 1.5 }}
-                  className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
-                >
-                  {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : '👤'}
-                </motion.div>
-                
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: 160 }}
-                  transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
-                  className="w-full bg-[#6b2cbd] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5)] border-t-[8px] border-[#9146ff]"
-                >
-                  {/* Silver Medal */}
-                  <div className="relative flex flex-col items-center mb-2 mt-2">
-                    {/* Ribbon */}
-                    <div className="w-4 h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                      <div className="w-1/3 h-full bg-transparent"></div>
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                    </div>
-                    {/* Medal */}
-                    <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
-                      <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
-                        <span className="font-outfit text-lg font-black text-white drop-shadow-md">2</span>
-                      </div>
+              <motion.div 
+                initial={{ height: 0 }}
+                animate={{ height: 160 }}
+                transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
+                className="w-full bg-[#6b2cbd] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5)] border-t-[8px] border-[#9146ff]"
+              >
+                {/* Silver Medal */}
+                <div className="relative flex flex-col items-center mb-2 mt-2">
+                  {/* Ribbon */}
+                  <div className="w-4 h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
+                    <div className="w-1/3 h-full bg-white/30"></div>
+                    <div className="w-1/3 h-full bg-transparent"></div>
+                    <div className="w-1/3 h-full bg-white/30"></div>
+                  </div>
+                  {/* Medal */}
+                  <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
+                    <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
+                      <span className="font-outfit text-lg font-black text-white drop-shadow-md">2</span>
                     </div>
                   </div>
-                </motion.div>
-              </div>
-            ) : <div className="flex-1 w-1/3" />}
+                </div>
+              </motion.div>
+            </div>
 
             {/* 1ST PLACE */}
             {winner ? (
@@ -302,51 +306,55 @@ export default function FinalResult() {
             ) : <div className="flex-1 w-1/3" />}
 
             {/* 3RD PLACE */}
-            {third ? (
-              <div className="flex flex-col items-center flex-1 z-10 w-1/3">
-                <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: [0, -4, 0], opacity: 1 }}
-                  transition={{ delay: 0.8, y: { repeat: Infinity, duration: 3.5, ease: "easeInOut" } }}
-                  className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform rotate-2 w-11/12 max-w-[140px]"
-                >
-                  <div className="font-bold text-black text-sm md:text-base truncate">{third.name}</div>
-                  <div className="font-black text-gray-600 text-xs md:text-sm">{third.totalScore || 0} pts</div>
-                </motion.div>
+            <div className="flex flex-col items-center flex-1 z-10 w-1/3">
+              {third ? (
+                <>
+                  <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: [0, -4, 0], opacity: 1 }}
+                    transition={{ delay: 0.8, y: { repeat: Infinity, duration: 3.5, ease: "easeInOut" } }}
+                    className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform rotate-2 w-11/12 max-w-[140px]"
+                  >
+                    <div className="font-bold text-black text-sm md:text-base truncate">{third.name}</div>
+                    <div className="font-black text-gray-600 text-xs md:text-sm">{third.totalScore || 0} pts</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 0.95 }}
+                    transition={{ type: 'spring', delay: 0.7 }}
+                    className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
+                  >
+                    {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : '👤'}
+                  </motion.div>
+                </>
+              ) : (
+                <div className="h-[96px] md:h-[128px] mb-5"></div>
+              )}
                 
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 0.95 }}
-                  transition={{ type: 'spring', delay: 0.7 }}
-                  className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
-                >
-                  {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : '👤'}
-                </motion.div>
-                
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: 110 }}
-                  transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
-                  className="w-full bg-[#783bd1] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.3),0_5px_15px_rgba(0,0,0,0.4)] border-t-[8px] border-[#a25eff]"
-                >
-                  {/* Bronze Medal */}
-                  <div className="relative flex flex-col items-center mb-2 mt-2">
-                    {/* Ribbon */}
-                    <div className="w-4 h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                      <div className="w-1/3 h-full bg-transparent"></div>
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                    </div>
-                    {/* Medal */}
-                    <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
-                      <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
-                        <span className="font-outfit text-lg font-black text-white drop-shadow-md">3</span>
-                      </div>
+              <motion.div 
+                initial={{ height: 0 }}
+                animate={{ height: 110 }}
+                transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
+                className="w-full bg-[#783bd1] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.3),0_5px_15px_rgba(0,0,0,0.4)] border-t-[8px] border-[#a25eff]"
+              >
+                {/* Bronze Medal */}
+                <div className="relative flex flex-col items-center mb-2 mt-2">
+                  {/* Ribbon */}
+                  <div className="w-4 h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
+                    <div className="w-1/3 h-full bg-white/30"></div>
+                    <div className="w-1/3 h-full bg-transparent"></div>
+                    <div className="w-1/3 h-full bg-white/30"></div>
+                  </div>
+                  {/* Medal */}
+                  <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
+                    <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
+                      <span className="font-outfit text-lg font-black text-white drop-shadow-md">3</span>
                     </div>
                   </div>
-                </motion.div>
-              </div>
-            ) : <div className="flex-1 w-1/3" />}
+                </div>
+              </motion.div>
+            </div>
 
           </div>
 
