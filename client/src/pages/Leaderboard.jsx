@@ -164,7 +164,8 @@ export default function Leaderboard() {
             question: response.question,
             questionNumber: response.question.questionNumber,
             totalQuestions: response.question.totalQuestions,
-            timeLeft: response.question.timeLimit
+            timeLeft: response.question.timeLimit,
+            quizBackgroundImage: response.quizBackgroundImage || ''
           };
           navigate(`/live/${pin}`, { state: { socketQuestionData } });
         } else {

@@ -161,9 +161,14 @@ export default function LiveQuiz() {
             setQuestionNumber(game.currentQuestion);
             setTotalQuestions(game.quiz.questions.length);
             setCategory(game.quiz.category || 'general');
-            setBgImage(game.quiz.backgroundImage || '');
+            // Use cached game.backgroundImage (on GameSession) as primary source
+            const globalBg = game.backgroundImage || game.quiz.backgroundImage || '';
+            const currentBg = q.backgroundImage || globalBg;
+            console.log('[FETCH STATE] globalBg length:', globalBg.length, 'preview:', globalBg.substring(0, 80));
+            setBgImage(currentBg);
             localStorage.setItem('last_category', game.quiz.category || 'general');
-            localStorage.setItem('last_bg_image', game.quiz.backgroundImage || '');
+            localStorage.setItem('quiz_global_bg_image', globalBg);
+            localStorage.setItem('last_bg_image', currentBg);
 
             if (game.questionStartTime) {
               const elapsedSeconds = Math.floor((Date.now() - new Date(game.questionStartTime).getTime()) / 1000);
@@ -196,16 +201,27 @@ export default function LiveQuiz() {
     if (location.state?.socketQuestionData) {
       const data = location.state.socketQuestionData;
       const q = data.question;
+      console.log('[LIVE QUIZ] socketQuestionData received:', {
+        quizBackgroundImage: (data.quizBackgroundImage || '').substring(0, 100),
+        questionBackgroundImage: (q.backgroundImage || '').substring(0, 100),
+      });
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
       setTotalQuestions(data.totalQuestions);
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
-      setBgImage(localStorage.getItem('last_bg_image') || '');
+      // Use the quiz global bg from the socket payload (teacher's customized bg)
+      const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
+      localStorage.setItem('quiz_global_bg_image', globalBg);
+      const resolvedBg = q.backgroundImage || globalBg;
+      console.log('[LIVE QUIZ] resolved bgImage length:', resolvedBg.length, 'preview:', resolvedBg.substring(0, 100));
+      setBgImage(resolvedBg);
+      localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
       setSelectedIdx(null);
     } else {
+      // No socket data — must fetch from server (e.g. page refresh)
       fetchCurrentState();
     }
 
@@ -240,7 +256,12 @@ export default function LiveQuiz() {
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
-      setBgImage(localStorage.getItem('last_bg_image') || '');
+      // Update global bg from socket payload (teacher's customized bg)
+      const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
+      localStorage.setItem('quiz_global_bg_image', globalBg);
+      const resolvedBg = q.backgroundImage || globalBg;
+      setBgImage(resolvedBg);
+      localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
       setSelectedIdx(null);
     });
@@ -399,17 +420,17 @@ export default function LiveQuiz() {
 
   const optionShapes = [
     // Triangle (Red)
-    <svg className="h-5 w-5 sm:h-6.5 sm:w-6.5 fill-white stroke-transparent shrink-0" viewBox="0 0 24 24" key="triangle">
+    <svg className="h-5 w-5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0" viewBox="0 0 24 24" key="triangle">
       <path d="M12 3l10 17H2L12 3z" />
     </svg>,
     // Diamond (Blue)
-    <svg className="h-4.5 w-4.5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0 rotate-45" viewBox="0 0 24 24" key="diamond">
+    <svg className="h-5 w-5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0 rotate-45" viewBox="0 0 24 24" key="diamond">
       <rect x="5" y="5" width="14" height="14" />
     </svg>,
     // Circle (Yellow)
-    <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded-full bg-white shrink-0 shadow-sm" key="circle" />,
+    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-white shrink-0 shadow-sm" key="circle" />,
     // Square (Green)
-    <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded bg-white shrink-0 shadow-sm" key="square" />
+    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-white shrink-0 shadow-sm" key="square" />
   ];
 
   const theme = getTheme(category);
@@ -488,7 +509,7 @@ export default function LiveQuiz() {
 
           {/* Timer Display */}
           <div className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 px-2.5 py-1 sm:px-4 sm:py-1.5 font-bold shrink-0">
-            <Clock className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 text-secondary animate-pulse" />
+            <Clock className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-secondary animate-pulse" />
             <span className="text-xs sm:text-sm font-mono">{timeLeft}s</span>
           </div>
         </div>
@@ -528,7 +549,7 @@ export default function LiveQuiz() {
             /* PLAYER WAITING PANEL */
             <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
               <div className="h-8 w-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
-                <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               </div>
               <h3 className="font-outfit text-sm font-bold text-white">Answer Locked!</h3>
               <p className="text-[10px] text-gray-400">Waiting for other challengers to submit their choices...</p>
@@ -537,7 +558,7 @@ export default function LiveQuiz() {
             /* PLAYER TIME'S UP PANEL */
             <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
               <div className="h-8 w-8 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto text-red-500">
-                <XCircle className="h-4.5 w-4.5" />
+                <XCircle className="h-5 w-5" />
               </div>
               <h3 className="font-outfit text-sm font-bold text-white">Time's Up!</h3>
               <p className="text-[10px] text-gray-400">Waiting for the teacher to end the question...</p>
@@ -546,13 +567,13 @@ export default function LiveQuiz() {
         </div>
 
         {/* ANSWERS LAYOUT (HOST SEES ONLY GRID, PLAYER SEES LARGE TAP BUTTONS) */}
-        <div className="w-full max-w-5xl mx-auto grid gap-1.5 sm:gap-4 grid-cols-1 sm:grid-cols-2 relative z-10 flex-1 my-1 sm:my-4 pb-2 sm:pb-0">
+        <div className="w-full max-w-5xl mx-auto grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2 relative z-10 sm:flex-1 mt-2 sm:my-4 pb-2 sm:pb-0">
           {question.options.map((opt, idx) => (
             <button
               key={idx}
               disabled={hasAnswered || isHost || timeLeft <= 0}
               onClick={() => handleSelectAnswer(idx)}
-              className={`rounded-xl sm:rounded-2xl border-2 px-4 py-2.5 sm:px-8 sm:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] ${isHost
+              className={`rounded-xl sm:rounded-2xl border-2 px-5 py-4 sm:px-8 sm:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] ${isHost
                   ? optionHostColors[idx]
                   : hasAnswered
                     ? selectedIdx === idx
@@ -572,7 +593,7 @@ export default function LiveQuiz() {
               </div>
 
               {/* Selection Circle Outline on the right */}
-              <div className="h-4.5 w-4.5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white/70 flex items-center justify-center shrink-0">
+              <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white/70 flex items-center justify-center shrink-0">
                 {hasAnswered && selectedIdx === idx && (
                   <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-white" />
                 )}

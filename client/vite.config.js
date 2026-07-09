@@ -90,12 +90,12 @@ function ngrokPlugin() {
             .authtoken(authtoken)
             .connect();
           
-          const tunnelBuilder = session.httpTunnelBuilder();
+          let endpoint = session.httpEndpoint();
           if (domain) {
-            tunnelBuilder.domain(domain);
+            endpoint = endpoint.domain(domain);
           }
           
-          const ngrokTunnel = await tunnelBuilder.port(port).connect();
+          const ngrokTunnel = await endpoint.listenAndForward(`http://localhost:${port}`);
           const url = ngrokTunnel.url();
           
           console.log(`\n==================================================`);
