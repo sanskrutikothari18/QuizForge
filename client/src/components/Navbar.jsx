@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Award, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
+import { PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Logo from './Logo';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -37,11 +38,9 @@ export default function Navbar() {
         
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 transition-transform active:scale-95">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-premium-glow">
-            <Award className="h-5.5 w-5.5" />
-          </div>
-          <span className="font-outfit text-xl font-bold tracking-tight text-white">
-            Fourise <span className="text-blue-500">Quiz Hub</span>
+          <Logo className="h-10 w-10" />
+          <span className="font-outfit text-xl font-bold tracking-tight" style={{ color: 'var(--text-heading)' }}>
+            Fourise <span className="text-secondary">Quiz Hub</span>
           </span>
         </Link>
 
@@ -49,21 +48,21 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           {token ? (
             <>
-              <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-bold text-gray-300 hover:text-white transition-colors">
+              <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
                 <LayoutDashboard className="h-4 w-4 text-primary" />
                 Dashboard
               </Link>
-              <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold text-gray-300 hover:text-white transition-colors">
-                <Award className="h-4 w-4 text-secondary" />
+              <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
+                <Logo className="h-4 w-4" />
                 My Quizzes
               </Link>
-              <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold text-gray-300 hover:text-white transition-colors">
+              <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
                 <PlusCircle className="h-4 w-4 text-accent" />
                 Create Quiz
               </Link>
             </>
           ) : (
-            <Link to="/#features" className="text-sm font-bold text-gray-300 hover:text-white transition-colors">
+            <Link to="/#features" className="text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
               Features
             </Link>
           )}
@@ -74,11 +73,16 @@ export default function Navbar() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="rounded-xl p-2.5 bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center mr-1"
+            className="rounded-xl p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center mr-1"
+            style={{
+              background: theme === 'light' ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
+              borderColor: theme === 'light' ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
+              color: theme === 'light' ? '#6d28d9' : '#d1d5db',
+            }}
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
-              <Moon className="h-4.5 w-4.5 text-primary" />
+              <Moon className="h-4.5 w-4.5" style={{ color: '#6d28d9' }} />
             ) : (
               <Sun className="h-4.5 w-4.5 text-yellow-400" />
             )}
@@ -87,9 +91,15 @@ export default function Navbar() {
           {token ? (
             <div className="flex items-center gap-3">
               {/* Profile Badge */}
-              <div className="hidden sm:flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-1.5">
+              <div
+                className="hidden sm:flex items-center gap-2 rounded-xl px-3 py-1.5"
+                style={{
+                  background: theme === 'light' ? 'rgba(139,92,246,0.07)' : 'rgba(255,255,255,0.05)',
+                  border: theme === 'light' ? '1px solid rgba(139,92,246,0.14)' : '1px solid rgba(255,255,255,0.10)',
+                }}
+              >
                 <User className="h-4 w-4 text-secondary" />
-                <span className="text-xs font-bold text-gray-200">{user?.name}</span>
+                <span className="text-xs font-bold" style={{ color: 'var(--text-main)' }}>{user?.name}</span>
               </div>
               
               {/* Logout Button */}

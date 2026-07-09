@@ -302,7 +302,7 @@ export default function LandingPage() {
               Loved by <span className="text-gradient-primary">Champions</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-gray-400">
-              See how educators, coordinators, and gamers use <span className="font-bold">Fourise <span className="text-blue-500">Quiz Hub</span></span>.
+              See how educators, coordinators, and gamers use Fourise Quiz Hub.
             </p>
           </div>
 

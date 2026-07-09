@@ -1,6 +1,7 @@
 import React from 'react';
-import { Award, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 
 export default function Footer() {
   return (
@@ -10,11 +11,9 @@ export default function Footer() {
           
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-primary to-secondary text-white">
-              <Award className="h-4.5 w-4.5" />
-            </div>
+            <Logo className="h-8 w-8" />
             <span className="font-outfit text-sm font-semibold tracking-tight text-white">
-              Fourise <span className="text-blue-500">Quiz Hub</span>
+              Fourise <span className="text-secondary">Quiz Hub</span>
             </span>
           </div>
 
