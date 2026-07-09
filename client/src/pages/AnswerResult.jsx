@@ -178,8 +178,14 @@ export default function AnswerResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
-    setIsHost(isUserHost);
+    let user = null;
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) user = JSON.parse(userStr);
+    } catch(e){}
+    
+    // Fallback until game is loaded
+    setIsHost(!localPlayer && !!hostToken);
 
     // Read stored variables from localStorage
     const savedIsCorrect = localStorage.getItem('last_isCorrect');
@@ -213,6 +219,15 @@ export default function AnswerResult() {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
+          
+          let currentUser = null;
+          try {
+            const userStr = localStorage.getItem('user');
+            if (userStr) currentUser = JSON.parse(userStr);
+          } catch(e){}
+
+          const isUserHost = currentUser && game.hostId === currentUser.id;
+          setIsHost(isUserHost);
           setCategory(game.quiz?.category || 'general');
           setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
           

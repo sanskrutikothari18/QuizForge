@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -17,6 +17,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [openReportMenuId, setOpenReportMenuId] = useState(null);
+
+  // Clear any lingering guest credentials so Host testing doesn't get bugged
+  useEffect(() => {
+    localStorage.removeItem('guest_playerName');
+    localStorage.removeItem('guest_pin');
+  }, []);
 
   // React Queries
   const { 

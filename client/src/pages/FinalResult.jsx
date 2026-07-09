@@ -54,8 +54,20 @@ export default function FinalResult() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    setIsHost(!localPlayerName && !!hostToken);
+    let user = null;
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) user = JSON.parse(userStr);
+    } catch (e) {}
 
+    if (game && user && game.hostId === user.id) {
+      setIsHost(true);
+    } else {
+      setIsHost(!localPlayerName && !!hostToken);
+    }
+  }, [game, localPlayerName]);
+
+  useEffect(() => {
     // Confetti logic
     let interval;
     
