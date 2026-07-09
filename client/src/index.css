@@ -857,6 +857,14 @@
   color: #7b6fa0 !important;
 }
 
+/* Fix browser autofill hiding text on dark backgrounds */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s !important;
+}
+
 /* ── Quiz Cards ── */
 .light .quiz-card {
   background: rgba(255, 253, 255, 0.95) !important;
