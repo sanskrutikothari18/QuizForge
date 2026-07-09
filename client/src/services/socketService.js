@@ -4,7 +4,15 @@ let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
-    const serverUrl = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`;
+    let serverUrl = import.meta.env.VITE_API_URL;
+    if (!serverUrl) {
+      const host = window.location.hostname;
+      if (host.includes('vercel.app') || host.includes('github.io')) {
+        serverUrl = 'http://localhost:5000';
+      } else {
+        serverUrl = `http://${host}:5000`;
+      }
+    }
     socket = io(serverUrl);
     console.log('[SOCKET] Connected successfully');
   }

@@ -1,8 +1,19 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  const host = window.location.hostname;
+  if (host.includes('vercel.app') || host.includes('github.io')) {
+    return 'http://localhost:5000';
+  }
+  return `http://${host}:5000`;
+};
+
 const API = axios.create({
-  baseURL: `http://${window.location.hostname}:5000`,
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
