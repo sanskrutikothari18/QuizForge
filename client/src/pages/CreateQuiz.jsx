@@ -27,8 +27,15 @@ export default function CreateQuiz() {
   const parseBgConfig = (bgStr) => {
     if (!bgStr) return null;
     try {
-      const config = JSON.parse(bgStr);
-      return config?.url ? config : null;
+      let config = bgStr;
+      while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
+        const parsed = JSON.parse(config);
+        if (typeof parsed === 'string' && parsed === config) {
+          break;
+        }
+        config = parsed;
+      }
+      return (config && typeof config === 'object' && config.url) ? config : null;
     } catch (e) {
       return null;
     }

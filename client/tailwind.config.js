@@ -10,12 +10,12 @@ export default {
         '4.5': '1.125rem',
       },
       colors: {
-        primary: "#7C3AED",     // Purple
-        secondary: "#06B6D4",   // Cyan
-        accent: "#F43F5E",      // Accent (Rose)
+        primary: "var(--theme-primary, #7C3AED)",     // Purple (Dynamic)
+        secondary: "var(--theme-secondary, #06B6D4)",   // Cyan (Dynamic)
+        accent: "var(--theme-accent, #F43F5E)",      // Accent (Rose) (Dynamic)
         success: "#22C55E",     // Success (Green)
         warning: "#FACC15",     // Warning (Yellow)
-        background: "var(--background)",   // Background (Dynamic slate/light-gray)
+        background: "var(--theme-bg, var(--background))",   // Background (Dynamic Theme)
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

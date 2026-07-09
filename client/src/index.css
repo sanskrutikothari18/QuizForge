@@ -20,6 +20,15 @@
   --glass-panel-border-hover: rgba(124, 58, 237, 0.25);
   --glass-panel-shadow-hover: 0 12px 40px 0 rgba(124, 58, 237, 0.15);
   --ambient-grid-color: rgba(255, 255, 255, 0.02);
+
+  /* Theme Defaults */
+  --theme-primary: #7C3AED;
+  --theme-secondary: #06B6D4;
+  --theme-accent: #F43F5E;
+  --theme-bg: #09090B;
+  --theme-card-bg: rgba(255, 255, 255, 0.05);
+  --theme-text: #e2e8f0;
+  --theme-font: 'Inter', sans-serif;
 }
 
 .light {
