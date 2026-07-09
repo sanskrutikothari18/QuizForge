@@ -520,17 +520,19 @@ const setupMockMongoose = () => {
         
         saveCollection(modelName, collection);
         return this;
+    };
 };
 
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI, {
-            serverSelectionTimeoutMS: 5000
+            serverSelectionTimeoutMS: 3000
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.log(`MongoDB Connection Error: ${error.message}`);
-        process.exit(1);
+        console.log(`⚠️ Falling back to Local File Database (local_db.json) to ensure the server works properly!`);
+        setupMockMongoose();
     }
 };
 
