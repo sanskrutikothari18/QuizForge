@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Award, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
+import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 
@@ -53,7 +53,7 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
-                <Award className="h-4 w-4 text-secondary" />
+                <BookOpen className="h-4 w-4 text-secondary" />
                 My Quizzes
               </Link>
               <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
