@@ -1,5 +1,5 @@
-const Quiz = require('../../models/Quiz');
-const GameSession = require('../../models/GameSession');
+const Quiz = require('../models/Quiz');
+const GameSession = require('../models/GameSession');
 
 const createQuiz = async (req, res) => {
     try {
@@ -36,6 +36,9 @@ const createQuiz = async (req, res) => {
             backgroundImage: backgroundImage || '',
             createdBy: req.user.id
         });
+
+        console.log('[CREATE QUIZ] Saved backgroundImage length:', (backgroundImage || '').length);
+        console.log('[CREATE QUIZ] backgroundImage preview:', (backgroundImage || '').substring(0, 120));
 
         res.status(201).json({
             success: true,

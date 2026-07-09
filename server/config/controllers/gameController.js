@@ -1,5 +1,5 @@
-const GameSession = require('../../models/GameSession');
-const Quiz = require('../../models/Quiz');
+const GameSession = require('../models/GameSession');
+const Quiz = require('../models/Quiz');
 const QRCode = require('qrcode');
 const os = require('os');
 
@@ -33,21 +33,21 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
         if (b.totalScore !== a.totalScore) {
             return b.totalScore - a.totalScore;
         }
-        
+
         const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
         const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
-        
+
         if (aCorrect !== bCorrect) {
             return bCorrect - aCorrect;
         }
-        
+
         const aTime = a.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
         const bTime = b.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
-        
+
         if (aTime !== bTime) {
             return aTime - bTime;
         }
-        
+
         return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
     });
 
@@ -55,7 +55,7 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
         const totalCorrect = p.answers.filter(a => a.isCorrect).length;
         const totalTimeCorrect = p.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
         const lastAnswer = p.answers.find(a => a.questionIndex === currentQuestionIndex);
-        
+
         return {
             name: p.name,
             username: p.name,
@@ -113,7 +113,8 @@ const createGame = async (req, res) => {
             hostId: req.user.id,
             status: 'waiting',
             players: [],
-            currentQuestionIndex: -1
+            currentQuestionIndex: -1,
+            backgroundImage: quiz.backgroundImage || ''
         });
 
         res.status(201).json({
@@ -152,10 +153,10 @@ const joinGame = async (req, res) => {
 
         const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const updatedGame = await GameSession.findOneAndUpdate(
-            { 
-                pin, 
-                status: 'waiting', 
-                'players.name': { $not: new RegExp('^' + escName + '$', 'i') } 
+            {
+                pin,
+                status: 'waiting',
+                'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
             { $push: { players: { name: playerName, avatar: avatar || '👤', totalScore: 0, answers: [] } } },
             { new: true }
@@ -248,9 +249,15 @@ const startQuestion = async (req, res) => {
         await game.save();
 
         const io = req.app.get('io');
+        // Use the cached backgroundImage from GameSession (most reliable), fallback to quiz
+        const quizBg = game.backgroundImage || quiz.backgroundImage || '';
+        console.log('[START QUESTION] quizBackgroundImage length:', quizBg.length);
+        console.log('[START QUESTION] quizBg preview:', quizBg.substring(0, 120));
+        console.log('[START QUESTION] questionBg:', (nextQuestion.backgroundImage || '').substring(0, 80));
         if (io) {
             io.to(`room_${pin}`).emit('question_started', {
                 category: quiz.category || 'general',
+                quizBackgroundImage: quizBg,
                 question: {
                     questionIndex: nextIndex,
                     questionNumber: nextIndex + 1,
@@ -260,7 +267,8 @@ const startQuestion = async (req, res) => {
                     timeLimit: nextQuestion.timeLimit,
                     timeLimitMs: nextQuestion.timeLimit * 1000,
                     startTime: questionStartTime,
-                    category: quiz.category || 'general'
+                    category: quiz.category || 'general',
+                    backgroundImage: nextQuestion.backgroundImage || ''
                 },
                 questionNumber: nextIndex + 1,
                 totalQuestions: quiz.questions.length,
@@ -271,6 +279,7 @@ const startQuestion = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Question started',
+            quizBackgroundImage: quizBg,
             question: {
                 questionIndex: nextIndex,
                 questionNumber: nextIndex + 1,
@@ -280,7 +289,8 @@ const startQuestion = async (req, res) => {
                 timeLimit: nextQuestion.timeLimit,
                 timeLimitMs: nextQuestion.timeLimit * 1000,
                 startTime: questionStartTime,
-                category: quiz.category || 'general'
+                category: quiz.category || 'general',
+                backgroundImage: nextQuestion.backgroundImage || ''
             }
         });
 
@@ -397,10 +407,10 @@ const submitAnswer = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            const answeredCount = updatedGame.players.filter(p => 
+            const answeredCount = updatedGame.players.filter(p =>
                 p.answers.some(a => a.questionIndex === updatedGame.currentQuestionIndex)
             ).length;
-            
+
             io.to(`room_${pin}`).emit('player_answered', {
                 username: playerName,
                 answeredCount,
@@ -550,7 +560,8 @@ const getGame = async (req, res) => {
                 questionStartTime: game.questionStartTime,
                 quiz: game.quizId,
                 host: game.hostId,
-                winner: game.winner
+                winner: game.winner,
+                backgroundImage: game.backgroundImage || game.quizId?.backgroundImage || ''
             }
         });
 
@@ -589,7 +600,7 @@ const endQuestion = async (req, res) => {
         // Calculate ranked players
         const rankedPlayers = sortAndRankPlayers(game.players, game.currentQuestionIndex);
 
-        const answerStats = currentQuestion.options.map((_, optIdx) => 
+        const answerStats = currentQuestion.options.map((_, optIdx) =>
             game.players.reduce((count, player) => {
                 const ans = player.answers.find(a => a.questionIndex === game.currentQuestionIndex);
                 return count + (ans && ans.answerIndex === optIdx ? 1 : 0);

@@ -91,6 +91,10 @@ const gameSessionSchema = new mongoose.Schema({
     winner: {
         type: String,
         default: ''
+    },
+    backgroundImage: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

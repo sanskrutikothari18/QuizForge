@@ -66,8 +66,11 @@ export default function WaitingRoom() {
   useEffect(() => {
     getGame(pin).then(res => {
       if (res.success) {
-        const bg = res.game?.quiz?.backgroundImage || '';
+        // game.backgroundImage is cached directly on GameSession for reliability
+        const bg = res.game?.backgroundImage || res.game?.quiz?.backgroundImage || '';
+        console.log('[WAITING ROOM] Fetched background length:', bg.length, 'preview:', bg.substring(0, 80));
         setBgImage(bg);
+        localStorage.setItem('quiz_global_bg_image', bg);
         localStorage.setItem('last_bg_image', bg);
       }
     }).catch(() => {});
@@ -112,7 +115,13 @@ export default function WaitingRoom() {
     socket.on('question_started', (data) => {
       console.log('[SOCKET CLIENT] Battle started! Redirecting...', data);
       toast.success('Commencing battle! Get ready! ⚔️');
-      navigate(`/live/${pin}`);
+      // Store the global background before navigating
+      const globalBg = localStorage.getItem('quiz_global_bg_image') || '';
+      const questionBg = data?.question?.backgroundImage || '';
+      const resolvedBg = questionBg || globalBg;
+      localStorage.setItem('last_bg_image', resolvedBg);
+      // Pass full socket data so LiveQuiz gets background immediately without extra API call
+      navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
     socket.on('room_closed', ({ message }) => {

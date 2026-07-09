@@ -25,6 +25,10 @@ const questionSchema = new mongoose.Schema({
     timeLimit: {
         type: Number,
         default: 60
+    },
+    backgroundImage: {
+        type: String,
+        default: ''
     }
 });
 

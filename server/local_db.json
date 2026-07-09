@@ -1,6 +1,377 @@
 {
-  "users": [],
-  "quizzes": [],
-  "gamesessions": [],
-  "results": []
+  "users": [
+    {
+      "_id": "s9jwwoqlda40q066wx",
+      "createdAt": "2026-07-09T13:00:45.763Z",
+      "updatedAt": "2026-07-09T13:00:45.763Z",
+      "name": "Sale",
+      "email": "sale@gmail.com",
+      "password": "$2b$10$O9ncrM6i9vaj8ctZBd02XeJielC7h7TAw96SXMxQdI9pHObiHMATO"
+    },
+    {
+      "_id": "siphh72xtumu5vsl69",
+      "createdAt": "2026-07-09T13:03:30.692Z",
+      "updatedAt": "2026-07-09T13:03:30.692Z",
+      "name": "saie",
+      "email": "xyd@gmail.com",
+      "password": "$2b$10$g8Fw0ow/Cb9zsqagyABdneJeL3jAG5vnHVOFGNNT/w38e0iU/24I2"
+    }
+  ],
+  "quizzes": [
+    {
+      "_id": "85x89n14paci48c6fz",
+      "createdAt": "2026-07-09T13:05:08.939Z",
+      "updatedAt": "2026-07-09T13:05:08.939Z",
+      "title": "sscdv",
+      "category": "general knowledge",
+      "description": "",
+      "questions": [
+        {
+          "questionText": "rt5y5yu7u6766u7",
+          "options": [
+            "7uukj66ku",
+            "y6uy",
+            "ukukik",
+            "yyuu"
+          ],
+          "correctAnswer": 0,
+          "timeLimit": 20,
+          "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}"
+        },
+        {
+          "questionText": "uuk6u7u76",
+          "options": [
+            "57u6889",
+            "68i87o89",
+            "8o9p0",
+            "8i9o"
+          ],
+          "correctAnswer": 2,
+          "timeLimit": 20,
+          "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}"
+        }
+      ],
+      "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}",
+      "createdBy": "siphh72xtumu5vsl69",
+      "isActive": false,
+      "id": "85x89n14paci48c6fz"
+    },
+    {
+      "_id": "t6e7rfwayosno16tgn",
+      "createdAt": "2026-07-09T13:11:08.658Z",
+      "updatedAt": "2026-07-09T13:11:08.658Z",
+      "title": "General Trivia",
+      "category": "general knowledge",
+      "description": "",
+      "questions": [
+        {
+          "questionText": "What is 2 + 2?",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correctAnswer": 3,
+          "timeLimit": 10,
+          "backgroundImage": ""
+        }
+      ],
+      "backgroundImage": "",
+      "createdBy": "s9jwwoqlda40q066wx",
+      "isActive": true
+    },
+    {
+      "_id": "lz4utux46vko6yculj",
+      "createdAt": "2026-07-09T13:12:57.748Z",
+      "updatedAt": "2026-07-09T13:12:57.748Z",
+      "title": "dtyri7",
+      "category": "general knowledge",
+      "description": "",
+      "questions": [
+        {
+          "questionText": "fyrfrtetguttydty",
+          "options": [
+            "kjb,bbnbbjk",
+            "jdtde",
+            "vhvhvhkb",
+            "gdyyut"
+          ],
+          "correctAnswer": 3,
+          "timeLimit": 20,
+          "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}"
+        },
+        {
+          "questionText": "cdtytyiyutyyu8y8",
+          "options": [
+            "gghu",
+            "jkjh",
+            " n,bnlml",
+            " ,nbjn"
+          ],
+          "correctAnswer": 2,
+          "timeLimit": 20,
+          "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}"
+        }
+      ],
+      "backgroundImage": "",
+      "createdBy": "siphh72xtumu5vsl69",
+      "isActive": true
+    },
+    {
+      "_id": "f96kgulsq2ohbqg6lk",
+      "createdAt": "2026-07-09T13:21:54.209Z",
+      "updatedAt": "2026-07-09T13:21:54.209Z",
+      "title": "xgffjgt",
+      "category": "general knowledge",
+      "description": "",
+      "questions": [
+        {
+          "questionText": "cghfyio",
+          "options": [
+            "vhfiuh",
+            " nmlkj",
+            "nkhjjhjhhj",
+            "bm,kjl"
+          ],
+          "correctAnswer": 0,
+          "timeLimit": 20,
+          "backgroundImage": ""
+        }
+      ],
+      "backgroundImage": "",
+      "createdBy": "siphh72xtumu5vsl69",
+      "isActive": false,
+      "id": "f96kgulsq2ohbqg6lk"
+    },
+    {
+      "_id": "z6tve4s1mv1hlg1btq",
+      "createdAt": "2026-07-09T13:31:33.441Z",
+      "updatedAt": "2026-07-09T13:31:33.441Z",
+      "title": "funnnyy",
+      "category": "general knowledge",
+      "description": "",
+      "questions": [
+        {
+          "questionText": "where the himalayas located in",
+          "options": [
+            "india",
+            "africa",
+            "egypt",
+            "france"
+          ],
+          "correctAnswer": 0,
+          "timeLimit": 20,
+          "backgroundImage": ""
+        }
+      ],
+      "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}",
+      "createdBy": "siphh72xtumu5vsl69"
+    }
+  ],
+  "gamesessions": [
+    {
+      "_id": "f02nhp66s392bqnhel",
+      "createdAt": "2026-07-09T13:05:09.054Z",
+      "updatedAt": "2026-07-09T13:29:20.312Z",
+      "pin": "451524",
+      "quizId": "85x89n14paci48c6fz",
+      "hostId": "siphh72xtumu5vsl69",
+      "status": "finished",
+      "players": [],
+      "currentQuestionIndex": -1,
+      "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}"
+    },
+    {
+      "_id": "uhrp7lf3i9etwpneiu",
+      "createdAt": "2026-07-09T13:11:08.728Z",
+      "updatedAt": "2026-07-09T13:29:20.312Z",
+      "pin": "723535",
+      "quizId": "t6e7rfwayosno16tgn",
+      "hostId": "s9jwwoqlda40q066wx",
+      "status": "finished",
+      "players": [
+        {
+          "name": "Alice",
+          "avatar": "🦊",
+          "totalScore": 0,
+          "answers": []
+        }
+      ],
+      "currentQuestionIndex": -1,
+      "backgroundImage": ""
+    },
+    {
+      "_id": "yrs8mc4i6qsve7at83",
+      "createdAt": "2026-07-09T13:12:57.802Z",
+      "updatedAt": "2026-07-09T13:14:12.318Z",
+      "pin": "401696",
+      "quizId": "lz4utux46vko6yculj",
+      "hostId": "siphh72xtumu5vsl69",
+      "status": "finished",
+      "players": [
+        {
+          "name": "Saie",
+          "avatar": "🐶",
+          "totalScore": 0,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": 0,
+              "isCorrect": false,
+              "timeTaken": 16183,
+              "score": 0
+            },
+            {
+              "questionIndex": 1,
+              "answerIndex": 0,
+              "isCorrect": false,
+              "timeTaken": 16902,
+              "score": 0
+            }
+          ],
+          "rank": 1
+        }
+      ],
+      "currentQuestionIndex": 1,
+      "backgroundImage": "",
+      "id": "yrs8mc4i6qsve7at83",
+      "questionStartTime": 1783602835415,
+      "winner": "Saie"
+    },
+    {
+      "_id": "br0bffe1sjzcrbiykh",
+      "createdAt": "2026-07-09T13:21:54.255Z",
+      "updatedAt": "2026-07-09T13:29:20.312Z",
+      "pin": "793676",
+      "quizId": "f96kgulsq2ohbqg6lk",
+      "hostId": "siphh72xtumu5vsl69",
+      "status": "finished",
+      "players": [],
+      "currentQuestionIndex": -1,
+      "backgroundImage": ""
+    },
+    {
+      "_id": "beojyvut5o6njw1et8",
+      "createdAt": "2026-07-09T13:31:33.550Z",
+      "updatedAt": "2026-07-09T13:32:00.658Z",
+      "pin": "876031",
+      "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATpSURBVO3BQU4tSRAEwfDSu/+VfVjmqqRWJwx8hRl+SdWSk6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatEnLwH5SWomIJOaJ4BMam6A3Kh5AsikZgLyk9S8cVK16KRq0UnVok+WqdkE5A0gN2pugNyoeUPNE2o2Adl0UrXopGrRSdWiT74ZkCfUPKHmRs0E5AbIJiCTmk1AnlDznU6qFp1ULTqpWvTJHwdkk5o3gExqJiCTmn/JSdWik6pFJ1WLPvnj1ExAbtRMQG7UPKFmAjKp+ZedVC06qVp0UrXok2+m5v+kZgIyqbkBMqmZgNyomYBMat5Q85ucVC06qVp0UrXok2VAfhKQSc0EZFIzAZnUvKFmAjKpmYBMam6A/GYnVYtOqhadVC3CL/nDgLyhZgLyndRMQCY1f9lJ1aKTqkUnVYvwS14AMqmZgNyomYA8oWYCMqmZgGxScwPkRs0NkEnNDZBJzQTkRs0bJ1WLTqoWnVQt+uQlNROQSc0bam6ATGpu1ExAJjVvAHkDyA2QGzU3aiYgm06qFp1ULTqpWvTJMjUTkEnNBOQGyKRmUvOdgExqbtTcAHlDzRNAbtRsOqladFK16KRq0Se/nJoJyKRmAjKpeQLIE0AmNROQGyCTmjeATGpugExq3jipWnRSteikatEnLwGZ1NwAeQLIpGYCcgNkUnOj5gbIpGYCMqm5AXID5Ak1E5BJzaRm00nVopOqRSdVi/BL/kdAbtRMQJ5QMwGZ1ExAJjUTkDfUvAHkRs0E5Ak1b5xULTqpWnRSteiTbwbkCTUTkCfUTEAmNROQSc0EZFKzCcgbaiYgk5oJyHc6qVp0UrXopGrRJ8uATGomIE+omYBsUjMBmdQ8AWRSMwG5UTMBmdRMQCY1E5AbNZtOqhadVC06qVr0yUtA3lAzAXkDyKRmAnKj5gbIjZoJyKRmAjIB2aRmAvKdTqoWnVQtOqla9MlLat4AMqm5AXKj5kbNDZBJzaTmBsgTaiYgm4D8pJOqRSdVi06qFn3yEpBJzQTkCSBPqJmATGpugExqfjMgk5oJyI2a73RSteikatFJ1SL8kh8E5EbNDZAbNb8JkDfU3AC5UfOTTqoWnVQtOqlahF+yCMikZgIyqZmAPKFmAjKpmYBMaiYgk5obIJOaGyD/JzXf6aRq0UnVopOqRfglfxiQSc0bQJ5QcwNkUjMBmdQ8AeRGzQTkRs0bJ1WLTqoWnVQt+uQlID9JzQ2QSc0NkBs1E5An1ExAngAyqdmkZtNJ1aKTqkUnVYs+WaZmE5An1NwAuVFzo2YCMqmZgExqJiA3ap5QMwGZ1ExAJjVvnFQtOqladFK16JNvBuQJNU+ouQHyBpBJzaTmRs0E5AbIG0CeULPppGrRSdWik6pFn/xxQH4SkBs1N2omIDdq3gDyk06qFp1ULTqpWvTJP0bNBGRSMwGZgDyhZgIyqZmA3KiZgNyomYA8AWRS88ZJ1aKTqkUnVYvwS14AMqnZBGRScwPkCTUTkCfUvAHkCTVvAJnUbDqpWnRSteikatEny4D8JCBvAJnUPAFkUjMBeULNJiA/6aRq0UnVopOqRfglVUtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRf8B2iVHRgjOD6sAAAAASUVORK5CYII=",
+      "quizId": {
+        "_id": "z6tve4s1mv1hlg1btq",
+        "createdAt": "2026-07-09T13:31:33.441Z",
+        "updatedAt": "2026-07-09T13:31:33.441Z",
+        "title": "funnnyy",
+        "category": "general knowledge",
+        "description": "",
+        "questions": [
+          {
+            "questionText": "where the himalayas located in",
+            "options": [
+              "india",
+              "africa",
+              "egypt",
+              "france"
+            ],
+            "correctAnswer": 0,
+            "timeLimit": 20,
+            "backgroundImage": ""
+          }
+        ],
+        "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}",
+        "createdBy": "siphh72xtumu5vsl69"
+      },
+      "hostId": "siphh72xtumu5vsl69",
+      "status": "finished",
+      "players": [
+        {
+          "name": "Saie",
+          "avatar": "🐶",
+          "totalScore": 1766,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": 0,
+              "isCorrect": true,
+              "timeTaken": 4685,
+              "score": 1766
+            }
+          ],
+          "rank": 1
+        }
+      ],
+      "currentQuestionIndex": 0,
+      "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}",
+      "id": "beojyvut5o6njw1et8",
+      "questionStartTime": 1783603915971,
+      "winner": "Saie"
+    }
+  ],
+  "results": [
+    {
+      "_id": "3outny7hfz42ae1w42",
+      "createdAt": "2026-07-09T13:14:26.741Z",
+      "updatedAt": "2026-07-09T13:14:26.741Z",
+      "sessionId": "yrs8mc4i6qsve7at83",
+      "quizId": "lz4utux46vko6yculj",
+      "hostId": "siphh72xtumu5vsl69",
+      "quizTitle": "dtyri7",
+      "players": [
+        {
+          "name": "Saie",
+          "totalScore": 0,
+          "correctAnswers": 0,
+          "wrongAnswers": 2,
+          "rank": 1,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": 0,
+              "isCorrect": false,
+              "timeTaken": 16183,
+              "score": 0
+            },
+            {
+              "questionIndex": 1,
+              "answerIndex": 0,
+              "isCorrect": false,
+              "timeTaken": 16902,
+              "score": 0
+            }
+          ]
+        }
+      ],
+      "winner": "Saie",
+      "totalQuestions": 2
+    },
+    {
+      "_id": "tn6qda536ty92nb17a",
+      "createdAt": "2026-07-09T13:32:11.404Z",
+      "updatedAt": "2026-07-09T13:32:11.404Z",
+      "sessionId": "beojyvut5o6njw1et8",
+      "quizId": "z6tve4s1mv1hlg1btq",
+      "hostId": "siphh72xtumu5vsl69",
+      "quizTitle": "funnnyy",
+      "players": [
+        {
+          "name": "Saie",
+          "totalScore": 1766,
+          "correctAnswers": 1,
+          "wrongAnswers": 0,
+          "rank": 1,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": 0,
+              "isCorrect": true,
+              "timeTaken": 4685,
+              "score": 1766
+            }
+          ]
+        }
+      ],
+      "winner": "Saie",
+      "totalQuestions": 1
+    }
+  ]
 }

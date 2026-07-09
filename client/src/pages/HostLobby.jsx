@@ -115,8 +115,8 @@ export default function HostLobby() {
     });
 
     socket.on('question_started', (data) => {
-      // Transition host to Live Quiz screen
-      navigate(`/live/${pin}`);
+      // Transition host to Live Quiz screen with background data
+      navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
     return () => {
@@ -140,7 +140,15 @@ export default function HostLobby() {
       const response = await startQuestion(pin);
       if (response.success) {
         toast.success('Battle commenced! 🚀');
-        navigate(`/live/${pin}`);
+        // The socket event will fire and navigate — but we also handle it here as fallback
+        const socketQuestionData = {
+          question: response.question,
+          questionNumber: response.question.questionNumber,
+          totalQuestions: response.question.totalQuestions,
+          timeLeft: response.question.timeLimit,
+          quizBackgroundImage: response.quizBackgroundImage || ''
+        };
+        navigate(`/live/${pin}`, { state: { socketQuestionData } });
       } else {
         toast.error(response.message || 'Failed to start quiz');
       }
