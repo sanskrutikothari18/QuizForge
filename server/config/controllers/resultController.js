@@ -45,14 +45,20 @@ const saveResult = async (req, res) => {
             return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
         });
 
-        const playerResults = sortedPlayers.map((player, index) => ({
-            name: player.name,
-            totalScore: player.totalScore,
-            correctAnswers: player.answers.filter(a => a.isCorrect).length,
-            wrongAnswers: player.answers.filter(a => !a.isCorrect).length,
-            rank: index + 1,
-            answers: player.answers
-        }));
+        const playerResults = sortedPlayers.map((player, index) => {
+            const correct = player.answers.filter(a => a.isCorrect).length;
+            const wrong = player.answers.filter(a => !a.isCorrect).length;
+            const unanswered = game.quizId.questions.length - player.answers.length;
+            return {
+                name: player.name,
+                totalScore: player.totalScore,
+                correctAnswers: correct,
+                wrongAnswers: wrong,
+                unansweredQuestions: unanswered,
+                rank: index + 1,
+                answers: player.answers
+            };
+        });
 
         const result = await Result.create({
             sessionId: game._id,
@@ -145,6 +151,7 @@ const getResultLeaderboard = async (req, res) => {
             totalScore: player.totalScore,
             correctAnswers: player.correctAnswers,
             wrongAnswers: player.wrongAnswers,
+            unansweredQuestions: player.unansweredQuestions !== undefined ? player.unansweredQuestions : (result.totalQuestions - player.correctAnswers - player.wrongAnswers),
             totalAnswers: player.correctAnswers + player.wrongAnswers
         }));
 

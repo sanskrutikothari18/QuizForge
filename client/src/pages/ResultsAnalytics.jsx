@@ -36,7 +36,7 @@ export default function ResultsAnalytics() {
     ? Math.round((players.reduce((sum, p) => sum + (p.correctAnswers || 0), 0) / totalPlayers) * 10) / 10
     : 0;
 
-  const totalQuestions = players[0]?.answers?.length || 0;
+  const totalQuestions = result?.totalQuestions || (players.length ? Math.max(...players.map(p => p.answers?.length || 0)) : 0);
   const accuracy = totalPlayers && totalQuestions
     ? Math.round((players.reduce((sum, p) => sum + (p.correctAnswers || 0), 0) / (totalPlayers * totalQuestions)) * 100)
     : 0;
@@ -99,16 +99,20 @@ export default function ResultsAnalytics() {
       
       // Standings Header
       lines.push('=== PLAYER STANDINGS ===');
-      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
+      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Unanswered Questions', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
       players.forEach(p => {
         const playerAccuracy = totalQuestions ? Math.round((p.correctAnswers / totalQuestions) * 100) + '%' : '0%';
+        const unanswered = typeof p.unansweredQuestions === 'number'
+          ? p.unansweredQuestions
+          : Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
         lines.push([
           p.rank,
           p.name,
           p.correctAnswers,
           p.wrongAnswers,
+          unanswered,
           playerAccuracy,
           p.totalScore
         ].map(escapeCSV).join(','));
@@ -277,6 +281,7 @@ export default function ResultsAnalytics() {
                     <th className="px-6 py-4">Player Nickname</th>
                     <th className="px-6 py-4 text-center">Correct</th>
                     <th className="px-6 py-4 text-center">Wrong</th>
+                    <th className="px-6 py-4 text-center">Unanswered</th>
                     <th className="px-6 py-4 text-right">Final Score</th>
                   </tr>
                 </thead>
@@ -293,6 +298,11 @@ export default function ResultsAnalytics() {
                       <td className="px-6 py-4 text-white font-bold">{player.name}</td>
                       <td className="px-6 py-4 text-center text-green-400">{player.correctAnswers}</td>
                       <td className="px-6 py-4 text-center text-accent">{player.wrongAnswers}</td>
+                      <td className="px-6 py-4 text-center text-yellow-400">
+                        {typeof player.unansweredQuestions === 'number'
+                          ? player.unansweredQuestions
+                          : Math.max(0, totalQuestions - (player.correctAnswers || 0) - (player.wrongAnswers || 0))}
+                      </td>
                       <td className="px-6 py-4 text-right font-outfit text-secondary font-black">{player.totalScore} pts</td>
                     </tr>
                   ))}
