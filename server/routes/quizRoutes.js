@@ -6,7 +6,7 @@ const {
     getQuiz,
     deleteQuiz,
     getMyQuizzes
-} = require('../controllers/quizController');
+} = require('../config/controllers/quizController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.get('/list', listQuizzes);

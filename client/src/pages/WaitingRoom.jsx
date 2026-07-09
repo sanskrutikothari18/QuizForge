@@ -4,9 +4,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ShieldAlert, Zap, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
 import { connectSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { useGame } from '../context/GameContext';
+import { getGame } from '../services/gameService';
+
+const parseBgConfig = (bgStr) => {
+  if (!bgStr) {
+    return {
+      url: '',
+      blur: 0,
+      brightness: 100,
+      overlayOpacity: 30,
+      gradientOverlay: 'none',
+      gradientColor1: '#7c3aed',
+      gradientColor2: '#06b6d4',
+      position: 'center',
+      fit: 'cover',
+      darkOverlay: true
+    };
+  }
+  try {
+    const config = JSON.parse(bgStr);
+    if (config && typeof config === 'object' && 'url' in config) {
+      return {
+        url: config.url || '',
+        blur: typeof config.blur === 'number' ? config.blur : 0,
+        brightness: typeof config.brightness === 'number' ? config.brightness : 100,
+        overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
+        gradientOverlay: config.gradientOverlay || 'none',
+        gradientColor1: config.gradientColor1 || '#7c3aed',
+        gradientColor2: config.gradientColor2 || '#06b6d4',
+        position: config.position || 'center',
+        fit: config.fit || 'cover',
+        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
+      };
+    }
+  } catch (e) {}
+  return {
+    url: bgStr,
+    blur: 0,
+    brightness: 100,
+    overlayOpacity: 30,
+    gradientOverlay: 'none',
+    gradientColor1: '#7c3aed',
+    gradientColor2: '#06b6d4',
+    position: 'center',
+    fit: 'cover',
+    darkOverlay: true
+  };
+};
 
 export default function WaitingRoom() {
   const { pin } = useParams();
@@ -14,6 +60,18 @@ export default function WaitingRoom() {
   const { playerName, setPin, setPlayerName } = useGame();
   const [players, setPlayers] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
+
+  // Fetch quiz background image on mount
+  useEffect(() => {
+    getGame(pin).then(res => {
+      if (res.success) {
+        const bg = res.game?.quiz?.backgroundImage || '';
+        setBgImage(bg);
+        localStorage.setItem('last_bg_image', bg);
+      }
+    }).catch(() => {});
+  }, [pin]);
 
   // Fallback if player refresh and context gets cleared
   const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
@@ -35,8 +93,15 @@ export default function WaitingRoom() {
     const socket = connectSocket();
     setIsConnected(true);
 
-    // 2. Register Player inside Socket Room
-    emitJoinRoom(pin, localPlayerName);
+    // 2. Register Player inside Socket Room (handle reconnects)
+    const joinRoom = () => {
+      emitJoinRoom(pin, localPlayerName);
+    };
+    
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     // 3. Listen to state updates
     socket.on('player_list', (data) => {
@@ -68,6 +133,7 @@ export default function WaitingRoom() {
     });
 
     return () => {
+      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('question_started');
       socket.off('room_closed');
@@ -76,10 +142,55 @@ export default function WaitingRoom() {
     };
   }, [pin, localPlayerName, playerName, navigate]);
 
+  const bgConfig = parseBgConfig(bgImage);
+
   return (
-    <ThemeBackground>
-      <AnimatedPage>
-        <div className="relative min-h-screen p-6 sm:p-8 flex flex-col items-center justify-center">
+    <AnimatedPage>
+      <div className="relative min-h-screen text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center overflow-hidden">
+        
+        {/* Customized Background Layer */}
+        {bgConfig.url ? (
+          <div className="fixed inset-0 z-0 pointer-events-none transition-all duration-700">
+            <div
+              style={{
+                backgroundImage: `url(${bgConfig.url})`,
+                backgroundPosition: bgConfig.position,
+                backgroundSize: bgConfig.fit,
+                backgroundRepeat: 'no-repeat',
+                filter: `blur(${bgConfig.blur}px) brightness(${bgConfig.brightness}%)`,
+                position: 'fixed',
+                inset: '-20px',
+              }}
+            />
+            {bgConfig.darkOverlay && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
+                }}
+              />
+            )}
+            {bgConfig.gradientOverlay !== 'none' && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    bgConfig.gradientOverlay === 'linear'
+                      ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
+                      : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
+                }}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-background z-0 pointer-events-none" />
+        )}
+        
+        {/* Glow Spheres */}
+        <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
+        <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
+
+
 
         {/* Waiting card */}
         <motion.div
@@ -126,7 +237,7 @@ export default function WaitingRoom() {
               <p className="text-xs text-gray-500 italic text-center py-4">Synchronizing player logs...</p>
             ) : (
               <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pr-1">
-                {players.map((p, idx) => (
+                {players.slice(0, 50).map((p, idx) => (
                   <div 
                     key={idx} 
                     className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
@@ -139,13 +250,17 @@ export default function WaitingRoom() {
                     <span>{p.username}</span>
                   </div>
                 ))}
+                {players.length > 50 && (
+                  <div className="px-3 py-1.5 rounded-lg border border-dashed border-white/10 bg-white/5 text-xs font-semibold text-gray-400">
+                    + {players.length - 50} more challengers...
+                  </div>
+                )}
               </div>
             )}
           </div>
 
         </motion.div>
       </div>
-      </AnimatedPage>
-    </ThemeBackground>
+    </AnimatedPage>
   );
 }

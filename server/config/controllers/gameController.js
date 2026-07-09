@@ -1,5 +1,5 @@
-const GameSession = require('../models/GameSession');
-const Quiz = require('../models/Quiz');
+const GameSession = require('../../models/GameSession');
+const Quiz = require('../../models/Quiz');
 const QRCode = require('qrcode');
 const os = require('os');
 
@@ -24,12 +24,16 @@ const calculateScore = (isCorrect, timeTaken, timeLimit) => {
     const timeLimitMs = timeLimit * 1000;
     const timeRemaining = timeLimitMs - timeTaken;
     const baseScore = 1000;
-    const timeBonus = Math.round((timeRemaining / timeLimitMs) * 1000);
+    const timeBonus = Math.max(0, Math.round((timeRemaining / timeLimitMs) * 1000));
     return baseScore + timeBonus;
 };
 
 const sortAndRankPlayers = (players, currentQuestionIndex) => {
     const sorted = [...players].sort((a, b) => {
+        if (b.totalScore !== a.totalScore) {
+            return b.totalScore - a.totalScore;
+        }
+        
         const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
         const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
         
@@ -55,6 +59,7 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
         return {
             name: p.name,
             username: p.name,
+            avatar: p.avatar,
             score: p.totalScore,
             totalScore: p.totalScore,
             rank: idx + 1,
@@ -136,7 +141,7 @@ const createGame = async (req, res) => {
 
 const joinGame = async (req, res) => {
     try {
-        const { pin, playerName } = req.body;
+        const { pin, playerName, avatar } = req.body;
 
         if (!pin || !playerName) {
             return res.status(400).json({
@@ -145,45 +150,43 @@ const joinGame = async (req, res) => {
             });
         }
 
-        const game = await GameSession.findOne({ pin });
-        if (!game) {
-            return res.status(404).json({
-                success: false,
-                message: 'Game not found. Check your PIN!'
-            });
-        }
-
-        if (game.status !== 'waiting') {
-            return res.status(400).json({
-                success: false,
-                message: 'Game has already started!'
-            });
-        }
-
-        const nameExists = game.players.find(
-            p => p.name.toLowerCase() === playerName.toLowerCase()
+        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const updatedGame = await GameSession.findOneAndUpdate(
+            { 
+                pin, 
+                status: 'waiting', 
+                'players.name': { $not: new RegExp('^' + escName + '$', 'i') } 
+            },
+            { $push: { players: { name: playerName, avatar: avatar || '👤', totalScore: 0, answers: [] } } },
+            { new: true }
         );
-        if (nameExists) {
+
+        if (!updatedGame) {
+            const checkGame = await GameSession.findOne({ pin });
+            if (!checkGame) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Game not found. Check your PIN!'
+                });
+            }
+            if (checkGame.status !== 'waiting') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Game has already started!'
+                });
+            }
             return res.status(400).json({
                 success: false,
                 message: 'This name is already taken!'
             });
         }
 
-        game.players.push({
-            name: playerName,
-            totalScore: 0,
-            answers: []
-        });
-
-        await game.save();
-
         const io = req.app.get('io');
         if (io) {
             io.to(`room_${pin}`).emit('player_list', {
-                pin: game.pin,
-                players: game.players.map(p => ({ username: p.name, score: p.totalScore })),
-                roomStatus: game.status
+                pin: updatedGame.pin,
+                players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                roomStatus: updatedGame.status
             });
         }
 
@@ -191,9 +194,9 @@ const joinGame = async (req, res) => {
             success: true,
             message: `${playerName} joined successfully!`,
             game: {
-                pin: game.pin,
+                pin: updatedGame.pin,
                 playerName: playerName,
-                totalPlayers: game.players.length
+                totalPlayers: updatedGame.players.length
             }
         });
 
@@ -326,52 +329,83 @@ const submitAnswer = async (req, res) => {
         const isCorrect = Number(answerIndex) === Number(currentQuestion.correctAnswer);
         const score = calculateScore(isCorrect, timeTaken, currentQuestion.timeLimit);
 
-        const playerIndex = game.players.findIndex(
-            p => p.name.toLowerCase() === playerName.toLowerCase()
+        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const updatedGame = await GameSession.findOneAndUpdate(
+            {
+                pin,
+                status: 'active',
+                players: {
+                    $elemMatch: {
+                        name: { $regex: new RegExp('^' + escName + '$', 'i') },
+                        'answers.questionIndex': { $ne: game.currentQuestionIndex }
+                    }
+                }
+            },
+            {
+                $push: {
+                    'players.$.answers': {
+                        questionIndex: game.currentQuestionIndex,
+                        answerIndex: answerIndex,
+                        isCorrect: isCorrect,
+                        timeTaken: timeTaken,
+                        score: score
+                    }
+                },
+                $inc: {
+                    'players.$.totalScore': score
+                }
+            },
+            { new: true }
         );
 
-        if (playerIndex === -1) {
-            return res.status(404).json({
-                success: false,
-                message: 'Player not found in this game'
-            });
-        }
-
-        const alreadyAnswered = game.players[playerIndex].answers.find(
-            a => a.questionIndex === game.currentQuestionIndex
-        );
-
-        if (alreadyAnswered) {
+        if (!updatedGame) {
+            // Find why it failed
+            const checkGame = await GameSession.findOne({ pin });
+            if (!checkGame) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Game not found'
+                });
+            }
+            if (checkGame.status !== 'active') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Game is not active'
+                });
+            }
+            const player = checkGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+            if (!player) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Player not found in this game'
+                });
+            }
+            const alreadyAnswered = player.answers.find(a => a.questionIndex === checkGame.currentQuestionIndex);
+            if (alreadyAnswered) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'You already answered this question!'
+                });
+            }
             return res.status(400).json({
                 success: false,
-                message: 'You already answered this question!'
+                message: 'Failed to submit answer'
             });
         }
 
-        game.players[playerIndex].answers.push({
-            questionIndex: game.currentQuestionIndex,
-            answerIndex: answerIndex,
-            isCorrect: isCorrect,
-            timeTaken: timeTaken,
-            score: score
-        });
-
-        game.players[playerIndex].totalScore += score;
-        await game.save();
+        const updatedPlayer = updatedGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
 
         const io = req.app.get('io');
         if (io) {
-            const answeredCount = game.players.filter(p => 
-                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
+            const answeredCount = updatedGame.players.filter(p => 
+                p.answers.some(a => a.questionIndex === updatedGame.currentQuestionIndex)
             ).length;
             
             io.to(`room_${pin}`).emit('player_answered', {
                 username: playerName,
                 answeredCount,
-                totalPlayers: game.players.length
+                totalPlayers: updatedGame.players.length
             });
-
-            // Just emit the player_answered event for real-time progress bar updates
         }
 
         res.status(200).json({
@@ -381,7 +415,7 @@ const submitAnswer = async (req, res) => {
             timeTaken: timeTaken,
             timeTakenSeconds: (timeTaken / 1000).toFixed(2),
             score: score,
-            totalScore: game.players[playerIndex].totalScore,
+            totalScore: updatedPlayer ? updatedPlayer.totalScore : score,
             message: isCorrect ? 'Correct Answer! 🎉' : 'Wrong Answer! ❌'
         });
 
@@ -487,7 +521,7 @@ const getGame = async (req, res) => {
         const { pin } = req.params;
 
         const game = await GameSession.findOne({ pin })
-            .populate('quizId', 'title category description questions')
+            .populate('quizId', 'title category description questions backgroundImage')
             .populate('hostId', 'name email');
 
         if (!game) {

@@ -4,6 +4,14 @@ import { AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
+// Initialize Theme to prevent flicker
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') {
+  document.documentElement.classList.add('light');
+} else {
+  document.documentElement.classList.remove('light');
+}
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 

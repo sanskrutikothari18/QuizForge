@@ -5,10 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Play, ShieldAlert, Award, QrCode, ArrowLeft, Loader2, Edit2, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import ThemeBackground from '../components/ThemeBackground';
-import ThemeSelector from '../components/ThemeSelector';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+import tunnelData from '../tunnel.json';
 
 export default function HostLobby() {
   const { pin } = useParams();
@@ -20,6 +19,7 @@ export default function HostLobby() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [hostnameUrl, setHostnameUrl] = useState('');
+  const [showTunnelGuide, setShowTunnelGuide] = useState(false);
 
   // Fetch initial game state (e.g. to get QR Code and quiz title)
   const { 
@@ -36,7 +36,26 @@ export default function HostLobby() {
 
   // Sync customUrl when game is loaded
   useEffect(() => {
-    if (game?.joinUrl) {
+    const hostname = window.location.hostname;
+    const isCustomDomain = hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com');
+    const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
+
+    if (isCustomDomain) {
+      const activeUrl = `${window.location.origin}/join?pin=${pin}`;
+      setCustomUrl(activeUrl);
+      setHostnameUrl(activeUrl);
+      setIpInput(window.location.host);
+    } else if (tunnelData && tunnelData.url) {
+      const activeUrl = `${tunnelData.url}/join?pin=${pin}`;
+      setCustomUrl(activeUrl);
+      setHostnameUrl(activeUrl);
+      try {
+        const url = new URL(tunnelData.url);
+        setIpInput(url.host);
+      } catch (e) {
+        setIpInput(window.location.host);
+      }
+    } else if (game?.joinUrl && isLocal) {
       setCustomUrl(game.joinUrl);
       setHostnameUrl(game.hostnameUrl || '');
       // Extract IP:port or hostname from the url
@@ -55,7 +74,7 @@ export default function HostLobby() {
 
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
-    const shareMessage = `Join my QuizForge battle arena! 🚀\n\n📌 *Game PIN*: ${pin}\n\n🔗 *Option A (Hostname Link - Recommended)*:\n${hostnameUrl || customUrl}\n\n🔗 *Option B (IP Link - Use if Option A doesn't load)*:\n${customUrl}\n\n(Ensure your phone is connected to the same Wi-Fi network as the host!)`;
+    const shareMessage = `Join my Fourise Quiz Hub arena! 🚀\n\n📌 *Game PIN*: ${pin}\n\n🔗 *Join Link*:\n${customUrl}`;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const baseUrl = isMobile 
       ? 'https://api.whatsapp.com/send' 
@@ -65,11 +84,21 @@ export default function HostLobby() {
   }, [pin, customUrl, hostnameUrl, ipInput]);
 
   useEffect(() => {
+    // Identify as host for this pin in local storage
+    localStorage.setItem('current_hosted_pin', pin);
+
     // 1. Connect Socket
     const socket = connectSocket();
 
-    // 2. Join Room as Host
-    emitJoinRoom(pin, 'Host');
+    // 2. Join Room as Host (handle reconnects)
+    const joinRoom = () => {
+      emitJoinRoom(pin, 'Host');
+    };
+    
+    socket.on('connect', joinRoom);
+    if (socket.connected) {
+      joinRoom();
+    }
 
     // 3. Listen to player updates
     socket.on('player_list', (data) => {
@@ -92,6 +121,7 @@ export default function HostLobby() {
 
     return () => {
       // Clean up event listeners on unmount
+      socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('player_connected');
       socket.off('player_disconnected');
@@ -152,15 +182,32 @@ export default function HostLobby() {
   }
 
   const handleSaveIp = () => {
-    if (!ipInput.trim()) {
+    const trimmed = ipInput.trim();
+    if (!trimmed) {
       toast.error('IP/Host cannot be empty');
       return;
     }
-    // Update the customUrl state with the new host/IP
-    const newUrl = `http://${ipInput.trim()}/join?pin=${pin}`;
+    
+    let newUrl;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      const base = trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed;
+      if (base.includes('/join')) {
+        try {
+          const parsed = new URL(base);
+          newUrl = `${parsed.origin}/join?pin=${pin}`;
+        } catch (e) {
+          newUrl = base;
+        }
+      } else {
+        newUrl = `${base}/join?pin=${pin}`;
+      }
+    } else {
+      newUrl = `http://${trimmed}/join?pin=${pin}`;
+    }
+    
     setCustomUrl(newUrl);
     setIsEditingIp(false);
-    toast.success('Join URL updated with new IP! 🌐');
+    toast.success('Join URL updated! 🌐');
   };
 
   const handleCopyLink = () => {
@@ -189,10 +236,8 @@ export default function HostLobby() {
 
 
   return (
-    <ThemeBackground>
-      <ThemeSelector />
-      <AnimatedPage>
-        <div className="max-w-6xl mx-auto p-4 md:p-8 pt-20">
+    <AnimatedPage>
+      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
         
         {/* Glow Spheres */}
         <div className="absolute top-[5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
@@ -223,7 +268,7 @@ export default function HostLobby() {
                   Host Lobby Room
                 </span>
                 <h2 className="font-outfit text-xl font-extrabold text-white mt-2">{game?.quiz?.title || 'Commencing Battle'}</h2>
-                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or go to QuizForge Join and enter the PIN below.</p>
+                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or go to Fourise Quiz Hub and enter the PIN below.</p>
               </div>
 
               <div className="space-y-1 text-center shrink-0">
@@ -258,7 +303,7 @@ export default function HostLobby() {
                   /* Connected players badge grid */
                   <div className="flex flex-wrap gap-2.5 max-h-[180px] overflow-y-auto pr-1">
                     <AnimatePresence>
-                      {players.map((player, idx) => (
+                      {players.slice(0, 100).map((player, idx) => (
                         <motion.div
                           key={idx}
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -271,6 +316,11 @@ export default function HostLobby() {
                         </motion.div>
                       ))}
                     </AnimatePresence>
+                    {players.length > 100 && (
+                      <div className="px-3.5 py-2 rounded-xl border border-dashed border-white/10 bg-white/5 text-xs font-bold text-gray-400">
+                        + {players.length - 100} more challengers...
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -358,10 +408,10 @@ export default function HostLobby() {
                 href={whatsappUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(37,211,102,0.2)] block"
+                className="w-full py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-[13px] font-bold flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_15px_rgba(37,211,102,0.4)] border border-[#1DA851] hover:-translate-y-0.5"
               >
-                <svg className="h-4.5 w-4.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.5-5.739-1.453L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.45 5.489 0 9.953-4.467 9.957-9.96.002-2.661-1.034-5.163-2.914-7.046C16.435 1.761 13.93 .72 11.267.72 5.783.72 1.32 5.187 1.316 10.68c-.001 1.57.418 3.1 1.215 4.457l-.953 3.486 3.58-.938c1.352.737 2.87 1.129 4.489 1.13z"/>
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                 </svg>
                 <span>Share via WhatsApp</span>
               </a>
@@ -373,8 +423,7 @@ export default function HostLobby() {
           </div>
 
         </div>
-        </div>
-      </AnimatedPage>
-    </ThemeBackground>
+      </div>
+    </AnimatedPage>
   );
 }

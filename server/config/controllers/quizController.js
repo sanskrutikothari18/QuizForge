@@ -1,9 +1,9 @@
-const Quiz = require('../models/Quiz');
-const GameSession = require('../models/GameSession');
+const Quiz = require('../../models/Quiz');
+const GameSession = require('../../models/GameSession');
 
 const createQuiz = async (req, res) => {
     try {
-        const { title, category, description, questions } = req.body;
+        const { title, category, description, questions, backgroundImage } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -33,6 +33,7 @@ const createQuiz = async (req, res) => {
             category,
             description,
             questions,
+            backgroundImage: backgroundImage || '',
             createdBy: req.user.id
         });
 
@@ -106,7 +107,17 @@ const deleteQuiz = async (req, res) => {
             });
         }
 
-        if (quiz.createdBy.toString() !== req.user.id) {
+        console.log('[DELETE QUIZ DEBUG]', {
+            quizCreatedBy: quiz.createdBy,
+            quizCreatedByStr: quiz.createdBy?.toString(),
+            reqUserId: req.user?.id,
+            reqUser_idStr: req.user?._id?.toString()
+        });
+
+        const createdByStr = quiz.createdBy?.toString();
+        const reqUserIdStr = req.user?._id?.toString();
+
+        if (createdByStr !== reqUserIdStr) {
             return res.status(401).json({
                 success: false,
                 message: 'Not authorized to delete this quiz'

@@ -4,26 +4,62 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #09090B;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-heading: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --header-bg: rgba(9, 9, 11, 0.6);
+  --header-border: rgba(255, 255, 255, 0.05);
+  --glass-panel-bg: rgba(8, 8, 12, 0.72);
+  --glass-panel-border: rgba(255, 255, 255, 0.08);
+  --glass-panel-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65);
+  --glass-panel-bg-hover: rgba(20, 20, 30, 0.6);
+  --glass-panel-border-hover: rgba(124, 58, 237, 0.25);
+  --glass-panel-shadow-hover: 0 12px 40px 0 rgba(124, 58, 237, 0.15);
+  --ambient-grid-color: rgba(255, 255, 255, 0.02);
+}
+
+.light {
+  --background: #f0f7ff;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --text-heading: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(99, 179, 237, 0.15);
+  --header-bg: rgba(240, 247, 255, 0.85);
+  --header-border: rgba(99, 179, 237, 0.12);
+  --glass-panel-bg: rgba(255, 255, 255, 0.88);
+  --glass-panel-border: rgba(99, 179, 237, 0.18);
+  --glass-panel-shadow: 0 12px 40px 0 rgba(59, 130, 246, 0.06);
+  --glass-panel-bg-hover: rgba(255, 255, 255, 0.98);
+  --glass-panel-border-hover: rgba(124, 58, 237, 0.25);
+  --glass-panel-shadow-hover: 0 12px 40px 0 rgba(124, 58, 237, 0.08);
+  --ambient-grid-color: rgba(59, 130, 246, 0.04);
+}
+
 @layer base {
   body {
-    @apply bg-background text-text antialiased overflow-x-hidden;
-    background: var(--theme-bg, #09090B);
-    font-family: var(--theme-font, 'Inter', sans-serif);
+    @apply bg-background font-inter font-bold antialiased overflow-x-hidden transition-colors duration-300;
+    background-color: var(--background);
+    color: var(--text-main);
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply text-white tracking-tight;
-    font-family: var(--theme-font, 'Outfit', sans-serif);
+    @apply font-outfit font-black tracking-tight transition-colors duration-300;
+    color: var(--text-heading);
   }
 }
 
 /* Premium Glassmorphism classes */
 .glass-panel {
-  background: var(--theme-card-bg, rgba(8, 8, 12, 0.72));
+  background: var(--glass-panel-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65);
+  border: 1px solid var(--glass-panel-border);
+  box-shadow: var(--glass-panel-shadow);
 }
 
 .glass-panel-hover {
@@ -31,19 +67,25 @@
 }
 
 .glass-panel-hover:hover {
-  background: rgba(20, 20, 30, 0.6);
-  border-color: rgba(124, 58, 237, 0.25);
-  box-shadow: 0 12px 40px 0 rgba(124, 58, 237, 0.15);
+  background: var(--glass-panel-bg-hover);
+  border-color: var(--glass-panel-border-hover);
+  box-shadow: var(--glass-panel-shadow-hover);
   transform: translateY(-4px);
 }
 
 /* Gradient Text */
 .text-gradient-primary {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary;
+  background-image: linear-gradient(to right, #7C3AED, #c084fc, #06B6D4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .text-gradient-accent {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-pink-500;
+  background-image: linear-gradient(to right, #F43F5E, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Glow Background Effects */
@@ -68,7 +110,7 @@
 }
 
 .ambient-grid {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(var(--ambient-grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--ambient-grid-color) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -144,11 +186,13 @@
 }
 
 .btn-primary-gradient {
-  @apply bg-gradient-to-r from-primary to-purple-700 text-white hover:brightness-110;
+  background-image: linear-gradient(to right, #7C3AED, #7e22ce);
+  @apply text-white hover:brightness-110;
 }
 
 .btn-secondary-gradient {
-  @apply bg-gradient-to-r from-secondary to-cyan-600 text-white hover:brightness-110;
+  background-image: linear-gradient(to right, #06B6D4, #0891b2);
+  @apply text-white hover:brightness-110;
 }
 
 .btn-glass {
@@ -633,4 +677,143 @@
     .quiz-grid { grid-template-columns: 1fr; }
     .dashboard-content { padding: 16px; }
     .navbar { padding: 12px 16px; }
+}
+
+/* ── Light Mode Color Class Overrides ── */
+/* Override text colors globally for light mode */
+.light .text-gray-200, 
+.light .text-gray-300 {
+  color: var(--text-main) !important;
+}
+.light .text-gray-400 {
+  color: var(--text-muted) !important;
+}
+.light .text-white {
+  color: var(--text-heading) !important;
+}
+.light .text-gray-100 {
+  color: var(--text-heading) !important;
+}
+
+/* Overrides for backgrounds */
+.light body,
+.light html {
+  background-image: linear-gradient(145deg, #dbeafe 0%, #eff6ff 25%, #ffffff 55%, #f0f9ff 80%, #e0f2fe 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+}
+.light .bg-background {
+  background-color: transparent !important;
+  background-image: linear-gradient(145deg, #dbeafe 0%, #eff6ff 25%, #ffffff 55%, #f0f9ff 80%, #e0f2fe 100%) !important;
+  background-attachment: fixed !important;
+}
+
+.light .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+.light .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .bg-white\/20 {
+  background-color: rgba(15, 23, 42, 0.15) !important;
+}
+.light .bg-white\/\[0\.02\] {
+  background-color: rgba(15, 23, 42, 0.015) !important;
+}
+.light .bg-black {
+  background-color: #ffffff !important;
+}
+.light .bg-background\/60 {
+  background-color: rgba(248, 250, 252, 0.7) !important;
+}
+
+/* Overrides for borders */
+.light .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+.light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+.light .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+
+/* Keep text white inside primary and secondary buttons & gradient cards */
+.light .btn-premium,
+.light .btn-premium *,
+.light .btn-primary-gradient,
+.light .btn-primary-gradient *,
+.light .btn-secondary-gradient,
+.light .btn-secondary-gradient *,
+.light .bg-gradient-to-r,
+.light .bg-gradient-to-r *,
+.light .bg-gradient-to-br,
+.light .bg-gradient-to-br *,
+.light .bg-primary,
+.light .bg-primary *,
+.light .bg-secondary,
+.light .bg-secondary *,
+.light .bg-indigo-600,
+.light .bg-indigo-600 *,
+.light .bg-purple-600,
+.light .bg-purple-600 *,
+.light .bg-emerald-600,
+.light .bg-emerald-600 *,
+.light .bg-fuchsia-600,
+.light .bg-fuchsia-600 * {
+  color: #ffffff !important;
+}
+
+/* Make sure inputs and select options are readable in light mode */
+.light input, 
+.light select, 
+.light textarea {
+  color: #0f172a !important;
+  background-color: rgba(15, 23, 42, 0.03) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+.light input::placeholder,
+.light select::placeholder,
+.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+.light select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Dashboard Stats / custom cards */
+.light .stat-card {
+  background: rgba(15, 23, 42, 0.03) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .stat-card .stat-label {
+  color: #64748b !important;
+}
+
+/* Quiz Card adjustments */
+.light .quiz-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+}
+.light .quiz-card:hover {
+  border-color: rgba(124, 58, 237, 0.25) !important;
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.08) !important;
+}
+
+/* Custom Scrollbar */
+.light ::-webkit-scrollbar-track {
+  background: #ffffff !important;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+/* Glow Spheres overrides for white background */
+.light .bg-glow-primary {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, rgba(255, 255, 255, 0) 70%) !important;
+}
+.light .bg-glow-secondary {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(255, 255, 255, 0) 70%) !important;
 }

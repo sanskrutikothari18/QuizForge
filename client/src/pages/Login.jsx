@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertCircle, Play, Sparkles, User, Hash } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import Avatar from '../components/Avatar';
 import { login } from '../services/authService';
 import { joinGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
@@ -367,7 +366,7 @@ export default function Login() {
                           : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
                       }`}
                     >
-                      <Avatar emoji={avatar} className="w-10 h-10 drop-shadow-md" />
+                      <span className="drop-shadow-md">{avatar}</span>
                       {selectedAvatar === avatar && (
                         <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
                           <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
