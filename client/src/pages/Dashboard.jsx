@@ -108,7 +108,7 @@ export default function Dashboard() {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-secondary text-white">
                 <Award className="h-5 w-5" />
               </div>
-              <span className="font-outfit text-lg font-bold text-white">QuizForge</span>
+              <span className="font-outfit text-lg font-bold text-white">Fourise <span className="text-blue-500">Quiz Hub</span></span>
             </div>
 
             {/* Nav links */}

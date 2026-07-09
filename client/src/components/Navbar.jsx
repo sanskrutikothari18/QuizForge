@@ -41,7 +41,7 @@ export default function Navbar() {
             <Award className="h-5.5 w-5.5" />
           </div>
           <span className="font-outfit text-xl font-bold tracking-tight text-white">
-            Quiz<span className="text-secondary">Forge</span>
+            Fourise <span className="text-blue-500">Quiz Hub</span>
           </span>
         </Link>
 

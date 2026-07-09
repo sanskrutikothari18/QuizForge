@@ -302,7 +302,7 @@ export default function LandingPage() {
               Loved by <span className="text-gradient-primary">Champions</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-gray-400">
-              See how educators, coordinators, and gamers use QuizForge.
+              See how educators, coordinators, and gamers use <span className="font-bold">Fourise <span className="text-blue-500">Quiz Hub</span></span>.
             </p>
           </div>
 
@@ -315,7 +315,7 @@ export default function LandingPage() {
                 rating: 5
               },
               {
-                text: "We used QuizForge to run our virtual corporate trivia night. Zero lag, beautiful responsive UI, and the analytics reports were extremely helpful.",
+                text: "We used Fourise Quiz Hub to run our virtual corporate trivia night. Zero lag, beautiful responsive UI, and the analytics reports were extremely helpful.",
                 author: "David Vance",
                 role: "HR Operations Lead",
                 rating: 5
