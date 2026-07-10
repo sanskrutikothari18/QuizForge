@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
   Users, CheckCircle, Percent, Calendar, FileSpreadsheet, FileText
