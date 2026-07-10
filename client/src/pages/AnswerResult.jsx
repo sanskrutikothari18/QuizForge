@@ -724,9 +724,9 @@ export default function AnswerResult() {
                   {leaderboard.slice(3).map((player, idx) => (
                     <div 
                       key={idx} 
-                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between ${
+                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between transition-all duration-300 ${
                         player.username?.toLowerCase() === localPlayer?.toLowerCase()
-                          ? 'bg-secondary/15 border-secondary/30 text-secondary' 
+                          ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02] text-white' 
                           : 'bg-white/5 border-white/10 text-gray-300'
                       }`}
                     >

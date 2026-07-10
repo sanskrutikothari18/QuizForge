@@ -261,7 +261,11 @@ export default function Leaderboard() {
           {runnersUp.length > 0 && (
             <div className="w-full max-w-md space-y-2 overflow-y-auto max-h-[160px] pr-1">
               {runnersUp.map((player, idx) => (
-                <div key={idx} className="glass-panel rounded-xl p-3.5 flex items-center justify-between text-xs border border-white/5">
+                <div key={idx} className={`glass-panel rounded-xl p-3.5 flex items-center justify-between text-xs border transition-all duration-300 ${
+                  player.name?.toLowerCase() === localPlayer?.toLowerCase()
+                    ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02]'
+                    : 'border-white/5'
+                }`}>
                   <div className="flex items-center gap-2.5">
                     <span className="font-mono text-gray-500 font-bold">#{player.rank}</span>
                     <span className="font-bold text-gray-300">{player.name}</span>
