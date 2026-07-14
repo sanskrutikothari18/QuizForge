@@ -298,6 +298,10 @@ export default function FinalResult() {
                   >
                     {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : '👤'}
                   </motion.div>
+                  <div className="text-center mb-2 px-2 z-10">
+                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{second.name}</div>
+                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
+                  </div>
                 </>
               ) : (
                 <div className="h-[96px] md:h-[128px] mb-5"></div>
@@ -305,7 +309,7 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 180 }}
+                animate={{ height: 120 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
                 className="w-full bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[6px] border-[#ffffff]"
               >
@@ -322,13 +326,6 @@ export default function FinalResult() {
                     </div>
                   </div>
                 </div>
-
-                {second && (
-                  <div className="text-center mt-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{second.name}</div>
-                    <div className="font-black text-gray-200 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
-                  </div>
-                )}
               </motion.div>
             </div>
 
@@ -368,10 +365,15 @@ export default function FinalResult() {
 
                   {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24 relative z-10" /> : '👤'}
                 </motion.div>
+
+                <div className="text-center mb-2 px-2 z-10">
+                  <div className="font-extrabold text-white text-sm md:text-lg tracking-tight truncate max-w-[120px] drop-shadow-md">{winner.name}</div>
+                  <div className="font-black text-yellow-300 text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
+                </div>
                 
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={{ height: 250 }}
+                  animate={{ height: 180 }}
                   transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 3.2 }}
                   className="w-full bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[6px] border-[#ffe082]"
                   style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
@@ -388,11 +390,6 @@ export default function FinalResult() {
                         <span className="font-outfit text-2xl font-black text-white drop-shadow-md">1</span>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="text-center mt-2 px-2 z-10">
-                    <div className="font-extrabold text-white text-sm md:text-lg tracking-tight truncate max-w-[120px] drop-shadow-md">{winner.name}</div>
-                    <div className="font-black text-yellow-200 text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
                   </div>
                 </motion.div>
               </div>
@@ -414,6 +411,10 @@ export default function FinalResult() {
                   >
                     {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : '👤'}
                   </motion.div>
+                  <div className="text-center mb-2 px-2 z-10">
+                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{third.name}</div>
+                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
+                  </div>
                 </>
               ) : (
                 <div className="h-[96px] md:h-[128px] mb-5"></div>
@@ -421,7 +422,7 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 140 }}
+                animate={{ height: 90 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
                 className="w-full bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[6px] border-[#ffb74d]"
               >
@@ -438,13 +439,6 @@ export default function FinalResult() {
                     </div>
                   </div>
                 </div>
-
-                {third && (
-                  <div className="text-center mt-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{third.name}</div>
-                    <div className="font-black text-gray-200 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
-                  </div>
-                )}
               </motion.div>
             </div>
 
