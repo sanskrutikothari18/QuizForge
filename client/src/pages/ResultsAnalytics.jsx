@@ -233,42 +233,6 @@ export default function ResultsAnalytics() {
       });
       cursorY += 28;
 
-      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
-      if (questionHighlights.length > 0) {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(40, 40, 40);
-        doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
-        cursorY += 4;
-
-        autoTable(doc, {
-          startY: cursorY,
-          head: [['Question', 'Fastest Solver', 'Time Taken']],
-          body: questionHighlights.map(hl => [
-            `Q${hl.questionNumber}`,
-            hl.fastestPlayer ? hl.fastestPlayer.name : '—',
-            hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A',
-          ]),
-          theme: 'grid',
-          styles: {
-            font: 'helvetica',
-            fontSize: 9,
-            cellPadding: 4,
-            textColor: [50, 50, 50],
-            lineColor: [220, 220, 220],
-            lineWidth: 0.1,
-          },
-          headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [40, 40, 40],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [250, 250, 250] },
-          margin: { left: margin, right: margin },
-        });
-        cursorY = doc.lastAutoTable.finalY + 10;
-      }
-
       // ── Player Rankings Table (Simple) ────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -317,6 +281,43 @@ export default function ResultsAnalytics() {
         rowPageBreak: 'auto',
         margin: { left: margin, right: margin },
       });
+      cursorY = doc.lastAutoTable.finalY + 10;
+
+      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
+      if (questionHighlights.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(40, 40, 40);
+        doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
+        cursorY += 4;
+
+        autoTable(doc, {
+          startY: cursorY,
+          head: [['Question', 'Fastest Solver', 'Time Taken']],
+          body: questionHighlights.map(hl => [
+            `Q${hl.questionNumber}`,
+            hl.fastestPlayer ? hl.fastestPlayer.name : '—',
+            hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A',
+          ]),
+          theme: 'grid',
+          styles: {
+            font: 'helvetica',
+            fontSize: 9,
+            cellPadding: 4,
+            textColor: [50, 50, 50],
+            lineColor: [220, 220, 220],
+            lineWidth: 0.1,
+          },
+          headStyles: {
+            fillColor: [240, 240, 240],
+            textColor: [40, 40, 40],
+            fontStyle: 'bold',
+          },
+          alternateRowStyles: { fillColor: [250, 250, 250] },
+          margin: { left: margin, right: margin },
+        });
+        cursorY = doc.lastAutoTable.finalY + 10;
+      }
 
       // ── Footer (Simple) ──────────────────────────────────────────────────
       const totalPages = doc.internal.getNumberOfPages();
@@ -442,32 +443,6 @@ export default function ResultsAnalytics() {
             ))}
           </div>
 
-          {/* QUESTION HIGHLIGHTS (FASTEST CORRECT SOLVERS) */}
-          <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-              <Trophy className="h-4.5 w-4.5 text-warning" />
-              <h3 className="font-outfit text-sm font-bold text-white uppercase tracking-wider">Fastest Correct Solvers (First to Answer Correctly)</h3>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {questionHighlights.map((hl, idx) => (
-                <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Question {hl.questionNumber}</span>
-                    <h4 className="font-bold text-white text-xs">
-                      {hl.fastestPlayer ? hl.fastestPlayer.name : <span className="text-gray-500 italic">No correct answers</span>}
-                    </h4>
-                  </div>
-                  {hl.fastestPlayer && (
-                    <div className="text-right">
-                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Time Taken</span>
-                      <span className="text-xs font-mono font-bold text-secondary">{hl.fastestPlayer.timeTaken}s ⚡</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* PLAYER STANDINGS DETAILED TABLE */}
           <div className="glass-panel rounded-3xl border border-white/5 overflow-hidden">
             
@@ -517,6 +492,32 @@ export default function ResultsAnalytics() {
             {players.length === 0 && (
               <div className="p-12 text-center text-gray-500 italic">No player records found.</div>
             )}
+          </div>
+
+          {/* QUESTION HIGHLIGHTS (FASTEST CORRECT SOLVERS) */}
+          <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
+            <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+              <Trophy className="h-4.5 w-4.5 text-warning" />
+              <h3 className="font-outfit text-sm font-bold text-white uppercase tracking-wider">Fastest Correct Solvers (First to Answer Correctly)</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {questionHighlights.map((hl, idx) => (
+                <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Question {hl.questionNumber}</span>
+                    <h4 className="font-bold text-white text-xs">
+                      {hl.fastestPlayer ? hl.fastestPlayer.name : <span className="text-gray-500 italic">No correct answers</span>}
+                    </h4>
+                  </div>
+                  {hl.fastestPlayer && (
+                    <div className="text-right">
+                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Time Taken</span>
+                      <span className="text-xs font-mono font-bold text-secondary">{hl.fastestPlayer.timeTaken}s ⚡</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
