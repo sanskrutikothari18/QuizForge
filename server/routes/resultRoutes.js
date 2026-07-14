@@ -5,7 +5,7 @@ const {
     getResultBySession,
     getMyResults,
     getResultLeaderboard
-} = require('../config/controllers/resultController');
+} = require('../controllers/resultController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.post('/save', protect, saveResult);

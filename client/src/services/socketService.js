@@ -1,37 +1,58 @@
 import { io } from 'socket.io-client';
 
-let socket = null;
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const socket = io(SOCKET_URL, {
+    autoConnect: false,
+    transports: ['websocket']
+});
 
 export const connectSocket = () => {
-  if (!socket) {
-    let serverUrl = import.meta.env.VITE_API_URL;
-    if (!serverUrl) {
-      const host = window.location.hostname;
-      if (host.includes('vercel.app') || host.includes('github.io')) {
-        serverUrl = 'http://localhost:5000';
-      } else {
-        serverUrl = `http://${host}:5000`;
-      }
+    if (!socket.connected) {
+        socket.connect();
     }
-    socket = io(serverUrl);
-    console.log('[SOCKET] Connected successfully');
-  }
-  return socket;
-};
-
-export const getSocket = () => {
-  return socket || connectSocket();
 };
 
 export const disconnectSocket = () => {
-  if (socket) {
-    socket.disconnect();
-    socket = null;
-    console.log('[SOCKET] Disconnected');
-  }
+    if (socket.connected) {
+        socket.disconnect();
+    }
 };
 
-export const emitJoinRoom = (pin, username) => {
-  const currentSocket = getSocket();
-  currentSocket.emit('join_room', { pin, username });
+export const joinRoom = (pin) => {
+    socket.emit('host-join', { pin });
 };
+
+export const playerJoinRoom = (pin, playerName) => {
+    socket.emit('player-join', { pin, playerName });
+};
+
+export const onPlayerJoined = (callback) => {
+    socket.on('player-joined', callback);
+};
+
+export const onShowQuestion = (callback) => {
+    socket.on('show-question', callback);
+};
+
+export const onPlayerAnswered = (callback) => {
+    socket.on('player-answered', callback);
+};
+
+export const onShowLeaderboard = (callback) => {
+    socket.on('show-leaderboard', callback);
+};
+
+export const onShowFinalResult = (callback) => {
+    socket.on('show-final-result', callback);
+};
+
+export const emitNextQuestion = (pin) => {
+    socket.emit('next-question', { pin });
+};
+
+export const removeListener = (event) => {
+    socket.off(event);
+};
+
+export default socket;

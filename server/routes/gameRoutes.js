@@ -10,7 +10,7 @@ const {
     getGame,
     endQuestion,
     showLeaderboard
-} = require('../config/controllers/gameController');
+} = require('../controllers/gameController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.post('/join', joinGame);
