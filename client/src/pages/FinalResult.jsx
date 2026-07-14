@@ -148,9 +148,16 @@ export default function FinalResult() {
 
   const players = game?.players || [];
   
-  // Sort players by accuracy and speed
+  // Sort players by total score (points), accuracy, and speed
   const rankedPlayers = [...players]
     .sort((a, b) => {
+      const aScore = a.totalScore || 0;
+      const bScore = b.totalScore || 0;
+      
+      if (aScore !== bScore) {
+        return bScore - aScore;
+      }
+      
       const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
       const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
       
@@ -298,9 +305,9 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 160 }}
+                animate={{ height: 180 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
-                className="w-full bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-3xl flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[6px] border-[#ffffff]"
+                className="w-full bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[6px] border-[#ffffff]"
               >
                 {/* Silver Medal */}
                 <div className="relative flex flex-col items-center mb-2 mt-2">
@@ -364,9 +371,9 @@ export default function FinalResult() {
                 
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={{ height: 240 }}
+                  animate={{ height: 250 }}
                   transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 3.2 }}
-                  className="w-full bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-3xl flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[6px] border-[#ffe082]"
+                  className="w-full bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[6px] border-[#ffe082]"
                   style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
                 >
                   {/* Gold Medal */}
@@ -414,9 +421,9 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 110 }}
+                animate={{ height: 140 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
-                className="w-full bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-3xl flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[6px] border-[#ffb74d]"
+                className="w-full bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[6px] border-[#ffb74d]"
               >
                 {/* Bronze Medal */}
                 <div className="relative flex flex-col items-center mb-2 mt-2">

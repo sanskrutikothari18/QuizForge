@@ -289,7 +289,7 @@ export default function ResultsAnalytics() {
             String(p.correctAnswers || 0),
             String(p.wrongAnswers || 0),
             String(notAnswered),
-            `${p.totalScore || 0} pts`,
+            String(p.totalScore || 0),
           ];
         }),
         theme: 'grid',
@@ -311,7 +311,7 @@ export default function ResultsAnalytics() {
           2: { halign: 'center' },
           3: { halign: 'center' },
           4: { halign: 'center' },
-          5: { halign: 'right', fontStyle: 'bold' },
+          5: { halign: 'center', fontStyle: 'bold' },
         },
         alternateRowStyles: { fillColor: [250, 250, 250] },
         rowPageBreak: 'auto',
