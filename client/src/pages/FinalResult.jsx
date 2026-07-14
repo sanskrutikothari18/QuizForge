@@ -598,7 +598,7 @@ export default function FinalResult() {
                 {isSaved ? (
                   <Link 
                     to={`/results/${game?.id}`}
-                    className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all"
+                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
                   >
                     <BarChart3 className="h-5 w-5" />
                     <span>View Full Analytics</span>
@@ -620,7 +620,7 @@ export default function FinalResult() {
                         toast.dismiss('save-res');
                       }
                     }}
-                    className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all animate-pulse"
+                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse"
                   >
                     <Save className="h-5 w-5" />
                     <span>Save Results to Dashboard</span>
@@ -638,7 +638,7 @@ export default function FinalResult() {
               <>
                 <Link 
                   to="/join"
-                  className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all"
+                  className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
                 >
                   <RefreshCw className="h-5 w-5" />
                   <span>Play Again</span>
