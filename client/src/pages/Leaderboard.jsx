@@ -284,7 +284,7 @@ export default function Leaderboard() {
             <button
               onClick={handleNextStep}
               disabled={isLoadingNext}
-              className="w-full btn-premium btn-primary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow"
+              className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all active:translate-y-1"
             >
               {isLoadingNext ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

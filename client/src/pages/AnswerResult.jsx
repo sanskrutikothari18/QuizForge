@@ -549,7 +549,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleShowLeaderboard}
                     disabled={isShowingLeaderboard || isLoading}
-                    className="flex-1 btn-premium btn-primary-gradient py-3 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer"
+                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
                   >
                     {isShowingLeaderboard ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -563,7 +563,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleNextStep}
                     disabled={isLoading || isShowingLeaderboard}
-                    className="flex-1 btn-premium btn-glass py-3 flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
