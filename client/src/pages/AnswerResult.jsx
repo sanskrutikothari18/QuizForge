@@ -178,14 +178,14 @@ export default function AnswerResult() {
     const savedPoints = localStorage.getItem('last_pointsEarned');
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
+    const savedHasAnswered = localStorage.getItem('last_hasAnswered');
 
-    // Only set hasAnswered to true if the player actually answered (last_isCorrect is 'true')
-    // If last_isCorrect is 'false', it means they didn't answer, so hasAnswered should be false
     if (savedIsCorrect !== null) {
-      const playerAnswered = savedIsCorrect === 'true';
-      setHasAnswered(playerAnswered);
-      setIsCorrect(playerAnswered);
-      setPointsEarned(playerAnswered ? Number(savedPoints || 0) : 0);
+      const correct = savedIsCorrect === 'true';
+      const answered = savedHasAnswered === 'true' || correct;
+      setHasAnswered(answered);
+      setIsCorrect(correct);
+      setPointsEarned(correct ? Number(savedPoints || 0) : 0);
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
     } else {
