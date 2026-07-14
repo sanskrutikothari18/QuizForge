@@ -261,12 +261,16 @@ export default function Leaderboard() {
           {runnersUp.length > 0 && (
             <div className="w-full max-w-md space-y-2 overflow-y-auto max-h-[160px] pr-1">
               {runnersUp.map((player, idx) => (
-                <div key={idx} className="glass-panel rounded-xl p-3.5 flex items-center justify-between text-xs border border-white/5">
+                <div key={idx} className={`backdrop-blur-md rounded-xl p-3.5 flex items-center justify-between text-xs border transition-all duration-300 ${
+                  player.name?.toLowerCase() === localPlayer?.toLowerCase()
+                    ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02]'
+                    : 'bg-black/40 border-white/10'
+                }`}>
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-gray-500 font-bold">#{player.rank}</span>
-                    <span className="font-bold text-gray-300">{player.name}</span>
+                    <span className="font-mono text-gray-400 font-bold">#{player.rank}</span>
+                    <span className="font-bold text-white">{player.name}</span>
                   </div>
-                  <span className="font-semibold text-gray-400">{player.totalScore || 0} pts ({player.lastTimeTaken || '0.00'}s)</span>
+                  <span className="font-semibold text-white">{player.totalScore || 0} pts ({player.lastTimeTaken || '0.00'}s)</span>
                 </div>
               ))}
             </div>
@@ -280,7 +284,7 @@ export default function Leaderboard() {
             <button
               onClick={handleNextStep}
               disabled={isLoadingNext}
-              className="w-full btn-premium btn-primary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow"
+              className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all active:translate-y-1"
             >
               {isLoadingNext ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

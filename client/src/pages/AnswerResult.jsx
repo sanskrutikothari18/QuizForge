@@ -178,14 +178,14 @@ export default function AnswerResult() {
     const savedPoints = localStorage.getItem('last_pointsEarned');
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
+    const savedHasAnswered = localStorage.getItem('last_hasAnswered');
 
-    // Only set hasAnswered to true if the player actually answered (last_isCorrect is 'true')
-    // If last_isCorrect is 'false', it means they didn't answer, so hasAnswered should be false
     if (savedIsCorrect !== null) {
-      const playerAnswered = savedIsCorrect === 'true';
-      setHasAnswered(playerAnswered);
-      setIsCorrect(playerAnswered);
-      setPointsEarned(playerAnswered ? Number(savedPoints || 0) : 0);
+      const correct = savedIsCorrect === 'true';
+      const answered = savedHasAnswered === 'true' || correct;
+      setHasAnswered(answered);
+      setIsCorrect(correct);
+      setPointsEarned(correct ? Number(savedPoints || 0) : 0);
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
     } else {
@@ -549,7 +549,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleShowLeaderboard}
                     disabled={isShowingLeaderboard || isLoading}
-                    className="flex-1 btn-premium btn-primary-gradient py-3 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer"
+                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
                   >
                     {isShowingLeaderboard ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -563,7 +563,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleNextStep}
                     disabled={isLoading || isShowingLeaderboard}
-                    className="flex-1 btn-premium btn-glass py-3 flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -724,9 +724,9 @@ export default function AnswerResult() {
                   {leaderboard.slice(3).map((player, idx) => (
                     <div 
                       key={idx} 
-                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between ${
+                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between transition-all duration-300 ${
                         player.username?.toLowerCase() === localPlayer?.toLowerCase()
-                          ? 'bg-secondary/15 border-secondary/30 text-secondary' 
+                          ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02] text-white' 
                           : 'bg-white/5 border-white/10 text-gray-300'
                       }`}
                     >

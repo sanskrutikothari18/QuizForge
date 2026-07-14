@@ -24,6 +24,7 @@ function loadServerModule() {
 
   const expressFactory = () => fakeApp;
   expressFactory.json = () => (req, res, next) => next();
+  expressFactory.urlencoded = () => (req, res, next) => next();
 
   const originalLoad = Module._load;
   Module._load = function(request, parent, isMain) {

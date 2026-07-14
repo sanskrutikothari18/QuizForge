@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { 
   Home, BarChart3, Loader2, RefreshCw, CheckCircle, Save
-, BookOpen, Clock, XCircle, AlertCircle, Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
@@ -12,9 +11,6 @@ import { getGame } from '../services/gameService';
 import { saveResult } from '../services/resultService';
 import { disconnectSocket } from '../services/socketService';
 import toast from 'react-hot-toast';
-import Avatar from '../components/Avatar';
-
-
 
 export default function FinalResult() {
   const { pin } = useParams();
@@ -106,7 +102,6 @@ export default function FinalResult() {
         const timeLeft = animationEnd - Date.now();
         if (timeLeft <= 0) return clearInterval(interval);
 
-        // Standard center sprinkles
         confetti({
           particleCount: 4,
           angle: randomInRange(55, 125),
@@ -115,24 +110,6 @@ export default function FinalResult() {
           colors: ['#FFC83D', '#ffffff', '#864CBF'],
           zIndex: 50,
           disableForReducedMotion: true
-        });
-
-        // Dynamic Kahoot-style side fountains
-        confetti({
-          particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.8 },
-          colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
-          zIndex: 50
-        });
-        confetti({
-          particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.8 },
-          colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
-          zIndex: 50
         });
       }, 250);
     }, 3600); // 1st place avatar appears around 3.6s
@@ -148,16 +125,9 @@ export default function FinalResult() {
 
   const players = game?.players || [];
   
-  // Sort players by total score (points), accuracy, and speed
+  // Sort players by accuracy and speed
   const rankedPlayers = [...players]
     .sort((a, b) => {
-      const aScore = a.totalScore || 0;
-      const bScore = b.totalScore || 0;
-      
-      if (aScore !== bScore) {
-        return bScore - aScore;
-      }
-      
       const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
       const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
       
@@ -185,9 +155,6 @@ export default function FinalResult() {
       };
     });
 
-  const questions = game?.quiz?.questions || [];
-  const currentPlayer = rankedPlayers.find(p => p.name?.toLowerCase() === localPlayerName?.toLowerCase());
-
   const winner = rankedPlayers[0];
   const second = rankedPlayers[1];
   const third = rankedPlayers[2];
@@ -208,47 +175,10 @@ export default function FinalResult() {
   return (
     <AnimatedPage>
       {/* Background with blur and vignette */}
-      <div className="relative min-h-screen bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] font-outfit overflow-hidden flex flex-col justify-between">
+      <div className="relative min-h-screen bg-[#46178F] font-outfit overflow-hidden flex flex-col justify-between">
         
-        {/* Component specific animations and keyframes */}
-        <style>{`
-          @keyframes sweepLeft {
-            0%, 100% { transform: rotate(-35deg) scaleX(0.85); }
-            50% { transform: rotate(-15deg) scaleX(1.15); }
-          }
-          @keyframes sweepRight {
-            0%, 100% { transform: rotate(35deg) scaleX(0.85); }
-            50% { transform: rotate(15deg) scaleX(1.15); }
-          }
-
-          @keyframes glowGoldPulse {
-            0%, 100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2); }
-            50% { box-shadow: 0 0 45px rgba(255, 215, 0, 0.85), inset 0 0 25px rgba(255, 215, 0, 0.4); }
-          }
-        `}</style>
-
-        {/* Sweeping stage spotlights */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div 
-            className="absolute top-[-20%] left-[10%] w-[320px] h-[120vh] bg-gradient-to-r from-transparent via-white/10 to-transparent origin-top"
-            style={{
-              transform: 'rotate(-25deg)',
-              animation: 'sweepLeft 8s ease-in-out infinite',
-            }}
-          />
-          <div 
-            className="absolute top-[-20%] right-[10%] w-[320px] h-[120vh] bg-gradient-to-l from-transparent via-white/10 to-transparent origin-top"
-            style={{
-              transform: 'rotate(25deg)',
-              animation: 'sweepRight 8s ease-in-out infinite',
-            }}
-          />
-        </div>
-
-
-
         {/* Radial vignette overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c051e]/40 to-[#0a0216] pointer-events-none z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#46178F]/50 to-[#2A0E5C] pointer-events-none z-0"></div>
         
         {/* Animated Torch Spotlight for Suspense */}
         <motion.div 
@@ -268,40 +198,41 @@ export default function FinalResult() {
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', bounce: 0.5, duration: 0.8 }}
-            className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] px-10 py-4 mb-auto text-center animate-pulse"
+            className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.3)] px-10 py-4 mb-auto text-center"
           >
-            <h1 className="text-3xl md:text-4xl font-black text-white">Battle Finished!</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-black">Battle Finished!</h1>
             <div className="flex justify-center mt-2">
-              <div className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-sm font-bold text-gray-200">
+              <div className="inline-flex items-center gap-1.5 bg-gray-100 px-4 py-1.5 rounded-full text-sm font-bold text-gray-700">
                 <span>🎉 Congratulations to all players!</span>
               </div>
             </div>
           </motion.div>
 
           {/* PODIUM CONTAINER */}
-          <div className="flex items-end justify-center w-full max-w-3xl h-[450px] mt-12 mb-8 gap-1.5 md:gap-4 relative">
+          <div className="flex items-end justify-center w-full max-w-3xl h-[450px] mt-12 mb-8 gap-1 md:gap-4">
             
             {/* 2ND PLACE */}
             <div className="flex flex-col items-center flex-1 z-10 w-1/3">
               {second ? (
                 <>
                   <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: [0, -5, 0], opacity: 1 }}
+                    transition={{ delay: 1.6, y: { repeat: Infinity, duration: 3, ease: "easeInOut" } }}
+                    className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform -rotate-2 w-11/12 max-w-[140px]"
+                  >
+                    <div className="font-bold text-black text-sm md:text-base truncate">{second.name}</div>
+                    <div className="font-black text-gray-600 text-xs md:text-sm">{second.totalScore || 0} pts</div>
+                  </motion.div>
+                  
+                  <motion.div 
                     initial={{ scale: 0 }}
-                    animate={{ scale: 1, x: [-8, 8, -8], y: [0, -6, 0], rotate: [-4, 4, -4] }}
-                    transition={{ 
-                      scale: { type: 'spring', delay: 1.5 }, 
-                      x: { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
-                      y: { repeat: Infinity, duration: 1.1, ease: "easeInOut" },
-                      rotate: { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
-                    }}
-                    className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', delay: 1.5 }}
+                    className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
                   >
                     {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : '👤'}
                   </motion.div>
-                  <div className="text-center mb-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{second.name}</div>
-                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
-                  </div>
                 </>
               ) : (
                 <div className="h-[96px] md:h-[128px] mb-5"></div>
@@ -309,17 +240,19 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 120 }}
+                animate={{ height: 160 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
-                className="w-full bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[6px] border-[#ffffff]"
+                className="w-full bg-[#6b2cbd] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5)] border-t-[8px] border-[#9146ff]"
               >
                 {/* Silver Medal */}
                 <div className="relative flex flex-col items-center mb-2 mt-2">
+                  {/* Ribbon */}
                   <div className="w-4 h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
                     <div className="w-1/3 h-full bg-white/30"></div>
                     <div className="w-1/3 h-full bg-transparent"></div>
                     <div className="w-1/3 h-full bg-white/30"></div>
                   </div>
+                  {/* Medal */}
                   <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
                     <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
                       <span className="font-outfit text-lg font-black text-white drop-shadow-md">2</span>
@@ -333,14 +266,20 @@ export default function FinalResult() {
             {winner ? (
               <div className="flex flex-col items-center flex-1 z-20 w-1/3 -mx-2 md:-mx-4">
                 <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: [0, -8, 0], opacity: 1 }}
+                  transition={{ delay: 3.8, y: { repeat: Infinity, duration: 2.5, ease: "easeInOut" } }}
+                  className="bg-white px-5 py-3 rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.2)] mb-4 text-center z-10 w-[110%] max-w-[180px]"
+                >
+                  <div className="font-black text-black text-base md:text-xl truncate">{winner.name}</div>
+                  <div className="font-black text-[#864CBF] text-sm md:text-base">{winner.totalScore || 0} pts</div>
+                </motion.div>
+                
+                <motion.div 
                   initial={{ scale: 0 }}
-                  animate={{ scale: 1.15, y: [0, -22, 0, -12, 0], rotate: [0, -6, 6, -4, 4, 0] }}
-                  transition={{ 
-                    scale: { type: 'spring', delay: 3.6 },
-                    y: { repeat: Infinity, duration: 1.8, ease: "easeInOut" },
-                    rotate: { repeat: Infinity, duration: 1.8, ease: "easeInOut" }
-                  }}
-                  className="text-7xl md:text-8xl mb-2 filter drop-shadow-2xl relative z-10 select-none cursor-pointer"
+                  animate={{ scale: 1.1 }}
+                  transition={{ type: 'spring', delay: 3.6 }}
+                  className="text-7xl md:text-8xl mb-1 filter drop-shadow-2xl relative"
                 >
                   <motion.div 
                     initial={{ y: -20, opacity: 0, rotate: -15 }}
@@ -350,41 +289,24 @@ export default function FinalResult() {
                   >
                     👑
                   </motion.div>
-                  
-                  {/* Golden Trophy floating next to avatar */}
-                  <motion.div 
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    className="absolute -right-6 bottom-0 text-3xl md:text-4xl filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
-                  >
-                    🏆
-                  </motion.div>
-
-                  {/* Golden Halo aura behind 1st place */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
-
-                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24 relative z-10" /> : '👤'}
+                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24" /> : '👤'}
                 </motion.div>
-
-                <div className="text-center mb-2 px-2 z-10">
-                  <div className="font-extrabold text-white text-sm md:text-lg tracking-tight truncate max-w-[120px] drop-shadow-md">{winner.name}</div>
-                  <div className="font-black text-yellow-300 text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
-                </div>
                 
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={{ height: 180 }}
+                  animate={{ height: 240 }}
                   transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 3.2 }}
-                  className="w-full bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[6px] border-[#ffe082]"
-                  style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
+                  className="w-full bg-[#5619ab] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-15px_30px_rgba(0,0,0,0.5),0_15px_30px_rgba(0,0,0,0.6)] border-t-[8px] border-[#864CBF]"
                 >
                   {/* Gold Medal */}
                   <div className="relative flex flex-col items-center mb-2 mt-2">
+                    {/* Ribbon */}
                     <div className="w-5 h-6 bg-red-600 rounded-sm mb-[-6px] z-0 shadow-inner border border-red-800 flex overflow-hidden">
                       <div className="w-1/3 h-full bg-white/30"></div>
                       <div className="w-1/3 h-full bg-transparent"></div>
                       <div className="w-1/3 h-full bg-white/30"></div>
                     </div>
+                    {/* Medal */}
                     <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_4px_15px_rgba(255,200,0,0.5)] border-[3px] border-[#d4af37]">
                       <div className="w-[85%] h-[85%] rounded-full border border-yellow-200/50 flex items-center justify-center bg-gradient-to-tr from-yellow-600/30 to-transparent">
                         <span className="font-outfit text-2xl font-black text-white drop-shadow-md">1</span>
@@ -400,21 +322,23 @@ export default function FinalResult() {
               {third ? (
                 <>
                   <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: [0, -4, 0], opacity: 1 }}
+                    transition={{ delay: 0.8, y: { repeat: Infinity, duration: 3.5, ease: "easeInOut" } }}
+                    className="bg-white px-4 py-2 rounded-lg shadow-lg mb-4 text-center transform rotate-2 w-11/12 max-w-[140px]"
+                  >
+                    <div className="font-bold text-black text-sm md:text-base truncate">{third.name}</div>
+                    <div className="font-black text-gray-600 text-xs md:text-sm">{third.totalScore || 0} pts</div>
+                  </motion.div>
+                  
+                  <motion.div 
                     initial={{ scale: 0 }}
-                    animate={{ scale: 0.95, y: [0, -10, 0], rotate: [-8, 8, -8] }}
-                    transition={{ 
-                      scale: { type: 'spring', delay: 0.7 },
-                      y: { repeat: Infinity, duration: 1.3, ease: "easeInOut" },
-                      rotate: { repeat: Infinity, duration: 1.3, ease: "easeInOut" }
-                    }}
-                    className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
+                    animate={{ scale: 0.95 }}
+                    transition={{ type: 'spring', delay: 0.7 }}
+                    className="text-6xl md:text-7xl mb-1 filter drop-shadow-xl"
                   >
                     {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : '👤'}
                   </motion.div>
-                  <div className="text-center mb-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{third.name}</div>
-                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
-                  </div>
                 </>
               ) : (
                 <div className="h-[96px] md:h-[128px] mb-5"></div>
@@ -422,17 +346,19 @@ export default function FinalResult() {
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 90 }}
+                animate={{ height: 110 }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
-                className="w-full bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[6px] border-[#ffb74d]"
+                className="w-full bg-[#783bd1] rounded-t-lg flex flex-col items-center justify-start pt-6 relative overflow-hidden shadow-[inset_0_-10px_20px_rgba(0,0,0,0.3),0_5px_15px_rgba(0,0,0,0.4)] border-t-[8px] border-[#a25eff]"
               >
                 {/* Bronze Medal */}
                 <div className="relative flex flex-col items-center mb-2 mt-2">
+                  {/* Ribbon */}
                   <div className="w-4 h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
                     <div className="w-1/3 h-full bg-white/30"></div>
                     <div className="w-1/3 h-full bg-transparent"></div>
                     <div className="w-1/3 h-full bg-white/30"></div>
                   </div>
+                  {/* Medal */}
                   <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
                     <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
                       <span className="font-outfit text-lg font-black text-white drop-shadow-md">3</span>
@@ -486,107 +412,6 @@ export default function FinalResult() {
             </motion.div>
           )}
 
-          {/* Detailed Question Review for Student */}
-          {!isHost && currentPlayer && questions.length > 0 && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="w-full max-w-2xl mx-auto mt-8 p-6 bg-white/5 border border-white/10 rounded-2xl text-left relative z-10"
-            >
-              <h2 className="font-outfit text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary animate-pulse" />
-                <span>Your Performance Breakdown</span>
-              </h2>
-              <p className="text-xs text-gray-400 mb-6">
-                Review your answers below to see where you excelled and where you can improve.
-              </p>
-
-              <div className="space-y-6">
-                {questions.map((q, idx) => {
-                  const userAnswer = currentPlayer.answers?.find(a => a.questionIndex === idx);
-                  const isUserCorrect = userAnswer?.isCorrect;
-                  const hasAnswered = userAnswer !== undefined && userAnswer.answerIndex !== -1;
-
-                  return (
-                    <div key={idx} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-3">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
-                            Question {idx + 1}
-                          </span>
-                          <h3 className="text-sm font-semibold text-white mt-0.5">{q.questionText}</h3>
-                        </div>
-                        <div>
-                          {hasAnswered ? (
-                            isUserCorrect ? (
-                              <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                                <CheckCircle className="h-3 w-3" /> Correct
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                                <XCircle className="h-3 w-3" /> Incorrect
-                              </span>
-                            )
-                          ) : (
-                            <span className="inline-flex items-center gap-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                              <AlertCircle className="h-3 w-3" /> Unanswered
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Answer Options Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                        {q.options.map((opt, optIdx) => {
-                          const isCorrectOption = optIdx === q.correctAnswer;
-                          const isSelectedOption = userAnswer && Number(userAnswer.answerIndex) === optIdx;
-
-                          let optClass = "border-white/5 bg-white/5 text-gray-400";
-                          let icon = null;
-
-                          if (isCorrectOption) {
-                            optClass = "border-green-500/30 bg-green-500/10 text-green-300 font-medium";
-                            icon = <CheckCircle className="h-3.5 w-3.5 text-green-400 shrink-0" />;
-                          } else if (isSelectedOption && !isUserCorrect) {
-                            optClass = "border-red-500/30 bg-red-500/10 text-red-300 font-medium";
-                            icon = <XCircle className="h-3.5 w-3.5 text-red-400 shrink-0" />;
-                          }
-
-                          return (
-                            <div
-                              key={optIdx}
-                              className={`flex items-center justify-between gap-2 p-2.5 rounded-lg border text-xs ${optClass}`}
-                            >
-                              <span>{opt}</span>
-                              {icon}
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Extra Info (Score & Time) */}
-                      {hasAnswered && (
-                        <div className="flex gap-4 text-[10px] text-gray-400 pt-1">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-gray-500" />
-                            Time taken: {(userAnswer.timeTaken / 1000).toFixed(2)}s
-                          </span>
-                          {isUserCorrect && (
-                            <span className="flex items-center gap-1 text-yellow-500/80 font-bold">
-                              <Award className="h-3 w-3" />
-                              +{userAnswer.score} pts
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        
           {/* ACTIONS */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -599,7 +424,7 @@ export default function FinalResult() {
                 {isSaved ? (
                   <Link 
                     to={`/results/${game?.id}`}
-                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
+                    className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all"
                   >
                     <BarChart3 className="h-5 w-5" />
                     <span>View Full Analytics</span>
@@ -621,7 +446,7 @@ export default function FinalResult() {
                         toast.dismiss('save-res');
                       }
                     }}
-                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse"
+                    className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all animate-pulse"
                   >
                     <Save className="h-5 w-5" />
                     <span>Save Results to Dashboard</span>
@@ -639,7 +464,7 @@ export default function FinalResult() {
               <>
                 <Link 
                   to="/join"
-                  className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
+                  className="w-full bg-white hover:bg-gray-100 text-[#46178F] py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black shadow-[0_4px_0_#ccc] active:translate-y-1 active:shadow-none transition-all"
                 >
                   <RefreshCw className="h-5 w-5" />
                   <span>Play Again</span>

@@ -13,6 +13,7 @@ import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { submitAnswer, getGame, endQuestion } from '../services/gameService';
 import { useGame } from '../context/GameContext';
+import confetti from 'canvas-confetti';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
@@ -194,6 +195,7 @@ export default function LiveQuiz() {
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
                 if (myAnswer) {
                   setHasAnswered(true);
+                  localStorage.setItem('last_hasAnswered', 'true');
                   setSelectedIdx(Number(myAnswer.answerIndex));
                 }
               }
@@ -228,6 +230,7 @@ export default function LiveQuiz() {
       setBgImage(resolvedBg);
       localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
+      localStorage.setItem('last_hasAnswered', 'false');
       setSelectedIdx(null);
     } else {
       // No socket data — must fetch from server (e.g. page refresh)
@@ -272,6 +275,7 @@ export default function LiveQuiz() {
       setBgImage(resolvedBg);
       localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
+      localStorage.setItem('last_hasAnswered', 'false');
       setSelectedIdx(null);
     });
 
@@ -350,6 +354,12 @@ export default function LiveQuiz() {
 
       if (response.success) {
         toast.success('Answer locked! 🔒');
+        localStorage.setItem('last_hasAnswered', 'true');
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
       } else {
         toast.error(response.message || 'Error locking answer');
         setHasAnswered(false);
