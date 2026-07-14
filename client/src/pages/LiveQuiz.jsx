@@ -13,6 +13,7 @@ import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { submitAnswer, getGame, endQuestion } from '../services/gameService';
 import { useGame } from '../context/GameContext';
+import confetti from 'canvas-confetti';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
@@ -350,6 +351,11 @@ export default function LiveQuiz() {
 
       if (response.success) {
         toast.success('Answer locked! 🔒');
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
       } else {
         toast.error(response.message || 'Error locking answer');
         setHasAnswered(false);
