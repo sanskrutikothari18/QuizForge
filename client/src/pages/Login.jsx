@@ -76,7 +76,6 @@ export default function Login() {
       if (response.success) {
         setPin(data.pin);
         setPlayerName(data.playerName);
-        localStorage.setItem('guest_playerAvatar', selectedAvatar);
         toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
         setTimeout(() => {
           navigate(`/waiting/${data.pin}`);
