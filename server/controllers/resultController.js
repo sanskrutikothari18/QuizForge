@@ -1,6 +1,13 @@
 const Result = require('../models/Result');
 const GameSession = require('../models/GameSession');
 
+const isUnansweredAnswer = (answer) => {
+    if (!answer) return true;
+
+    const value = answer.answerIndex;
+    return value === null || value === undefined || value === '' || value === -1 || Number.isNaN(Number(value));
+};
+
 const saveResult = async (req, res) => {
     try {
         const { sessionId } = req.body;
@@ -46,9 +53,10 @@ const saveResult = async (req, res) => {
         });
 
         const playerResults = sortedPlayers.map((player, index) => {
-            const correct = player.answers.filter(a => a.isCorrect).length;
-            const wrong = player.answers.filter(a => !a.isCorrect).length;
-            const unanswered = game.quizId.questions.length - player.answers.length;
+            const submittedAnswers = player.answers.filter(a => !isUnansweredAnswer(a));
+            const correct = submittedAnswers.filter(a => a.isCorrect).length;
+            const wrong = submittedAnswers.filter(a => !a.isCorrect).length;
+            const unanswered = Math.max(0, game.quizId.questions.length - submittedAnswers.length);
             return {
                 name: player.name,
                 totalScore: player.totalScore,

@@ -969,3 +969,39 @@ input:-webkit-autofill:active {
   border: 1px solid rgba(139, 92, 246, 0.15) !important;
   box-shadow: 0 4px 16px rgba(109, 40, 217, 0.10) !important;
 }
+
+/* ── Light Mode Gameplay Background Overrides ── */
+.light .bg-\[\#0b0716\],
+.light .bg-\[\#030a08\],
+.light .bg-\[\#040c14\],
+.light .bg-\[\#06070d\],
+.light .from-\[\#120b24\],
+.light .from-\[\#051410\],
+.light .from-\[\#071626\],
+.light .from-\[\#0d0f1a\],
+.light .via-\[\#1b1036\],
+.light .via-\[\#0b261f\],
+.light .via-\[\#0d2745\],
+.light .via-\[\#16182c\],
+.light .to-\[\#0d071b\],
+.light .to-\[\#040e0b\],
+.light .to-\[\#05111d\],
+.light .to-\[\#090a11\],
+.light .bg-gradient-to-br {
+  background-color: #faf9ff !important;
+  background-image: none !important;
+}
+
+/* ── Light Mode Option Button & Brand Elements (Keep white text) ── */
+.light .bg-\[\#e21b3c\],
+.light .bg-\[\#e21b3c\] *,
+.light .bg-\[\#1368ce\],
+.light .bg-\[\#1368ce\] *,
+.light .bg-\[\#d89e00\],
+.light .bg-\[\#d89e00\] *,
+.light .bg-\[\#26890c\],
+.light .bg-\[\#26890c\] *,
+.light .bg-\[\#25D366\],
+.light .bg-\[\#25D366\] * {
+  color: #ffffff !important;
+}

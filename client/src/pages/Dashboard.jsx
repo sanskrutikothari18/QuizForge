@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
+import ReportsModal from '../components/ReportsModal';
 import { getProfile } from '../services/authService';
 import { getMyQuizzes, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
@@ -248,59 +249,17 @@ export default function Dashboard() {
                           const quizResults = resultsData?.results?.filter(res => res.quizId?._id === quiz._id) || [];
                           if (quizResults.length > 0) {
                             return (
-                              <div className="relative">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (quizResults.length === 1) {
-                                      navigate(`/results/${quizResults[0].sessionId}`);
-                                    } else {
-                                      setOpenReportMenuId(openReportMenuId === quiz._id ? null : quiz._id);
-                                    }
-                                  }}
-                                  className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-[10px] font-black uppercase tracking-wider flex items-center gap-1"
-                                  title={`View latest report (${quizResults[0].players?.length || 0} participants)`}
-                                >
-                                  <BarChart3 className="h-3 w-3 text-secondary animate-pulse" />
-                                  <span>Reports ({quizResults.length})</span>
-                                </button>
-
-                                {openReportMenuId === quiz._id && (
-                                  <>
-                                    <div 
-                                      className="fixed inset-0 z-20" 
-                                      onClick={() => setOpenReportMenuId(null)}
-                                    />
-                                    <div className="absolute right-0 bottom-full mb-2 w-64 rounded-xl bg-white dark:bg-[#111115]/95 border border-black/10 dark:border-white/10 p-2 shadow-2xl backdrop-blur-xl z-30 space-y-1">
-                                      <div className="px-2.5 py-1.5 text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest border-b border-black/10 dark:border-white/5 mb-1 flex items-center gap-1">
-                                        <Trophy className="h-3 w-3 text-accent" />
-                                        <span>Select Battle Session</span>
-                                      </div>
-                                      <div className="max-h-40 overflow-y-auto space-y-1">
-                                        {quizResults.map((res) => (
-                                          <button
-                                            key={res._id}
-                                            onClick={() => {
-                                              setOpenReportMenuId(null);
-                                              navigate(`/results/${res.sessionId}`);
-                                            }}
-                                            className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all flex flex-col gap-0.5 border border-transparent hover:border-black/10 dark:hover:border-white/5"
-                                          >
-                                            <div className="flex justify-between items-center text-[10px] font-bold text-gray-800 dark:text-white">
-                                              <span>{new Date(res.playedAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                                              <span className="text-[9px] text-green-500 dark:text-green-400 font-semibold">{res.winner ? `🏆 ${res.winner}` : 'No winner'}</span>
-                                            </div>
-                                            <div className="text-[9px] text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
-                                              <Users className="h-2.5 w-2.5" />
-                                              <span>{res.players?.length || 0} participants</span>
-                                            </div>
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenReportMenuId(quiz._id);
+                                }}
+                                className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+                                title={`View reports (${quizResults.length} session${quizResults.length > 1 ? 's' : ''})`}
+                              >
+                                <BarChart3 className="h-3.5 w-3.5 text-secondary animate-pulse" />
+                                <span>Reports ({quizResults.length})</span>
+                              </button>
                             );
                           }
                           return null;
@@ -372,6 +331,17 @@ export default function Dashboard() {
         </div>
 
       </div>
+
+      <ReportsModal
+        isOpen={!!openReportMenuId}
+        onClose={() => setOpenReportMenuId(null)}
+        quiz={quizzesData?.quizzes?.find(q => q._id === openReportMenuId)}
+        results={resultsData?.results?.filter(res => {
+          const rid = res.quizId?._id || res.quizId;
+          return rid === openReportMenuId || rid?.toString() === openReportMenuId?.toString();
+        })}
+        isLoading={isResultsLoading}
+      />
     </AnimatedPage>
   );
 }

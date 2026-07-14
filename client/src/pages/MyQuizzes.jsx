@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import ReportsModal from '../components/ReportsModal';
 import { getMyQuizzes, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
@@ -261,92 +262,22 @@ export default function MyQuizzes() {
                         const medals = ['🥇', '🥈', '🥉'];
 
                         return (
-                          <div className="relative">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!hasResults) return;
-                                if (quizResults.length === 1) {
-                                  navigate(`/results/${quizResults[0].sessionId}`);
-                                } else {
-                                  setOpenReportMenuId(openReportMenuId === quiz._id ? null : quiz._id);
-                                }
-                              }}
-                              className={`px-3.5 py-2 rounded-xl border transition-all text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                                hasResults
-                                  ? 'bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 cursor-pointer'
-                                  : 'bg-white/2 border-white/5 text-gray-600 cursor-default'
-                              }`}
-                              title={hasResults ? `View reports (${quizResults.length} session${quizResults.length > 1 ? 's' : ''})` : 'No reports yet — launch a lobby first'}
-                            >
-                              <BarChart3 className={`h-3.5 w-3.5 ${hasResults ? 'text-secondary animate-pulse' : 'text-gray-600'}`} />
-                              <span>{hasResults ? `Reports (${quizResults.length})` : 'No Reports'}</span>
-                            </button>
-
-                            {openReportMenuId === quiz._id && hasResults && (
-                              <>
-                                <div
-                                  className="fixed inset-0 z-20"
-                                  onClick={() => setOpenReportMenuId(null)}
-                                />
-                                <div className="absolute right-0 bottom-full mb-2 w-72 rounded-xl bg-white dark:bg-[#111115]/95 border border-black/10 dark:border-white/10 p-2 shadow-2xl backdrop-blur-xl z-30 space-y-1">
-                                  <div className="px-2.5 py-1.5 text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest border-b border-black/10 dark:border-white/5 mb-1 flex items-center gap-1">
-                                    <Trophy className="h-3 w-3 text-accent" />
-                                    <span>Select Battle Session</span>
-                                  </div>
-                                  <div className="max-h-56 overflow-y-auto space-y-1.5">
-                                    {quizResults.map((res) => {
-                                      const topPlayers = [...(res.players || [])].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0)).slice(0, 3);
-                                      return (
-                                        <button
-                                          key={res._id}
-                                          onClick={() => {
-                                            setOpenReportMenuId(null);
-                                            navigate(`/results/${res.sessionId}`);
-                                          }}
-                                          className="w-full text-left px-2.5 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all flex flex-col gap-1.5 border border-transparent hover:border-black/10 dark:hover:border-white/5"
-                                        >
-                                          {/* Session header */}
-                                          <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-bold text-gray-800 dark:text-white">
-                                              {new Date(res.playedAt || res.createdAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                            </span>
-                                            <span className="text-[9px] text-secondary font-semibold">
-                                              {res.players?.length || 0} players
-                                            </span>
-                                          </div>
-
-                                          {/* Rankings mini-table */}
-                                          {topPlayers.length > 0 ? (
-                                            <div className="space-y-0.5">
-                                              {topPlayers.map((p, i) => (
-                                                <div key={i} className="flex items-center justify-between text-[9px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">
-                                                  <span className="font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                                                    <span>{medals[i] || `#${i + 1}`}</span>
-                                                    <span className="truncate max-w-[90px]">{p.name}</span>
-                                                  </span>
-                                                  <span className="font-black text-secondary shrink-0">{p.totalScore || 0} pts</span>
-                                                </div>
-                                              ))}
-                                            </div>
-                                          ) : (
-                                            <span className="text-[9px] text-gray-600 italic">No player data</span>
-                                          )}
-
-                                          <div className="flex items-center gap-1 pt-0.5 border-t border-black/10 dark:border-white/5">
-                                            <Trophy className="h-2.5 w-2.5 text-warning shrink-0" />
-                                            <span className="text-[9px] text-green-500 dark:text-green-400 font-semibold truncate">
-                                              {res.winner ? `Winner: ${res.winner}` : 'No winner recorded'}
-                                            </span>
-                                          </div>
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!hasResults) return;
+                              setOpenReportMenuId(quiz._id);
+                            }}
+                            className={`px-3.5 py-2 rounded-xl border transition-all text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                              hasResults
+                                ? 'bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 cursor-pointer'
+                                : 'bg-white/2 border-white/5 text-gray-600 cursor-default'
+                            }`}
+                            title={hasResults ? `View reports (${quizResults.length} session${quizResults.length > 1 ? 's' : ''})` : 'No reports yet — launch a lobby first'}
+                          >
+                            <BarChart3 className={`h-3.5 w-3.5 ${hasResults ? 'text-secondary animate-pulse' : 'text-gray-600'}`} />
+                            <span>{hasResults ? `Reports (${quizResults.length})` : 'No Reports'}</span>
+                          </button>
                         );
                       })()}
                     </div>
@@ -359,6 +290,17 @@ export default function MyQuizzes() {
 
         </div>
       </div>
+
+      <ReportsModal
+        isOpen={!!openReportMenuId}
+        onClose={() => setOpenReportMenuId(null)}
+        quiz={data?.quizzes?.find(q => q._id === openReportMenuId)}
+        results={(resultsData?.results || []).filter(res => {
+          const rid = res.quizId?._id || res.quizId;
+          return rid === openReportMenuId || rid?.toString() === openReportMenuId?.toString();
+        })}
+        isLoading={isResultsLoading}
+      />
     </AnimatedPage>
   );
 }

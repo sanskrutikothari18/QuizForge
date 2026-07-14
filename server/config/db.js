@@ -10,8 +10,13 @@ const connectDB = async () => {
         const conn = await mongoose.connect(process.env.MONGO_URI);
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
+<<<<<<< HEAD
         console.error(`❌ MongoDB Connection Error: ${error.message}`);
         process.exit(1);
+=======
+        console.warn(`MongoDB Connection Error: ${error.message}. Falling back to local file database.`);
+        setupMockMongoose();
+>>>>>>> dd29739 (Update quiz app UI and controller fixes)
     }
 };
 

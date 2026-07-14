@@ -15,6 +15,22 @@
       "name": "saie",
       "email": "xyd@gmail.com",
       "password": "$2b$10$g8Fw0ow/Cb9zsqagyABdneJeL3jAG5vnHVOFGNNT/w38e0iU/24I2"
+    },
+    {
+      "_id": "zr5z08prl46njle2c2",
+      "createdAt": "2026-07-14T17:15:52.778Z",
+      "updatedAt": "2026-07-14T17:15:52.778Z",
+      "name": "srush",
+      "email": "joshiabhay1970@gmail.com",
+      "password": "$2b$10$1wQ8yH5LB4yu6makaPlz1ePiDXjb3w/zfI68OmcOqr1Vuvpxsy0Y."
+    },
+    {
+      "_id": "dd9ejo3l95uywnrhnv",
+      "createdAt": "2026-07-14T17:17:27.926Z",
+      "updatedAt": "2026-07-14T17:17:27.926Z",
+      "name": "srusj",
+      "email": "omkarphapale98@gmail.com",
+      "password": "$2b$10$qUMPwgstxOT2huhuWe9Vu.zN7j308AqntnsSRnYr50m4fq/NYlyf6"
     }
   ],
   "quizzes": [
@@ -167,6 +183,42 @@
       ],
       "backgroundImage": "{\"url\":\"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=60\",\"blur\":0,\"brightness\":100,\"overlayOpacity\":30,\"gradientOverlay\":\"none\",\"gradientColor1\":\"#7c3aed\",\"gradientColor2\":\"#06b6d4\",\"position\":\"center\",\"fit\":\"cover\",\"darkOverlay\":true}",
       "createdBy": "siphh72xtumu5vsl69"
+    },
+    {
+      "_id": "zu1n6v0vuh3o1u23ie",
+      "createdAt": "2026-07-14T17:19:23.853Z",
+      "updatedAt": "2026-07-14T17:19:23.854Z",
+      "title": "shbs",
+      "category": "general knowledge",
+      "description": "dvs",
+      "questions": [
+        {
+          "questionText": "what is blue",
+          "options": [
+            "color",
+            "water",
+            "ring",
+            "ocean"
+          ],
+          "correctAnswer": 0,
+          "timeLimit": 10,
+          "backgroundImage": ""
+        },
+        {
+          "questionText": "2+2",
+          "options": [
+            "2",
+            "-4",
+            "3",
+            "4"
+          ],
+          "correctAnswer": 3,
+          "timeLimit": 20,
+          "backgroundImage": ""
+        }
+      ],
+      "backgroundImage": "",
+      "createdBy": "zr5z08prl46njle2c2"
     }
   ],
   "gamesessions": [
@@ -305,6 +357,80 @@
       "id": "beojyvut5o6njw1et8",
       "questionStartTime": 1783603915971,
       "winner": "Saie"
+    },
+    {
+      "_id": "sjgexhym2e8v4q0fdv",
+      "createdAt": "2026-07-14T17:19:24.006Z",
+      "updatedAt": "2026-07-14T17:20:53.307Z",
+      "pin": "926805",
+      "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATHSURBVO3BQY4cSRIEQdNA/f/Lun30UwCJ9GpyuCaCP1K15KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhadVC06qVr0yUtAfpOaGyCTmieATGomIJOaCcik5gbIpGYC8pvUvHFSteikatFJ1aJPlqnZBGQTkEnNDZA3gExqJjVPqNkEZNNJ1aKTqkUnVYs++TIgT6h5Asg3qZmAvAFkUvMGkCfUfNNJ1aKTqkUnVYs++ceomYA8oWYCcgNkUjMBmdT8y06qFp1ULTqpWvTJP07NBGQCMqmZ1ExAboBMav6fnFQtOqladFK16JMvU/ObgExqJjUTkDfUTEAmIJOaCcik5gk1f5OTqkUnVYtOqhZ9sgzIn6RmAjKpeQLIpGYCMqmZgGwC8jc7qVp0UrXopGrRJy+p+S8BMql5Q80EZFJzo+ZGzX/JSdWik6pFJ1WLPnkJyKRmArJJzaTmCTUTkEnNpGYCcqPmBsik5gbIJjXfdFK16KRq0UnVok9eUvOEmgnIpOZPAnKj5gbIpGZSMwHZpOYJIJOaN06qFp1ULTqpWvTJS0AmNTdAJjU3QCY1N0AmNd8E5AbIjZobIN+kZtNJ1aKTqkUnVYs+eUnNBGRS8wSQSc0TaiYgN2omIJOaJ9RMQJ4AcqNmAvIEkEnNppOqRSdVi06qFuGPvADkCTU3QG7UTEBu1ExAbtRMQG7UfBOQJ9RMQCY133RSteikatFJ1aJP/jAgk5pvUjMBuVFzA+RGzRNAJjVvqLkBMql546Rq0UnVopOqRfgjXwRkUnMD5A01N0Bu1LwB5Ak1TwC5UfMnnVQtOqladFK16JOXgNyomYDcqPkmNROQGyCTmgnIjZoJyARkUnOjZgJyA+RGzaaTqkUnVYtOqhbhj3wRkEnNE0Bu1ExAbtS8AWRScwNkUvMEkBs1E5AbNd90UrXopGrRSdWiT14CMqm5AfKEmjfUTEAmNROQN4BsUvOGmhsgk5o3TqoWnVQtOqla9MlfRs0E5EbNDZA/Sc0NkDfU3ACZ1ExqNp1ULTqpWnRSteiTL1PzBJBJzQTkCTUTkAnIjZoJyATkDTUTkEnNBOQNIJOaTSdVi06qFp1ULcIfeQHIpOYGyKTmBsikZgJyo+YNIDdq3gCySc0E5Ak1b5xULTqpWnRStQh/5D8MyKTmBsiNmhsgT6i5ATKpeQLIjZoJyI2aN06qFp1ULTqpWvTJS0B+k5pJzQRkUjOpmYBsUrMJyKTmCSCTmm86qVp0UrXopGrRJ8vUbAJyA+SbgExqJiA3QN5QswnIpGbTSdWik6pFJ1WLPvkyIE+o+SYgk5obNTdqNgH5JjXfdFK16KRq0UnVok/+cUAmNU8AuVEzAZnUTEBu1ExAnlBzA2RSs+mkatFJ1aKTqkWf/GPU3ACZ1DyhZgJyA+RGzQRkUjMBeQLIbzqpWnRSteikatEnX6bmm9RMQN4AMqm5UXMDZJOaJ9RMQL7ppGrRSdWik6pFnywD8puATGqeADKpmYBMaiYgk5pJzSYgN2pu1HzTSdWik6pFJ1WL8EeqlpxULTqpWnRSteikatFJ1aKTqkUnVYtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WL/ge8Mjkn7PcHWwAAAABJRU5ErkJggg==",
+      "quizId": {
+        "_id": "zu1n6v0vuh3o1u23ie",
+        "createdAt": "2026-07-14T17:19:23.853Z",
+        "updatedAt": "2026-07-14T17:19:23.854Z",
+        "title": "shbs",
+        "category": "general knowledge",
+        "description": "dvs",
+        "questions": [
+          {
+            "questionText": "what is blue",
+            "options": [
+              "color",
+              "water",
+              "ring",
+              "ocean"
+            ],
+            "correctAnswer": 0,
+            "timeLimit": 10,
+            "backgroundImage": ""
+          },
+          {
+            "questionText": "2+2",
+            "options": [
+              "2",
+              "-4",
+              "3",
+              "4"
+            ],
+            "correctAnswer": 3,
+            "timeLimit": 20,
+            "backgroundImage": ""
+          }
+        ],
+        "backgroundImage": "",
+        "createdBy": "zr5z08prl46njle2c2"
+      },
+      "hostId": "zr5z08prl46njle2c2",
+      "status": "finished",
+      "players": [
+        {
+          "name": "Srushti",
+          "avatar": "🐶",
+          "totalScore": 1777,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": -1,
+              "isCorrect": false,
+              "timeTaken": 0,
+              "score": 0
+            },
+            {
+              "questionIndex": 1,
+              "answerIndex": 3,
+              "isCorrect": true,
+              "timeTaken": 4466,
+              "score": 1777
+            }
+          ],
+          "rank": 1
+        }
+      ],
+      "currentQuestionIndex": 1,
+      "backgroundImage": "",
+      "id": "sjgexhym2e8v4q0fdv",
+      "questionStartTime": 1784049648840,
+      "winner": "Srushti"
     }
   ],
   "results": [
@@ -372,6 +498,43 @@
       ],
       "winner": "Saie",
       "totalQuestions": 1
+    },
+    {
+      "_id": "8fs6lf4y6anf67jptm",
+      "createdAt": "2026-07-14T17:21:03.642Z",
+      "updatedAt": "2026-07-14T17:21:03.642Z",
+      "sessionId": "sjgexhym2e8v4q0fdv",
+      "quizId": "zu1n6v0vuh3o1u23ie",
+      "hostId": "zr5z08prl46njle2c2",
+      "quizTitle": "shbs",
+      "players": [
+        {
+          "name": "Srushti",
+          "totalScore": 1777,
+          "correctAnswers": 1,
+          "wrongAnswers": 0,
+          "unansweredQuestions": 1,
+          "rank": 1,
+          "answers": [
+            {
+              "questionIndex": 0,
+              "answerIndex": -1,
+              "isCorrect": false,
+              "timeTaken": 0,
+              "score": 0
+            },
+            {
+              "questionIndex": 1,
+              "answerIndex": 3,
+              "isCorrect": true,
+              "timeTaken": 4466,
+              "score": 1777
+            }
+          ]
+        }
+      ],
+      "winner": "Srushti",
+      "totalQuestions": 2
     }
   ]
 }

@@ -3,27 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
-
-  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
-
-  React.useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'light') {
-      root.classList.add('light');
-    } else {
-      root.classList.remove('light');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  };
+  const { themeMode, toggleThemeMode } = useTheme();
+  const isLight = themeMode === 'light';
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -72,16 +59,16 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {/* Theme Toggle Button */}
           <button
-            onClick={toggleTheme}
+            onClick={toggleThemeMode}
             className="rounded-xl p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center mr-1"
             style={{
-              background: theme === 'light' ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-              borderColor: theme === 'light' ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
-              color: theme === 'light' ? '#6d28d9' : '#d1d5db',
+              background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
+              borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
+              color: isLight ? '#6d28d9' : '#d1d5db',
             }}
             aria-label="Toggle Theme"
           >
-            {theme === 'light' ? (
+            {isLight ? (
               <Moon className="h-4.5 w-4.5" style={{ color: '#6d28d9' }} />
             ) : (
               <Sun className="h-4.5 w-4.5 text-yellow-400" />
@@ -94,8 +81,8 @@ export default function Navbar() {
               <div
                 className="hidden sm:flex items-center gap-2 rounded-xl px-3 py-1.5"
                 style={{
-                  background: theme === 'light' ? 'rgba(139,92,246,0.07)' : 'rgba(255,255,255,0.05)',
-                  border: theme === 'light' ? '1px solid rgba(139,92,246,0.14)' : '1px solid rgba(255,255,255,0.10)',
+                  background: isLight ? 'rgba(139,92,246,0.07)' : 'rgba(255,255,255,0.05)',
+                  border: isLight ? '1px solid rgba(139,92,246,0.14)' : '1px solid rgba(255,255,255,0.10)',
                 }}
               >
                 <User className="h-4 w-4 text-secondary" />

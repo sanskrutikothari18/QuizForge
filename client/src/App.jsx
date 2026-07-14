@@ -1,16 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-
-// Initialize Theme to prevent flicker
-const savedTheme = localStorage.getItem('theme') || 'light';
-if (savedTheme === 'light') {
-  document.documentElement.classList.add('light');
-} else {
-  document.documentElement.classList.remove('light');
-}
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -31,7 +23,7 @@ import Leaderboard from './pages/Leaderboard';
 import FinalResult from './pages/FinalResult';
 import ResultsAnalytics from './pages/ResultsAnalytics';
 
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
 
 const queryClient = new QueryClient();
@@ -76,20 +68,42 @@ function AnimatedRoutes() {
   );
 }
 
+function ThemedToaster() {
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
+
+  return (
+    <Toaster
+      position="top-right"
+      toastOptions={{
+        style: {
+          background: isLight ? '#faf8ff' : '#18181b',
+          color: isLight ? '#1e1840' : '#fff',
+          border: isLight
+            ? '1px solid rgba(139, 92, 246, 0.18)'
+            : '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: isLight
+            ? '0 4px 16px rgba(109, 40, 217, 0.10)'
+            : '0 4px 16px rgba(0,0,0,0.4)',
+          fontFamily: 'Inter, sans-serif',
+          fontSize: '14px',
+        },
+      }}
+    />
+  );
+}
+
 export default function App() {
-  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
-
-  // Sync theme state when it changes (Navbar updates localStorage + html class)
-  React.useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const isLight = document.documentElement.classList.contains('light');
-      setTheme(isLight ? 'light' : 'dark');
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
+  useEffect(() => {
+    const savedAppMode = localStorage.getItem('quizforge_mode') || 'dark';
+    if (savedAppMode === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
   }, []);
-
-  const isLight = theme === 'light';
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -97,23 +111,7 @@ export default function App() {
         <GameProvider>
           <Router>
             <AnimatedRoutes />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: isLight ? '#faf8ff' : '#18181b',
-                  color: isLight ? '#1e1840' : '#fff',
-                  border: isLight
-                    ? '1px solid rgba(139, 92, 246, 0.18)'
-                    : '1px solid rgba(255, 255, 255, 0.08)',
-                  boxShadow: isLight
-                    ? '0 4px 16px rgba(109, 40, 217, 0.10)'
-                    : '0 4px 16px rgba(0,0,0,0.4)',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '14px',
-                },
-              }}
-            />
+            <ThemedToaster />
           </Router>
         </GameProvider>
       </ThemeProvider>

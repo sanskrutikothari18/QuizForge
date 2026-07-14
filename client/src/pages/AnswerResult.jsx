@@ -178,6 +178,7 @@ export default function AnswerResult() {
     const savedPoints = localStorage.getItem('last_pointsEarned');
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
+<<<<<<< HEAD
     const savedHasAnswered = localStorage.getItem('last_hasAnswered');
 
     if (savedIsCorrect !== null) {
@@ -186,15 +187,23 @@ export default function AnswerResult() {
       setHasAnswered(answered);
       setIsCorrect(correct);
       setPointsEarned(correct ? Number(savedPoints || 0) : 0);
+=======
+    const savedTimeTaken = localStorage.getItem('last_timeTaken');
+
+    // Initialize state from localStorage (will be overridden by live state fetch)
+    // hasAnswered should be true if there's any saved answer data (correct or incorrect)
+    if (savedIsCorrect !== null) {
+      const answered = savedIsCorrect === 'true' || savedIsCorrect === 'false';
+      setHasAnswered(answered);
+      setIsCorrect(savedIsCorrect === 'true');
+      setPointsEarned(Number(savedPoints || 0));
+>>>>>>> dd29739 (Update quiz app UI and controller fixes)
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
+      setTimeTaken(savedTimeTaken || '0.00');
     } else {
       // No saved answer -> mark as not answered by default until we fetch live state
       setHasAnswered(false);
-    }
-    const savedTimeTaken = localStorage.getItem('last_timeTaken');
-    if (savedTimeTaken !== null) {
-      setTimeTaken(savedTimeTaken);
     }
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
     setCategory(localStorage.getItem('last_category') || 'general');
