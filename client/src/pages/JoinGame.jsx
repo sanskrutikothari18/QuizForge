@@ -106,7 +106,7 @@ export default function JoinGame() {
         // Update global game contexts
         setPin(data.pin);
         setPlayerName(data.playerName);
-        // Assuming we might want to store avatar in context later, for now we just pass it to backend
+        localStorage.setItem('guest_playerAvatar', selectedAvatar);
 
         toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
         

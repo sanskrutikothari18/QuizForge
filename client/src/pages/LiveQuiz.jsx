@@ -14,6 +14,7 @@ import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../ser
 import { submitAnswer, getGame, endQuestion } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 import confetti from 'canvas-confetti';
+import Avatar from '../components/Avatar';
 
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
@@ -140,6 +141,7 @@ export default function LiveQuiz() {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [isHost, setIsHost] = useState(false);
+  const [playerAvatar, setPlayerAvatar] = useState(localStorage.getItem('guest_playerAvatar') || '🐶');
 
   useEffect(() => {
     const localPlayer = playerName || localStorage.getItem('guest_playerName');
@@ -192,6 +194,10 @@ export default function LiveQuiz() {
             if (!isUserHost && localPlayer) {
               const myPlayerRecord = game.players?.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
               if (myPlayerRecord) {
+                if (myPlayerRecord.avatar) {
+                  setPlayerAvatar(myPlayerRecord.avatar);
+                  localStorage.setItem('guest_playerAvatar', myPlayerRecord.avatar);
+                }
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
                 if (myAnswer) {
                   setHasAnswered(true);
@@ -562,12 +568,31 @@ export default function LiveQuiz() {
             </div>
           ) : hasAnswered ? (
             /* PLAYER WAITING PANEL */
-            <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
-              <div className="h-8 w-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
-                <Loader2 className="h-5 w-5 animate-spin" />
+            <div className={`text-center space-y-4 glass-panel rounded-3xl p-6 w-full border ${theme.cardBorder} flex flex-col items-center justify-center`}>
+              <motion.div
+                animate={{
+                  y: [0, -12, 0],
+                  rotate: [-5, 5, -5],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.2,
+                  ease: "easeInOut"
+                }}
+                className="filter drop-shadow-lg select-none cursor-pointer"
+              >
+                <Avatar emoji={playerAvatar} className="w-16 h-16 sm:w-20 sm:h-20" />
+              </motion.div>
+              <div className="space-y-1">
+                <h3 className="font-outfit text-sm font-bold text-white">Answer Locked!</h3>
+                <p className="text-[10px] text-gray-400">Waiting for other challengers to submit their choices...</p>
               </div>
-              <h3 className="font-outfit text-sm font-bold text-white">Answer Locked!</h3>
-              <p className="text-[10px] text-gray-400">Waiting for other challengers to submit their choices...</p>
+              <div className="flex items-center justify-center gap-1.5 mt-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
             </div>
           ) : timeLeft <= 0 ? (
             /* PLAYER TIME'S UP PANEL */
