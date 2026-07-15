@@ -85,17 +85,8 @@ const parseBgConfig = (bgStr) => {
     };
   }
   try {
-    let config = bgStr;
-    // Recursively parse string if it's double serialized or nested JSON
-    while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
-      const parsed = JSON.parse(config);
-      if (typeof parsed === 'string' && parsed === config) {
-        break; // Prevent infinite loop
-      }
-      config = parsed;
-    }
-
-    if (config && typeof config === 'object') {
+    const config = JSON.parse(bgStr);
+    if (config && typeof config === 'object' && 'url' in config) {
       return {
         url: config.url || '',
         blur: typeof config.blur === 'number' ? config.blur : 0,
@@ -114,9 +105,9 @@ const parseBgConfig = (bgStr) => {
         optionTextColor: config.optionTextColor || '#ffffff'
       };
     }
-  } catch (e) { }
+  } catch (e) {}
   return {
-    url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
+    url: bgStr,
     blur: 0,
     brightness: 100,
     overlayOpacity: 30,
@@ -146,12 +137,12 @@ export default function AnswerResult() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [currentScore, setCurrentScore] = useState(0);
-  const [hasAnswered, setHasAnswered] = useState(true);
   const [correctAnswerIdx, setCorrectAnswerIdx] = useState(0);
   const [timeTaken, setTimeTaken] = useState('0.00');
   const [answerStats, setAnswerStats] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLastQuestion, setIsLastQuestion] = useState(false);
+  const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [category, setCategory] = useState('general');
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
@@ -169,8 +160,8 @@ export default function AnswerResult() {
       console.error('Failed to parse user from localStorage', e);
     }
     
-    const hostedPin = localStorage.getItem('current_hosted_pin');
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+    // The player is the host if they are logged in and their ID matches the game's hostId.
+    const isUserHost = !!hostToken && (game && user && game.hostId === user.id);
     setIsHost(isUserHost);
 
     // Read stored variables from localStorage
@@ -178,32 +169,20 @@ export default function AnswerResult() {
     const savedPoints = localStorage.getItem('last_pointsEarned');
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
-<<<<<<< HEAD
-    const savedHasAnswered = localStorage.getItem('last_hasAnswered');
 
     if (savedIsCorrect !== null) {
-      const correct = savedIsCorrect === 'true';
-      const answered = savedHasAnswered === 'true' || correct;
-      setHasAnswered(answered);
-      setIsCorrect(correct);
-      setPointsEarned(correct ? Number(savedPoints || 0) : 0);
-=======
-    const savedTimeTaken = localStorage.getItem('last_timeTaken');
-
-    // Initialize state from localStorage (will be overridden by live state fetch)
-    // hasAnswered should be true if there's any saved answer data (correct or incorrect)
-    if (savedIsCorrect !== null) {
-      const answered = savedIsCorrect === 'true' || savedIsCorrect === 'false';
-      setHasAnswered(answered);
       setIsCorrect(savedIsCorrect === 'true');
       setPointsEarned(Number(savedPoints || 0));
->>>>>>> dd29739 (Update quiz app UI and controller fixes)
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
-      setTimeTaken(savedTimeTaken || '0.00');
-    } else {
-      // No saved answer -> mark as not answered by default until we fetch live state
-      setHasAnswered(false);
+    }
+    const savedHasSubmitted = localStorage.getItem('last_answerSubmitted');
+    if (savedHasSubmitted !== null) {
+      setHasSubmittedAnswer(savedHasSubmitted === 'true');
+    }
+    const savedTimeTaken = localStorage.getItem('last_timeTaken');
+    if (savedTimeTaken !== null) {
+      setTimeTaken(savedTimeTaken);
     }
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
     setCategory(localStorage.getItem('last_category') || 'general');
@@ -221,10 +200,6 @@ export default function AnswerResult() {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
-          const hostId = game.host?._id || game.host?.id || game.host;
-          if (hostId && user && hostId === user.id) {
-            setIsHost(true);
-          }
           setCategory(game.quiz?.category || 'general');
           const currentIdx = game.currentQuestion - 1;
           const currentQuestion = game.quiz?.questions?.[currentIdx];
@@ -251,15 +226,15 @@ export default function AnswerResult() {
               const myPlayerRecord = game.players?.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
               if (myPlayerRecord) {
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
-                const answered = !!myAnswer;
-                setHasAnswered(answered);
-                const correct = myAnswer ? myAnswer.isCorrect : false;
+                const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
+                const correct = submittedAnswer ? myAnswer.isCorrect : false;
+                setHasSubmittedAnswer(Boolean(submittedAnswer));
                 setIsCorrect(correct);
-                setPointsEarned(myAnswer ? myAnswer.score : 0);
+                setPointsEarned(submittedAnswer ? myAnswer.score : 0);
                 setCurrentScore(myPlayerRecord.totalScore || 0);
-                setTimeTaken(myAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : '0.00');
-
-                if (answered && correct) {
+                setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : '0.00');
+                
+                if (correct) {
                   confetti({
                     particleCount: 150,
                     spread: 80,
@@ -306,8 +281,8 @@ export default function AnswerResult() {
     };
     fetchLiveState();
 
-    // 1. Play Confetti on Correct answer (only if player actually answered)
-    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true' && localStorage.getItem('last_timeTaken') !== null) {
+    // 1. Play Confetti on Correct answer
+    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true') {
       confetti({
         particleCount: 150,
         spread: 80,
@@ -329,7 +304,7 @@ export default function AnswerResult() {
     }
 
     socket.on('question_started', (data) => {
-      toast.success('Commencing next question! ⚔️');
+      toast.success('get ready for the next question! ⚔️');
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
@@ -411,6 +386,7 @@ export default function AnswerResult() {
 
   const theme = getTheme(category);
   const bgConfig = parseBgConfig(bgImage);
+  const isUnanswered = !hasSubmittedAnswer;
 
   const firstPlace = leaderboard.find(p => p.rank === 1);
   const secondPlace = leaderboard.find(p => p.rank === 2);
@@ -474,7 +450,7 @@ export default function AnswerResult() {
           <div className="w-full max-w-4xl flex justify-between items-center mb-6 relative z-10 border-b border-white/5 pb-4">
             <button 
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs font-black uppercase tracking-wider"
+              className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Return to Dashboard</span>
@@ -558,7 +534,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleShowLeaderboard}
                     disabled={isShowingLeaderboard || isLoading}
-                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
+                    className="flex-1 btn-premium btn-primary-gradient py-3 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer"
                   >
                     {isShowingLeaderboard ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -572,7 +548,7 @@ export default function AnswerResult() {
                   <button
                     onClick={handleNextStep}
                     disabled={isLoading || isShowingLeaderboard}
-                    className="flex-1 bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all active:translate-y-1 cursor-pointer"
+                    className="flex-1 btn-premium btn-glass py-3 flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -586,24 +562,23 @@ export default function AnswerResult() {
                 </div>
               </div>
             ) : (
-              /* PLAYER SCREEN: CORRECT / INCORRECT / NOT ANSWERED FEEDBACK */
+              /* PLAYER SCREEN: CORRECT / INCORRECT FEEDBACK */
               <motion.div
                 initial={!isCorrect ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
                 className={`glass-panel rounded-3xl p-8 border text-center space-y-6 relative overflow-hidden ${
-                  // If not answered show neutral info, if answered show correct/incorrect styles
-                  !hasAnswered
-                    ? 'border-white/10 bg-white/3'
-                    : isCorrect 
-                      ? 'border-green-500/20 shadow-[0_8px_32px_0_rgba(34,197,94,0.15)] bg-green-500/5' 
+                  isUnanswered
+                    ? 'border-orange-500/20 shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] bg-orange-500/5'
+                    : isCorrect
+                      ? 'border-green-500/20 shadow-[0_8px_32px_0_rgba(34,197,94,0.15)] bg-green-500/5'
                       : 'border-red-500/20 shadow-[0_8px_32px_0_rgba(244,63,94,0.15)] bg-red-500/5'
                 }`}
               >
                 {/* Header Icon */}
                 <div className="flex justify-center">
-                  {!hasAnswered ? (
-                    <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center text-white shadow-sm">
-                      <AlertCircle className="h-9 w-9 stroke-[2.5] text-gray-300" />
+                  {isUnanswered ? (
+                    <div className="h-16 w-16 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-[0_0_24px_rgba(249,115,22,0.35)]">
+                      <AlertCircle className="h-9 w-9 stroke-[2.5]" />
                     </div>
                   ) : isCorrect ? (
                     <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-white shadow-premium-glow">
@@ -618,11 +593,11 @@ export default function AnswerResult() {
 
                 {/* Title */}
                 <div className="space-y-1">
-                  <h3 className={`font-outfit text-3xl font-black ${!hasAnswered ? 'text-gray-300' : (isCorrect ? 'text-green-400' : 'text-red-400')}`}>
-                    {!hasAnswered ? 'No Answer Submitted' : (isCorrect ? 'Correct Answer!' : 'Incorrect Answer')}
+                  <h3 className={`font-outfit text-3xl font-black ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                    {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Incorrect Answer'}
                   </h3>
                   <p className="text-xs sm:text-sm font-bold text-gray-200">
-                    {!hasAnswered ? 'You did not answer this question.' : (isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`)}
+                    {isUnanswered ? 'No answer was recorded before the timer ended.' : isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`}
                   </p>
                 </div>
 
@@ -637,8 +612,8 @@ export default function AnswerResult() {
                   {/* Points gained */}
                   <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
                     <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">POINTS RECEIVED</span>
-                    <span className={`font-outfit text-sm font-black mt-1 ${!hasAnswered ? 'text-gray-400' : (isCorrect ? 'text-green-400' : 'text-gray-400')}`}>
-                      { !hasAnswered ? '—' : (isCorrect ? `+${pointsEarned}` : '+0') }
+                    <span className={`font-outfit text-sm font-black mt-1 ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-gray-400'}`}>
+                      {isUnanswered ? '+0' : isCorrect ? `+${pointsEarned}` : '+0'}
                     </span>
                   </div>
 
@@ -733,9 +708,9 @@ export default function AnswerResult() {
                   {leaderboard.slice(3).map((player, idx) => (
                     <div 
                       key={idx} 
-                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between transition-all duration-300 ${
+                      className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between ${
                         player.username?.toLowerCase() === localPlayer?.toLowerCase()
-                          ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02] text-white' 
+                          ? 'bg-secondary/15 border-secondary/30 text-secondary' 
                           : 'bg-white/5 border-white/10 text-gray-300'
                       }`}
                     >
