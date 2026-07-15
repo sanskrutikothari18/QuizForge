@@ -182,7 +182,7 @@ export default function Leaderboard() {
             {isHost && (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-xs font-black uppercase tracking-wider mr-2"
+                className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider mr-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>Dashboard</span>
@@ -284,7 +284,7 @@ export default function Leaderboard() {
             <button
               onClick={handleNextStep}
               disabled={isLoadingNext}
-              className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all active:translate-y-1"
+              className="w-full btn-premium btn-primary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow rounded-2xl"
             >
               {isLoadingNext ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
