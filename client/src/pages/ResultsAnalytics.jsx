@@ -270,94 +270,6 @@ export default function ResultsAnalytics() {
       autoTable(doc, {
         startY: cursorY,
         head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
-        body: players.map(p => {
-          const notAnswered = Math.max(0, totalQuestions - (p.correctAnswers || 0) - (p.wrongAnswers || 0));
-          const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
-          return [
-            medal,
-            p.name,
-            String(p.correctAnswers || 0),
-            String(p.wrongAnswers || 0),
-            String(notAnswered),
-            String(p.totalScore || 0),
-          ];
-        }),
-        theme: 'grid',
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          cellPadding: 4,
-          textColor: [50, 50, 50],
-          lineColor: [220, 220, 220],
-          lineWidth: 0.1,
-        },
-        headStyles: {
-          fillColor: [240, 240, 240],
-          textColor: [40, 40, 40],
-          fontStyle: 'bold',
-        },
-        columnStyles: {
-          0: { cellWidth: 20, halign: 'center' },
-          2: { halign: 'center' },
-          3: { halign: 'center' },
-          4: { halign: 'center' },
-          5: { halign: 'center', fontStyle: 'bold' },
-        },
-        alternateRowStyles: { fillColor: [250, 250, 250] },
-        rowPageBreak: 'auto',
-        margin: { left: margin, right: margin },
-      });
-      cursorY = doc.lastAutoTable.finalY + 10;
-
-      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
-      if (questionHighlights.length > 0) {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(40, 40, 40);
-        doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
-        cursorY += 4;
-
-        autoTable(doc, {
-          startY: cursorY,
-          head: [['Question', 'Fastest Solver', 'Time Taken']],
-          body: questionHighlights.map(hl => [
-            `Q${hl.questionNumber}`,
-            hl.fastestPlayer ? hl.fastestPlayer.name : '—',
-            hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A',
-          ]),
-          theme: 'grid',
-          styles: {
-            font: 'helvetica',
-            fontSize: 9,
-            cellPadding: 4,
-            textColor: [50, 50, 50],
-            lineColor: [220, 220, 220],
-            lineWidth: 0.1,
-          },
-          headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [40, 40, 40],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [250, 250, 250] },
-          margin: { left: margin, right: margin },
-        });
-        cursorY = doc.lastAutoTable.finalY + 10;
-      }
-
-<<<<<<< HEAD
-=======
-      // ── Player Rankings Table (Simple) ────────────────────────────────────
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(40, 40, 40);
-      doc.text('PLAYER RANKINGS', margin, cursorY);
-      cursorY += 4;
-
-      const rankMedals = ['1st', '2nd', '3rd'];
-      autoTable(doc, {
-        startY: cursorY,
-        head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
         body: playerSummaries.map((p) => {
           const notAnswered = p.unanswered;
           const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
@@ -395,8 +307,6 @@ export default function ResultsAnalytics() {
         rowPageBreak: 'auto',
         margin: { left: margin, right: margin },
       });
-
->>>>>>> dd29739 (Update quiz app UI and controller fixes)
       // ── Footer (Simple) ──────────────────────────────────────────────────
       const totalPages = doc.internal.getNumberOfPages();
       for (let pg = 1; pg <= totalPages; pg++) {
@@ -576,80 +486,6 @@ export default function ResultsAnalytics() {
             ))}
           </div>
 
-<<<<<<< HEAD
-          {/* PLAYER STANDINGS DETAILED TABLE */}
-          <div className="glass-panel rounded-3xl border border-white/5 overflow-hidden">
-            
-            <div className="p-6 border-b border-white/5 flex items-center gap-2">
-              <FileSpreadsheet className="h-4.5 w-4.5 text-primary" />
-              <h3 className="font-outfit text-sm font-bold text-white uppercase tracking-wider">Player Rankings</h3>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                
-                <thead>
-                  <tr className="border-b border-white/5 text-gray-500 font-bold uppercase tracking-wider bg-white/2">
-                    <th className="px-6 py-4 w-20">Rank</th>
-                    <th className="px-6 py-4">Player Nickname</th>
-                    <th className="px-6 py-4 text-center">Correct</th>
-                    <th className="px-6 py-4 text-center">Wrong</th>
-                    <th className="px-6 py-4 text-center">Not Answered</th>
-                    <th className="px-6 py-4 text-right">Final Score</th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-white/5 font-semibold">
-                  {players.map((player) => {
-                    const notAnswered = Math.max(0, result?.totalQuestions - (player.correctAnswers || 0) - (player.wrongAnswers || 0));
-                    return (
-                      <tr
-                        key={player.rank}
-                        className="hover:bg-white/2 transition-colors"
-                      >
-                        <td className="px-6 py-4 font-mono text-gray-400 font-bold">
-                          {player.rank === 1 ? '🥇 #1' : player.rank === 2 ? '🥈 #2' : player.rank === 3 ? '🥉 #3' : `#${player.rank}`}
-                        </td>
-                        <td className="px-6 py-4 text-white font-bold">{player.name}</td>
-                        <td className="px-6 py-4 text-center text-green-400">{player.correctAnswers}</td>
-                        <td className="px-6 py-4 text-center text-accent">{player.wrongAnswers}</td>
-                        <td className="px-6 py-4 text-center text-gray-500">{notAnswered}</td>
-                        <td className="px-6 py-4 text-right font-outfit text-secondary font-black">{player.totalScore} pts</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-
-              </table>
-            </div>
-
-            {players.length === 0 && (
-              <div className="p-12 text-center text-gray-500 italic">No player records found.</div>
-            )}
-          </div>
-
-          {/* QUESTION HIGHLIGHTS (FASTEST CORRECT SOLVERS) */}
-          <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-              <Trophy className="h-4.5 w-4.5 text-warning" />
-              <h3 className="font-outfit text-sm font-bold text-white uppercase tracking-wider">Fastest Correct Solvers (First to Answer Correctly)</h3>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {questionHighlights.map((hl, idx) => (
-                <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Question {hl.questionNumber}</span>
-                    <h4 className="font-bold text-white text-xs">
-                      {hl.fastestPlayer ? hl.fastestPlayer.name : <span className="text-gray-500 italic">No correct answers</span>}
-                    </h4>
-                  </div>
-                  {hl.fastestPlayer && (
-                    <div className="text-right">
-                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Time Taken</span>
-                      <span className="text-xs font-mono font-bold text-secondary">{hl.fastestPlayer.timeTaken}s ⚡</span>
-                    </div>
-                  )}
-=======
           <div className={`rounded-[28px] border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-slate-200 bg-white'}`}>
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -700,15 +536,10 @@ export default function ResultsAnalytics() {
                   <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Question {hl.questionNumber}</p>
                   <p className={`mt-2 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers'}</p>
                   {hl.fastestPlayer && <p className={`mt-1 text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>{hl.fastestPlayer.timeTaken}s</p>}
->>>>>>> dd29739 (Update quiz app UI and controller fixes)
                 </div>
               ))}
             </div>
           </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> dd29739 (Update quiz app UI and controller fixes)
         </div>
       </div>
     </AnimatedPage>
