@@ -12,6 +12,11 @@ const connectDB = async () => {
     } catch (error) {
         console.error(`❌ MongoDB Connection Error: ${error.message}`);
         process.exit(1);
+<<<<<<< HEAD
+=======
+        console.warn(`MongoDB Connection Error: ${error.message}. Falling back to local file database.`);
+        setupMockMongoose();
+>>>>>>> 8ddb45db2e082b68ad8c1dbdd903281845fde9bb
     }
 };
 
