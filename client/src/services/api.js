@@ -1,10 +1,10 @@
-// client/src/api/config.js
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const fallbackApiUrl = 'http://localhost:5000/api';
+const API_URL = (import.meta.env.VITE_API_URL || fallbackApiUrl).replace(/\/$/, '');
 
-if (!API_URL) {
-    console.error('❌ VITE_API_URL is not defined!');
+if (!import.meta.env.VITE_API_URL) {
+    console.info('ℹ️ Using default API URL:', API_URL);
 }
 
 const API = axios.create({

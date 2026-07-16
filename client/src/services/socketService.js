@@ -19,12 +19,24 @@ export const disconnectSocket = () => {
     }
 };
 
+export const getSocket = () => socket;
+
+export const emitJoinRoom = (pin, roleOrName = 'Host') => {
+    const normalizedRole = String(roleOrName || '').toLowerCase();
+
+    if (normalizedRole === 'host') {
+        socket.emit('host-join', { pin });
+    } else {
+        socket.emit('player-join', { pin, playerName: roleOrName });
+    }
+};
+
 export const joinRoom = (pin) => {
-    socket.emit('host-join', { pin });
+    emitJoinRoom(pin, 'Host');
 };
 
 export const playerJoinRoom = (pin, playerName) => {
-    socket.emit('player-join', { pin, playerName });
+    emitJoinRoom(pin, playerName);
 };
 
 export const onPlayerJoined = (callback) => {
