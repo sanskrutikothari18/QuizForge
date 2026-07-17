@@ -1,10 +1,10 @@
 // client/src/api/config.js
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-if (!API_URL) {
-    console.error('❌ VITE_API_URL is not defined!');
+if (!import.meta.env.VITE_API_URL) {
+    console.warn('⚠️ VITE_API_URL is not defined, falling back to http://localhost:5000');
 }
 
 const API = axios.create({
