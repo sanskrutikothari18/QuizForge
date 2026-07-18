@@ -136,6 +136,9 @@ export default function LiveQuiz() {
   const [category, setCategory] = useState('general');
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
 
+  // Ref to prevent auto-end from firing more than once per question
+  const autoEndCalledRef = React.useRef(false);
+
   // Player state
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
@@ -277,6 +280,8 @@ export default function LiveQuiz() {
       setHasAnswered(false);
       localStorage.setItem('last_hasAnswered', 'false');
       setSelectedIdx(null);
+      // Reset the auto-end guard for each new question
+      autoEndCalledRef.current = false;
     });
 
     socket.on('question_ended', (data) => {
@@ -390,14 +395,20 @@ export default function LiveQuiz() {
   }, [question]);
 
   // Host auto-end question logic
+  // FIXED: autoEndCalledRef prevents endQuestion from being called repeatedly
+  // when timeLeft stays at 0 or when other deps re-trigger the effect
   useEffect(() => {
     if (!isHost || !question) return;
 
     const autoEnd = async () => {
+      if (autoEndCalledRef.current) return; // Guard — only call once per question
+      autoEndCalledRef.current = true;
       try {
         await endQuestion(pin);
       } catch (err) {
         console.error('Error auto-ending question:', err);
+        // Reset on error so it can retry once
+        autoEndCalledRef.current = false;
       }
     };
 

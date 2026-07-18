@@ -85,8 +85,16 @@ const parseBgConfig = (bgStr) => {
     };
   }
   try {
-    const config = JSON.parse(bgStr);
-    if (config && typeof config === 'object' && 'url' in config) {
+    // FIXED: use recursive unwrap loop to handle double-serialized JSON strings
+    // (matches the same logic in LiveQuiz.jsx and WaitingRoom.jsx)
+    let config = bgStr;
+    while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
+      const parsed = JSON.parse(config);
+      if (typeof parsed === 'string' && parsed === config) break; // prevent infinite loop
+      config = parsed;
+    }
+
+    if (config && typeof config === 'object') {
       return {
         url: config.url || '',
         blur: typeof config.blur === 'number' ? config.blur : 0,
@@ -107,7 +115,7 @@ const parseBgConfig = (bgStr) => {
     }
   } catch (e) {}
   return {
-    url: bgStr,
+    url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
     brightness: 100,
     overlayOpacity: 30,

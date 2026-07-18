@@ -13,6 +13,8 @@ export default function HostLobby() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
+  // FIXED: guard to prevent double-navigation (socket + API response both used to navigate)
+  const hasNavigatedRef = React.useRef(false);
   const [customUrl, setCustomUrl] = useState('');
   const [isEditingIp, setIsEditingIp] = useState(false);
   const [ipInput, setIpInput] = useState('');
@@ -115,7 +117,10 @@ export default function HostLobby() {
     });
 
     socket.on('question_started', (data) => {
-      // Transition host to Live Quiz screen with background data
+      // FIXED: guard against double-navigation — both socket and API call
+      // used to navigate; now socket is the sole canonical trigger
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
@@ -140,15 +145,22 @@ export default function HostLobby() {
       const response = await startQuestion(pin);
       if (response.success) {
         toast.success('Battle commenced! 🚀');
-        // The socket event will fire and navigate — but we also handle it here as fallback
-        const socketQuestionData = {
-          question: response.question,
-          questionNumber: response.question.questionNumber,
-          totalQuestions: response.question.totalQuestions,
-          timeLeft: response.question.timeLimit,
-          quizBackgroundImage: response.quizBackgroundImage || ''
-        };
-        navigate(`/live/${pin}`, { state: { socketQuestionData } });
+        // FIXED: Do NOT navigate here — the socket `question_started` event is
+        // the canonical navigation trigger (guarded by hasNavigatedRef).
+        // If the socket somehow doesn't fire within 2s, fallback navigate here.
+        setTimeout(() => {
+          if (!hasNavigatedRef.current) {
+            hasNavigatedRef.current = true;
+            const socketQuestionData = {
+              question: response.question,
+              questionNumber: response.question.questionNumber,
+              totalQuestions: response.question.totalQuestions,
+              timeLeft: response.question.timeLimit,
+              quizBackgroundImage: response.quizBackgroundImage || ''
+            };
+            navigate(`/live/${pin}`, { state: { socketQuestionData } });
+          }
+        }, 2000);
       } else {
         toast.error(response.message || 'Failed to start quiz');
       }

@@ -7,10 +7,13 @@ const socket = io(SOCKET_URL, {
     transports: ['websocket']
 });
 
+// FIXED: was missing `return socket` — caused every component to get `undefined`
+// and crash when calling socket.on(...)
 export const connectSocket = () => {
     if (!socket.connected) {
         socket.connect();
     }
+    return socket;
 };
 
 export const disconnectSocket = () => {
@@ -21,13 +24,15 @@ export const disconnectSocket = () => {
 
 export const getSocket = () => socket;
 
+// FIXED: emitJoinRoom now uses `room_${pin}` prefix to match the server's
+// io.to(`room_${pin}`) emit calls in gameController.js
 export const emitJoinRoom = (pin, roleOrName = 'Host') => {
     const normalizedRole = String(roleOrName || '').toLowerCase();
 
     if (normalizedRole === 'host') {
-        socket.emit('host-join', { pin });
+        socket.emit('host-join', { pin: `room_${pin}`, rawPin: pin });
     } else {
-        socket.emit('player-join', { pin, playerName: roleOrName });
+        socket.emit('player-join', { pin: `room_${pin}`, rawPin: pin, playerName: roleOrName });
     }
 };
 

@@ -1,9 +1,21 @@
+/**
+ * ⚠️  DEPRECATED — DO NOT USE THIS FILE.
+ *
+ * This file is an outdated entry point with NO Socket.IO support and
+ * different route prefixes (/api/auth vs /auth). It will break the app
+ * if run instead of index.js.
+ *
+ * The real server entry point is: index.js  (set in package.json "main")
+ * Run with: npm start  OR  npm run dev
+ */
+
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+
 
 const app = express();
 

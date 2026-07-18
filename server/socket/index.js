@@ -6,27 +6,41 @@ module.exports = (io) => {
         console.log(`User connected: ${socket.id}`);
 
         // ─── HOST JOINS GAME ROOM ─────────────────
-        socket.on('host-join', ({ pin }) => {
-            socket.join(pin);
-            console.log(`Host joined room: ${pin}`);
+        // FIXED: rooms now use `room_${pin}` prefix to match gameController.js
+        // which emits to io.to(`room_${pin}`)
+        socket.on('host-join', ({ pin, rawPin }) => {
+            // Support both old-style (bare pin) and new-style (room_pin) payloads
+            const roomPin = rawPin || pin;
+            const roomName = `room_${roomPin}`;
+            socket.join(roomName);
+            // Also store rawPin on socket for disconnect tracking
+            socket.data.pin = roomPin;
+            socket.data.role = 'host';
+            console.log(`Host joined room: ${roomName}`);
         });
 
         // ─── PLAYER JOINS GAME ROOM ───────────────
-        socket.on('player-join', ({ pin, playerName }) => {
-            socket.join(pin);
-            console.log(`${playerName} joined room: ${pin}`);
+        socket.on('player-join', ({ pin, rawPin, playerName }) => {
+            const roomPin = rawPin || pin;
+            const roomName = `room_${roomPin}`;
+            socket.join(roomName);
+            socket.data.pin = roomPin;
+            socket.data.role = 'player';
+            socket.data.name = playerName;
+            console.log(`${playerName} joined room: ${roomName}`);
 
-            // Tell host new player joined
-            io.to(pin).emit('player-joined', {
-                playerName,
+            // Notify everyone in room (host + other players) a new player joined
+            io.to(roomName).emit('player_connected', {
+                username: playerName,
                 message: `${playerName} joined the game!`
             });
         });
 
         // ─── HOST STARTS QUESTION ─────────────────
         socket.on('question-started', ({ pin, question }) => {
+            const roomName = `room_${pin}`;
             // Send question to ALL players in room
-            io.to(pin).emit('show-question', {
+            io.to(roomName).emit('show-question', {
                 questionNumber: question.questionNumber,
                 totalQuestions: question.totalQuestions,
                 questionText: question.questionText,
@@ -36,10 +50,9 @@ module.exports = (io) => {
                 startTime: question.startTime
             });
 
-            console.log(`Question ${question.questionNumber} started in room: ${pin}`);
+            console.log(`Question ${question.questionNumber} started in room: ${roomName}`);
 
-            // Start timer on server side
-            // After timeLimit seconds → end question automatically
+            // Auto-end question after time limit (server-side safety net)
             setTimeout(async () => {
                 try {
                     const game = await GameSession.findOne({ pin })
@@ -59,15 +72,14 @@ module.exports = (io) => {
                             totalAnswers: player.answers.length
                         }));
 
-                    // Send leaderboard to ALL in room
-                    io.to(pin).emit('show-leaderboard', {
+                    io.to(roomName).emit('show-leaderboard', {
                         questionNumber: question.questionNumber,
                         totalQuestions: question.totalQuestions,
                         leaderboard: rankedPlayers,
                         isLastQuestion: question.questionNumber === question.totalQuestions
                     });
 
-                    console.log(`Leaderboard sent for question ${question.questionNumber} in room: ${pin}`);
+                    console.log(`Leaderboard sent for question ${question.questionNumber} in room: ${roomName}`);
 
                 } catch (error) {
                     console.log('Timer error:', error.message);
@@ -79,6 +91,7 @@ module.exports = (io) => {
         // ─── PLAYER SUBMITTED ANSWER ──────────────
         socket.on('answer-submitted', async ({ pin, playerName, isCorrect, score }) => {
             try {
+                const roomName = `room_${pin}`;
                 const game = await GameSession.findOne({ pin });
                 if (!game) return;
 
@@ -91,7 +104,7 @@ module.exports = (io) => {
                 ).length;
 
                 // Tell everyone someone answered
-                io.to(pin).emit('player-answered', {
+                io.to(roomName).emit('player-answered', {
                     playerName,
                     answeredCount,
                     totalPlayers,
@@ -111,7 +124,7 @@ module.exports = (io) => {
                             totalAnswers: player.answers.length
                         }));
 
-                    io.to(pin).emit('show-leaderboard', {
+                    io.to(roomName).emit('show-leaderboard', {
                         leaderboard: rankedPlayers,
                         allAnswered: true
                     });
@@ -124,29 +137,34 @@ module.exports = (io) => {
 
         // ─── HOST MOVES TO NEXT QUESTION ─────────
         socket.on('next-question', ({ pin }) => {
-            // Tell ALL players to get ready for next question
-            io.to(pin).emit('prepare-next-question', {
+            const roomName = `room_${pin}`;
+            io.to(roomName).emit('prepare-next-question', {
                 message: 'Next question coming...'
             });
 
-            console.log(`Next question triggered in room: ${pin}`);
+            console.log(`Next question triggered in room: ${roomName}`);
         });
 
         // ─── GAME ENDED ───────────────────────────
         socket.on('game-ended', ({ pin, winner, finalLeaderboard }) => {
-            // Tell ALL players game is over
-            io.to(pin).emit('show-final-result', {
+            const roomName = `room_${pin}`;
+            io.to(roomName).emit('show-final-result', {
                 winner,
                 finalLeaderboard,
                 message: 'Game Over!'
             });
 
-            console.log(`Game ended in room: ${pin}`);
+            console.log(`Game ended in room: ${roomName}`);
         });
 
         // ─── DISCONNECT ───────────────────────────
         socket.on('disconnect', () => {
             console.log(`User disconnected: ${socket.id}`);
+            const { name, pin, role } = socket.data;
+            if (pin && role === 'player' && name) {
+                const roomName = `room_${pin}`;
+                io.to(roomName).emit('player_disconnected', { username: name });
+            }
         });
     });
 };

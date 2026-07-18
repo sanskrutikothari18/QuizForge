@@ -251,9 +251,6 @@ const startQuestion = async (req, res) => {
         const io = req.app.get('io');
         // Use the cached backgroundImage from GameSession (most reliable), fallback to quiz
         const quizBg = game.backgroundImage || quiz.backgroundImage || '';
-        console.log('[START QUESTION] quizBackgroundImage length:', quizBg.length);
-        console.log('[START QUESTION] quizBg preview:', quizBg.substring(0, 120));
-        console.log('[START QUESTION] questionBg:', (nextQuestion.backgroundImage || '').substring(0, 80));
         if (io) {
             io.to(`room_${pin}`).emit('question_started', {
                 category: quiz.category || 'general',
@@ -505,9 +502,15 @@ const endGame = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
+            // Emit quiz_ended for the final results screen
             io.to(`room_${pin}`).emit('quiz_ended', {
                 winner,
                 finalLeaderboard: finalLeaderboard
+            });
+            // FIXED: Also emit room_closed so WaitingRoom/LiveQuiz listeners can
+            // redirect players who haven't yet advanced past the waiting screen
+            io.to(`room_${pin}`).emit('room_closed', {
+                message: 'Game has ended. Thanks for playing!'
             });
         }
 
@@ -554,7 +557,7 @@ const getGame = async (req, res) => {
                 qrCode: game.qrCode,
                 joinUrl: joinUrl,
                 hostnameUrl: hostnameUrl,
-                status: game?.status || game.status,
+                status: game.status,
                 players: game.players,
                 currentQuestion: game.currentQuestionIndex + 1,
                 questionStartTime: game.questionStartTime,
@@ -600,10 +603,12 @@ const endQuestion = async (req, res) => {
         // Calculate ranked players
         const rankedPlayers = sortAndRankPlayers(game.players, game.currentQuestionIndex);
 
+        // FIXED: coerce both sides to Number — answerIndex is stored as whatever
+        // was submitted (may be a string from req.body), optIdx is always a number
         const answerStats = currentQuestion.options.map((_, optIdx) =>
             game.players.reduce((count, player) => {
                 const ans = player.answers.find(a => a.questionIndex === game.currentQuestionIndex);
-                return count + (ans && ans.answerIndex === optIdx ? 1 : 0);
+                return count + (ans && Number(ans.answerIndex) === optIdx ? 1 : 0);
             }, 0)
         );
 
