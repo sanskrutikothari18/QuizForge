@@ -28,7 +28,12 @@ const getSubmittedAnswers = (answers = []) => (answers || []).filter((answer) =>
 export default function FinalResult() {
   const { pin } = useParams();
   const navigate = useNavigate();
-  const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(() => {
+    const hostToken = localStorage.getItem('token');
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const guestName = localStorage.getItem('guest_playerName');
+    return !!hostToken && (hostedPin === pin || !guestName);
+  });
   const [isSaved, setIsSaved] = useState(false);
   const { themeMode, toggleThemeMode } = useTheme();
   const isDark = themeMode !== 'light';

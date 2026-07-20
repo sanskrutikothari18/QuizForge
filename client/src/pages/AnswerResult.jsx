@@ -145,7 +145,12 @@ export default function AnswerResult() {
   const optionLetters = ['A', 'B', 'C', 'D'];
 
   // Retrieved stats from local storage
-  const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(() => {
+    const hostToken = localStorage.getItem('token');
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const guestName = localStorage.getItem('guest_playerName');
+    return !!hostToken && (hostedPin === pin || !guestName);
+  });
   const [isCorrect, setIsCorrect] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [currentScore, setCurrentScore] = useState(0);
@@ -153,7 +158,7 @@ export default function AnswerResult() {
   const [timeTaken, setTimeTaken] = useState('0.00');
   const [answerStats, setAnswerStats] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [isLastQuestion, setIsLastQuestion] = useState(false);
+  const [isLastQuestion, setIsLastQuestion] = useState(() => localStorage.getItem('last_isLastQuestion') === 'true');
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [category, setCategory] = useState('general');
