@@ -33,24 +33,12 @@ const io = new Server(server, {
 });
 
 // ─── CORS Configuration ───────────────────────
-const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:4173',
-    'https://quizforge-rouge.vercel.app'
-];
-
-if (process.env.FRONTEND_URL) {
-    allowedOrigins.push(process.env.FRONTEND_URL);
-}
-
+// Allowed dynamically from any origin to make the API universally accessible
 app.use(cors({
     origin: function(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // and allow all other origins dynamically.
+        callback(null, true);
     },
     credentials: true
 }));
@@ -87,11 +75,12 @@ const startServer = (port = PORT, host = HOST) => {
         console.log(`✅ QuizForge server listening on http://${host}:${port}`);
     });
 
-    server.on('error', (error) => {
+    server.once('error', (error) => {
         if (error.code === 'EADDRINUSE') {
             const nextPort = port + 1;
             console.warn(`⚠️ Port ${port} is busy. Trying ${nextPort} instead...`);
-            server.close(() => startServer(nextPort, host));
+            // When listen fails, the server is not bound, so we don't need to close it.
+            startServer(nextPort, host);
         } else {
             console.error('❌ Server failed to start', error);
             process.exit(1);

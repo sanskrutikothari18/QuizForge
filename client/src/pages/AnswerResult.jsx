@@ -15,6 +15,10 @@ import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../ser
 import { startQuestion, endGame, getGame, showLeaderboard } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 
+const isUnansweredAnswer = (answer) => {
+  return answer.answerIndex === -1 || answer.answerIndex === undefined || answer.answerIndex === null;
+}
+
 const getTheme = (category) => {
   const cat = String(category || 'general').toLowerCase();
   
@@ -168,9 +172,7 @@ export default function AnswerResult() {
       console.error('Failed to parse user from localStorage', e);
     }
     
-    // The player is the host if they are logged in and their ID matches the game's hostId.
-    const isUserHost = !!hostToken && (game && user && game.hostId === user.id);
-    setIsHost(isUserHost);
+    let isUserHost = false;
 
     // Read stored variables from localStorage
     const savedIsCorrect = localStorage.getItem('last_isCorrect');
@@ -208,6 +210,8 @@ export default function AnswerResult() {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
+          isUserHost = !!hostToken && (user && game.hostId === user.id);
+          setIsHost(isUserHost);
           setCategory(game.quiz?.category || 'general');
           const currentIdx = game.currentQuestion - 1;
           const currentQuestion = game.quiz?.questions?.[currentIdx];

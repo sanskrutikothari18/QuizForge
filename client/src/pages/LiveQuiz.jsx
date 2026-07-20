@@ -199,6 +199,7 @@ export default function LiveQuiz() {
                 if (myAnswer) {
                   setHasAnswered(true);
                   localStorage.setItem('last_hasAnswered', 'true');
+                  localStorage.setItem('last_answerSubmitted', 'true');
                   setSelectedIdx(Number(myAnswer.answerIndex));
                 }
               }
@@ -234,6 +235,7 @@ export default function LiveQuiz() {
       localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
       localStorage.setItem('last_hasAnswered', 'false');
+      localStorage.setItem('last_answerSubmitted', 'false');
       setSelectedIdx(null);
     } else {
       // No socket data — must fetch from server (e.g. page refresh)
@@ -360,6 +362,7 @@ export default function LiveQuiz() {
       if (response.success) {
         toast.success('Answer locked! 🔒');
         localStorage.setItem('last_hasAnswered', 'true');
+        localStorage.setItem('last_answerSubmitted', 'true');
         confetti({
           particleCount: 150,
           spread: 80,
