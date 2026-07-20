@@ -210,7 +210,7 @@ export default function AnswerResult() {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
-          isUserHost = !!hostToken && (user && (game.hostId === user.id || game.hostId?._id === user.id));
+          isUserHost = !!hostToken && (user && (game.host === user.id || game.host?._id === user.id));
           setIsHost(isUserHost);
           setCategory(game.quiz?.category || 'general');
           const currentIdx = game.currentQuestion - 1;
