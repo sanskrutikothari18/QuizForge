@@ -79,7 +79,7 @@ export default function FinalResult() {
       if (userStr) user = JSON.parse(userStr);
     } catch (e) {}
 
-    if (game && user && game.hostId === user.id) {
+    if (game && user && (game.hostId === user.id || game.hostId?._id === user.id)) {
       setIsHost(true);
     } else {
       setIsHost(!localPlayerName && !!hostToken);
