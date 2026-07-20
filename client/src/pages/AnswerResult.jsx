@@ -239,12 +239,16 @@ export default function AnswerResult() {
               if (myPlayerRecord) {
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
                 const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
-                const correct = submittedAnswer ? myAnswer.isCorrect : false;
-                setHasSubmittedAnswer(Boolean(submittedAnswer));
+                
+                // Robust Fallback: If DB sync missed the answer, trust localStorage
+                const didSubmit = Boolean(submittedAnswer) || localStorage.getItem('last_answerSubmitted') === 'true';
+                const correct = submittedAnswer ? myAnswer.isCorrect : localStorage.getItem('last_isCorrect') === 'true';
+                
+                setHasSubmittedAnswer(didSubmit);
                 setIsCorrect(correct);
-                setPointsEarned(submittedAnswer ? myAnswer.score : 0);
-                setCurrentScore(myPlayerRecord.totalScore || 0);
-                setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : '0.00');
+                setPointsEarned(submittedAnswer ? myAnswer.score : Number(localStorage.getItem('last_pointsEarned') || 0));
+                setCurrentScore(myPlayerRecord.totalScore || Number(localStorage.getItem('last_score') || 0));
+                setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
                 
                 if (correct) {
                   confetti({
