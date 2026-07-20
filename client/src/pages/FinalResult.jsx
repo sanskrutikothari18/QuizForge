@@ -323,9 +323,8 @@ export default function FinalResult() {
             </button>
           </div>
 
-          {/* Show Podium for Host, Show Detailed Report for Players */}
-          {isHost ? (
-            <>
+          {/* Show Podium for Everyone, Show Detailed Report for Players Below */}
+          <>
               {/* Quiz Title / Battle Finished Card */}
               <motion.div 
                 initial={{ y: -50, opacity: 0 }}
@@ -556,11 +555,9 @@ export default function FinalResult() {
               </div>
             </motion.div>
           ) : null}
-        </>
-      ) : (
-        <>
-              {/* Summary Cards for Player */}
-              {playerStats && (
+
+          {/* Summary Cards for Player */}
+          {playerStats && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -826,7 +823,7 @@ export default function FinalResult() {
                 </motion.div>
               )}
             </>
-          )}
+
 
           {/* ACTIONS */}
           <motion.div 
