@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon } from 'lucide-react';
+import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon, Menu, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import { useTheme } from '../context/ThemeContext';
@@ -11,22 +11,26 @@ export default function Navbar() {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     toast.success('Logged out successfully');
     navigate('/login');
+    setMobileMenuOpen(false);
   };
+
+  const closeMobile = () => setMobileMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/60 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2.5 transition-transform active:scale-95">
-          <Logo className="h-10 w-10" />
-          <span className="font-outfit text-xl font-bold tracking-tight" style={{ color: 'var(--text-heading)' }}>
+        <Link to="/" className="flex items-center gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
+          <Logo className="h-9 w-9 sm:h-10 sm:w-10" />
+          <span className="font-outfit text-lg sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-heading)' }}>
             Fourise <span className="text-secondary">Quiz Hub</span>
           </span>
         </Link>
@@ -56,11 +60,11 @@ export default function Navbar() {
         </nav>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Theme Toggle Button */}
           <button
             onClick={toggleThemeMode}
-            className="rounded-xl p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center mr-1"
+            className="rounded-xl p-2 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
             style={{
               background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
               borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
@@ -69,14 +73,14 @@ export default function Navbar() {
             aria-label="Toggle Theme"
           >
             {isLight ? (
-              <Moon className="h-4.5 w-4.5" style={{ color: '#6d28d9' }} />
+              <Moon className="h-4 w-4" style={{ color: '#6d28d9' }} />
             ) : (
-              <Sun className="h-4.5 w-4.5 text-yellow-400" />
+              <Sun className="h-4 w-4 text-yellow-400" />
             )}
           </button>
 
           {token ? (
-            <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3">
               {/* Profile Badge */}
               <div
                 className="hidden sm:flex items-center gap-2 rounded-xl px-3 py-1.5"
@@ -100,10 +104,10 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <Link
                 to="/login"
-                className="btn-premium flex items-center gap-2 text-white px-5 py-2.5 text-sm font-extrabold tracking-wide shadow-md"
+                className="btn-premium flex items-center gap-2 text-white px-4 py-2 text-sm font-extrabold tracking-wide shadow-md"
                 style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none' }}
               >
                 <LogIn className="h-4 w-4" />
@@ -111,15 +115,114 @@ export default function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="btn-premium flex items-center gap-2 bg-gradient-to-r from-primary to-purple-600 text-white px-5 py-2.5 text-sm font-extrabold tracking-wide shadow-premium-glow"
+                className="btn-premium flex items-center gap-2 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-2 text-sm font-extrabold tracking-wide shadow-premium-glow"
               >
                 Sign Up
               </Link>
             </div>
           )}
-        </div>
 
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              borderColor: 'rgba(255,255,255,0.10)',
+              color: 'var(--text-main)',
+            }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden border-t border-white/5 px-4 py-4 space-y-2"
+          style={{ background: 'var(--header-bg)', backdropFilter: 'blur(16px)' }}
+        >
+          {token ? (
+            <>
+              {/* User info row */}
+              <div className="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                <User className="h-4 w-4 text-secondary shrink-0" />
+                <span className="text-xs font-bold truncate" style={{ color: 'var(--text-main)' }}>{user?.name}</span>
+              </div>
+
+              <Link
+                to="/dashboard"
+                onClick={closeMobile}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors hover:bg-white/5"
+                style={{ color: 'var(--text-main)' }}
+              >
+                <LayoutDashboard className="h-4 w-4 text-primary" />
+                Dashboard
+              </Link>
+              <Link
+                to="/quiz/my"
+                onClick={closeMobile}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors hover:bg-white/5"
+                style={{ color: 'var(--text-main)' }}
+              >
+                <BookOpen className="h-4 w-4 text-secondary" />
+                My Quizzes
+              </Link>
+              <Link
+                to="/quiz/create"
+                onClick={closeMobile}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors hover:bg-white/5"
+                style={{ color: 'var(--text-main)' }}
+              >
+                <PlusCircle className="h-4 w-4 text-accent" />
+                Create Quiz
+              </Link>
+              <div className="pt-2 border-t border-white/5">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/#features"
+                onClick={closeMobile}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors hover:bg-white/5"
+                style={{ color: 'var(--text-main)' }}
+              >
+                Features
+              </Link>
+              <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
+                <Link
+                  to="/login"
+                  onClick={closeMobile}
+                  className="btn-premium flex items-center justify-center gap-2 text-white px-4 py-3 text-sm font-extrabold"
+                  style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none' }}
+                >
+                  <LogIn className="h-4 w-4" />
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobile}
+                  className="btn-premium flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-3 text-sm font-extrabold shadow-premium-glow"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 }

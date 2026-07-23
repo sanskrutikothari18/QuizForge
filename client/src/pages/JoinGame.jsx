@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { Html5Qrcode } from 'html5-qrcode';
 import AnimatedPage from '../components/AnimatedPage';
 import { joinGame } from '../services/gameService';
+import Avatar from '../components/Avatar';
 import { useGame } from '../context/GameContext';
 
 export default function JoinGame() {
@@ -17,10 +18,10 @@ export default function JoinGame() {
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState(null);
-  const [selectedAvatar, setSelectedAvatar] = useState('🐶');
+  const [selectedAvatar, setSelectedAvatar] = useState('dog');
   const qrCodeRef = useRef(null);
 
-  const avatars = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮'];
+  const avatars = ['dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda', 'koala', 'tiger', 'lion', 'cow'];
 
   const {
     register,
@@ -74,7 +75,7 @@ export default function JoinGame() {
 
           if (pinVal) {
             setValue('pin', pinVal);
-            toast.success(`PIN ${pinVal} scanned! 🔍`);
+            toast.success(`PIN ${pinVal} scanned!`);
             setIsScanning(false);
           } else {
             toast.error('No valid game PIN found in QR Code.');
@@ -108,7 +109,7 @@ export default function JoinGame() {
         setPlayerName(data.playerName);
         // Assuming we might want to store avatar in context later, for now we just pass it to backend
 
-        toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
+        toast.success(`Welcome to the lobby, ${data.playerName}!`);
         
         // Navigate to the Waiting Room page
         setTimeout(() => {
@@ -128,7 +129,7 @@ export default function JoinGame() {
 
   return (
     <AnimatedPage>
-      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-12 bg-background">
+      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-8 sm:py-12 bg-background">
         
         {/* Glow Spheres */}
         <div className="absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-glow-primary pointer-events-none opacity-45"></div>
@@ -139,7 +140,7 @@ export default function JoinGame() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
+          className="w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden"
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-secondary/40 to-transparent"></div>
 
@@ -190,8 +191,9 @@ export default function JoinGame() {
                       <p className="text-[10px] text-gray-400 leading-relaxed max-w-[240px] mx-auto">
                         In-app camera scanning requires a secure connection (HTTPS) or localhost.
                       </p>
-                      <div className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-xl p-2.5 max-w-[240px] mx-auto font-medium">
-                        ✨ Tip: Scan the host's QR code using your phone's native Camera app instead!
+                      <div className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-xl p-2.5 max-w-[240px] mx-auto font-medium flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                        <span>Tip: Scan the host's QR code using your phone's native Camera app instead!</span>
                       </div>
                     </div>
                   ) : (
@@ -275,7 +277,7 @@ export default function JoinGame() {
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
                 Choose Avatar
               </label>
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
                 {avatars.map((avatar) => (
                   <button
                     key={avatar}
@@ -287,7 +289,7 @@ export default function JoinGame() {
                         : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
                     }`}
                   >
-                    <span className="drop-shadow-md">{avatar}</span>
+                    <Avatar emoji={avatar} className="w-10 h-10 object-contain drop-shadow-md" />
                     {selectedAvatar === avatar && (
                       <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
                         <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

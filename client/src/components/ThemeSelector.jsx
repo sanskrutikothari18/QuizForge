@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Palette } from 'lucide-react';
 
 const ThemeSelector = () => {
   const { activeTheme, changeTheme, themes } = useTheme();
@@ -12,7 +13,7 @@ const ThemeSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="glass-panel p-3 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors"
       >
-        <span className="text-xl">🎨</span>
+        <Palette className="h-5 w-5 text-primary" />
         <span className="font-semibold text-sm hidden sm:block">Theme: {activeTheme.name}</span>
       </button>
 

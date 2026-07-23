@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Trophy, HelpCircle, ArrowRight, ArrowLeft, CheckCircle, XCircle, AlertCircle, Users, Award, Loader2, Crown,
+  Trophy, HelpCircle, ArrowRight, ArrowLeft, CheckCircle, XCircle, AlertCircle, Users, Award, Loader2, Crown, Medal,
   Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
   Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
   Globe, Compass, Map, Scroll, Landmark, Anchor, History,
@@ -325,7 +325,7 @@ export default function AnswerResult() {
     }
 
     socket.on('question_started', (data) => {
-      toast.success('get ready for the next question! ⚔️');
+      toast.success('Get ready for the next question!');
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
@@ -334,7 +334,7 @@ export default function AnswerResult() {
     });
 
     socket.on('quiz_ended', (data) => {
-      toast.success('Battle finished! 🏆');
+      toast.success('Battle finished!');
       navigate(`/final-result/${pin}`);
     });
 
@@ -531,7 +531,7 @@ export default function AnswerResult() {
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs font-semibold">
                           <span className={`${isCorrectOption ? 'text-green-400 font-bold' : 'text-gray-300'}`}>
-                            {optionLabels[idx]} {isCorrectOption && '✓'}
+                            {optionLabels[idx]} {isCorrectOption && <CheckCircle className="inline h-3.5 w-3.5 text-green-400 ml-1" />}
                           </span>
                           <span className="text-white font-bold">{count} Responses</span>
                         </div>
@@ -685,7 +685,7 @@ export default function AnswerResult() {
                         transition={{ type: 'spring', stiffness: 50, delay: 0.2 }}
                         className="w-full bg-gradient-to-t from-white/5 to-white/15 border border-white/10 rounded-t-xl flex items-center justify-center mt-1"
                       >
-                        <span className="text-xs">🥈</span>
+                        <Medal className="h-4 w-4 text-slate-400" />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}
@@ -702,7 +702,7 @@ export default function AnswerResult() {
                         transition={{ type: 'spring', stiffness: 50 }}
                         className="w-full bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20 rounded-t-xl flex items-center justify-center mt-1"
                       >
-                        <span className="text-sm">👑</span>
+                        <Crown className="h-5 w-5 text-yellow-400" />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}
@@ -718,7 +718,7 @@ export default function AnswerResult() {
                         transition={{ type: 'spring', stiffness: 50, delay: 0.3 }}
                         className="w-full bg-gradient-to-t from-white/5 to-white/10 border border-white/10 rounded-t-xl flex items-center justify-center mt-1"
                       >
-                        <span className="text-[10px]">🥉</span>
+                        <Medal className="h-4 w-4 text-amber-700" />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}

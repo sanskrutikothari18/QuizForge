@@ -58,7 +58,7 @@ export default function Dashboard() {
     mutationFn: createGame,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success('Lobby initialized! 🚀');
+        toast.success('Lobby initialized!');
         navigate(`/host/lobby/${data.game.pin}`);
       } else {
         toast.error(data.message || 'Failed to initialize game lobby');
@@ -89,7 +89,7 @@ export default function Dashboard() {
         <div className="flex-1 flex items-center justify-center min-h-[70vh] bg-background">
           <div className="text-center space-y-4">
             <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-sm font-semibold tracking-wide text-gray-400">Loading your battle forge dashboard...</p>
+            <p className="text-sm font-semibold tracking-wide text-gray-400">Loading your battle dashboard...</p>
           </div>
         </div>
       </AnimatedPage>
@@ -100,10 +100,10 @@ export default function Dashboard() {
 
   return (
     <AnimatedPage>
-      <div className="flex flex-1 flex-col md:flex-row min-h-screen bg-background">
+      <div className="flex flex-1 flex-col md:flex-row min-h-screen bg-background overflow-x-hidden">
         
         {/* SIDEBAR */}
-        <aside className="w-full md:w-64 bg-background border-b md:border-b-0 md:border-r border-white/5 p-6 flex flex-col justify-between shrink-0">
+        <aside className="w-full md:w-64 bg-background border-b md:border-b-0 md:border-r border-white/5 px-4 py-4 md:p-6 flex flex-col justify-between shrink-0">
           <div className="space-y-8">
             {/* Logo area */}
             <div className="flex items-center gap-2.5">
@@ -112,7 +112,7 @@ export default function Dashboard() {
             </div>
 
             {/* Nav links */}
-            <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            <nav className="flex flex-row md:flex-col gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none -mx-1 px-1">
               <button 
                 onClick={() => setActiveTab('overview')}
                 className={`flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide transition-all whitespace-nowrap ${
@@ -154,7 +154,7 @@ export default function Dashboard() {
         </aside>
 
         {/* MAIN DASHBOARD */}
-        <div className="flex-1 p-6 sm:p-8 lg:p-10 space-y-8 overflow-y-auto">
+        <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto overflow-x-hidden">
           
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
@@ -178,7 +178,7 @@ export default function Dashboard() {
           </div>
 
           {/* METRIC CARDS GRID */}
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3">
             {[
               { label: 'Total Quizzes', value: totalQuizzes, icon: <FileText className="h-5 w-5 text-primary" />, desc: 'Custom battle sets built' },
               { label: 'Sessions Hosted', value: totalGamesHosted, icon: <Play className="h-5 w-5 text-secondary" />, desc: 'Real-time games executed' },
@@ -215,7 +215,7 @@ export default function Dashboard() {
                   <HelpCircle className="h-10 w-10 text-gray-600 mx-auto" />
                   <h4 className="font-semibold text-white">No Quizzes Found</h4>
                   <p className="text-xs text-gray-400 max-w-[280px] mx-auto">
-                    You haven't forged any quizzes yet. Create your first multiplayer challenge!
+                    You haven't created any quizzes yet. Create your first multiplayer challenge!
                   </p>
                   <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold">
                     Create Quiz
@@ -224,7 +224,7 @@ export default function Dashboard() {
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {quizzesData?.quizzes?.slice(0, 4).map((quiz) => (
-                    <div key={quiz._id} className="glass-panel rounded-2xl p-5 flex flex-col justify-between h-48 group border border-white/5 hover:border-primary/30 transition-all relative">
+                    <div key={quiz._id} className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[180px] sm:h-48 group border border-white/5 hover:border-primary/30 transition-all relative">
                       <div>
                         <div className="flex justify-between items-start gap-2">
                           <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -236,7 +236,7 @@ export default function Dashboard() {
                         <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{quiz.description || 'No description provided.'}</p>
                       </div>
 
-                      <div className="flex gap-2 mt-4 pt-3 border-t border-white/5">
+                      <div className="flex flex-col gap-2 mt-3 sm:mt-4 pt-3 border-t border-white/5">
                         <button
                           onClick={() => handleHostGame(quiz._id)}
                           className="flex-1 btn-premium btn-primary-gradient py-2 px-3 flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-wider shadow-premium-glow"

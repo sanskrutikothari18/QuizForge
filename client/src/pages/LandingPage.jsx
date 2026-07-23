@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Play, Sparkles, Award, Users, Zap, Shield, 
-  ArrowRight, CheckCircle2, ChevronRight, MessageSquare, Star, Plus 
+  ArrowRight, CheckCircle2, ChevronRight, MessageSquare, Star, Plus, Crown, Medal
 } from 'lucide-react';
 import AnimatedPage from '../components/AnimatedPage';
 
@@ -63,7 +63,7 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-24 sm:px-6 sm:pt-24 lg:px-8">
+        <section className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 lg:px-8">
           <div className="text-center">
             
             {/* Promo Pill */}
@@ -82,9 +82,9 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-outfit text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7.5xl"
+              className="font-outfit text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight"
             >
-              Forge Epic Quizzes.<br />
+              Create Epic Quizzes.<br />
               <span className="text-gradient-primary">Battle Real-Time.</span>
             </motion.h1>
 
@@ -93,7 +93,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mx-auto mt-6 max-w-2xl text-base text-gray-400 sm:text-lg lg:text-xl"
+              className="mx-auto mt-4 sm:mt-6 max-w-2xl text-sm sm:text-base text-gray-400 sm:text-lg px-2 sm:px-0"
             >
               The premium multiplayer quiz platform designed for classrooms, corporate squads, and trivia champions. Engage players instantly.
             </motion.p>
@@ -103,20 +103,20 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mx-auto mt-10 flex max-w-md flex-col justify-center gap-4 sm:flex-row"
+              className="mx-auto mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0"
             >
               <Link
                 to="/login"
-                className="btn-premium btn-primary-gradient px-8 py-4 flex items-center justify-center gap-2 group text-base font-bold shadow-premium-glow"
+                className="btn-premium btn-primary-gradient px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2 group text-sm sm:text-base font-bold shadow-premium-glow w-full sm:w-auto"
               >
                 <span>Create Quiz</span>
-                <Plus className="h-4.5 w-4.5 group-hover:translate-x-0.5 transition-transform" />
+                <Plus className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 to="/join"
-                className="btn-premium btn-secondary-gradient px-8 py-4 flex items-center justify-center gap-2 text-base font-bold shadow-secondary-glow"
+                className="btn-premium btn-secondary-gradient px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2 text-sm sm:text-base font-bold shadow-secondary-glow w-full sm:w-auto"
               >
-                <Play className="h-4.5 w-4.5 fill-current" />
+                <Play className="h-4 w-4 fill-current" />
                 <span>Join Game</span>
               </Link>
             </motion.div>
@@ -128,7 +128,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 60, delay: 0.4 }}
-            className="mx-auto mt-16 max-w-4xl glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden"
+            className="mx-auto mt-12 sm:mt-16 max-w-4xl glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 relative overflow-hidden"
           >
             <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
             
@@ -144,23 +144,23 @@ export default function LandingPage() {
             </div>
 
             {/* Mock Dashboard Leaderboard */}
-            <div className="grid gap-4 sm:grid-cols-3 text-left">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3 text-left">
               {[
-                { name: 'Alex Miller', score: '3,840 pts', color: 'border-yellow-500/20 bg-yellow-500/5', icon: '👑', place: '1st Place' },
-                { name: 'Sophia Chen', score: '3,520 pts', color: 'border-slate-400/20 bg-slate-400/5', icon: '🥈', place: '2nd Place' },
-                { name: 'Marcus Vance', score: '3,110 pts', color: 'border-amber-700/20 bg-amber-700/5', icon: '🥉', place: '3rd Place' },
+                { name: 'Alex Miller', score: '3,840 pts', color: 'border-yellow-500/20 bg-yellow-500/5', icon: <Crown className="h-5 w-5 text-yellow-500" />, place: '1st Place' },
+                { name: 'Sophia Chen', score: '3,520 pts', color: 'border-slate-400/20 bg-slate-400/5', icon: <Medal className="h-5 w-5 text-slate-400" />, place: '2nd Place' },
+                { name: 'Marcus Vance', score: '3,110 pts', color: 'border-amber-700/20 bg-amber-700/5', icon: <Medal className="h-5 w-5 text-amber-700" />, place: '3rd Place' },
               ].map((player, idx) => (
                 <div 
                   key={idx} 
-                  className={`border rounded-2xl p-4.5 flex flex-col justify-between h-36 transform hover:scale-[1.02] transition-transform ${player.color}`}
+                  className={`border rounded-xl sm:rounded-2xl p-4 flex flex-col sm:flex-col justify-between sm:h-36 transform hover:scale-[1.02] transition-transform ${player.color}`}
                 >
-                  <div className="flex justify-between items-start">
-                    <span className="text-2xl">{player.icon}</span>
+                  <div className="flex justify-between items-start mb-2 sm:mb-0">
+                    <span>{player.icon}</span>
                     <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">{player.place}</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-white text-sm">{player.name}</h4>
-                    <p className="text-gradient-primary text-base font-bold mt-1">{player.score}</p>
+                    <p className="text-gradient-primary text-sm sm:text-base font-bold mt-0.5 sm:mt-1">{player.score}</p>
                   </div>
                 </div>
               ))}
@@ -170,7 +170,7 @@ export default function LandingPage() {
         </section>
 
         {/* Feature Cards Section */}
-        <section id="features" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <section id="features" className="mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               Engineered for <span className="text-gradient-primary">Elite Performance</span>
@@ -235,7 +235,7 @@ export default function LandingPage() {
         </section>
 
         {/* Statistics Section */}
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-y border-white/5 bg-[#0c0c0e]/30">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6 lg:px-8 border-y border-white/5 bg-[#0c0c0e]/30">
           <div className="grid gap-8 grid-cols-2 md:grid-cols-4 text-center">
             {[
               { label: 'Total Quizzes Hosted', value: '45,892+' },
@@ -260,7 +260,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Timeline */}
-        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               Launch Your First Battle <span className="text-gradient-primary">in Seconds</span>
@@ -276,7 +276,7 @@ export default function LandingPage() {
             <div className="hidden lg:block absolute top-[40px] left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
 
             {[
-              { step: '01', title: 'Forge the Questions', desc: 'Use our streamlined custom quiz creator to builder multiple-choice answers, set question timers, and categories.' },
+              { step: '01', title: 'Create the Questions', desc: 'Use our streamlined custom quiz creator to builder multiple-choice answers, set question timers, and categories.' },
               { step: '02', title: 'Open Host Lobby', desc: 'Generate your instant lobby session. Launch a private room containing a large PIN and auto-generated QR code.' },
               { step: '03', title: 'Gather the Squad', desc: 'Players enter the PIN on their phones to join the lobby room. Watch as avatars pop up on the host screen.' },
               { step: '04', title: 'Ignite the Quiz', desc: 'Advance through questions, submit answers on speed sliders, and see who takes the podium victory trophy.' }
@@ -296,7 +296,7 @@ export default function LandingPage() {
         </section>
 
         {/* Testimonials Slider */}
-        <section id="testimonials" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 border-t border-white/5">
+        <section id="testimonials" className="mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8 border-t border-white/5">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               Loved by <span className="text-gradient-primary">Champions</span>

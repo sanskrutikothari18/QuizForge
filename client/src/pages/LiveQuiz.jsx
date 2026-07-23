@@ -120,6 +120,12 @@ const parseBgConfig = (bgStr) => {
   };
 };
 
+const formatTime = (seconds) => {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+};
+
 export default function LiveQuiz() {
   const { pin } = useParams();
   const navigate = useNavigate();
@@ -336,7 +342,7 @@ export default function LiveQuiz() {
     try {
       const response = await endQuestion(pin);
       if (response.success) {
-        toast.success('Question ended! 🏁');
+        toast.success('Question ended!');
       } else {
         toast.error(response.message || 'Failed to end question');
       }
@@ -360,7 +366,7 @@ export default function LiveQuiz() {
       const response = await submitAnswer(pin, player, index);
 
       if (response.success) {
-        toast.success('Answer locked! 🔒');
+        toast.success('Answer locked!');
         localStorage.setItem('last_hasAnswered', 'true');
         localStorage.setItem('last_answerSubmitted', 'true');
         confetti({
@@ -524,7 +530,7 @@ export default function LiveQuiz() {
 
         {/* Header Indicator */}
         <div className="flex justify-between items-center pb-2 sm:pb-4 relative z-10 shrink-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {isHost && (
               <button
                 onClick={() => navigate('/dashboard')}
@@ -539,17 +545,21 @@ export default function LiveQuiz() {
             </span>
             <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest hidden sm:inline">{category}</span>
           </div>
+        </div>
 
-          {/* Timer Display */}
-          <div className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 px-2.5 py-1 sm:px-4 sm:py-1.5 font-bold shrink-0">
-            <Clock className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-secondary animate-pulse" />
-            <span className="text-xs sm:text-sm font-mono">{timeLeft}s</span>
+        {/* Timer Display — centered above the question card */}
+        <div className="quiz-timer-container relative z-10 shrink-0">
+          <div className={`quiz-timer ${timeLeft <= 5 ? 'urgent' : ''}`}>
+            <Clock className={`h-4 w-4 ${timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-secondary'}`} />
+            <span className="text-base sm:text-lg font-mono tracking-widest">
+              {formatTime(timeLeft)}
+            </span>
           </div>
         </div>
 
         {/* QUESTION TEXT PANEL */}
-        <div className="my-1 sm:my-4 max-w-4xl mx-auto text-center relative z-10 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-gray-200 shadow-xl shrink-0 w-full">
-          <h2 className="font-outfit text-lg sm:text-2xl md:text-3.5xl text-gray-900 font-black leading-tight">
+        <div className="my-1 sm:my-2 max-w-4xl mx-auto text-center relative z-10 bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-gray-200 shadow-xl shrink-0 w-full">
+          <h2 className="font-outfit text-base sm:text-xl md:text-2xl lg:text-3xl text-gray-900 font-black leading-tight break-words">
             {question.questionText}
           </h2>
         </div>
@@ -600,13 +610,13 @@ export default function LiveQuiz() {
         </div>
 
         {/* ANSWERS LAYOUT (HOST SEES ONLY GRID, PLAYER SEES LARGE TAP BUTTONS) */}
-        <div className="w-full max-w-5xl mx-auto grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2 relative z-10 sm:flex-1 mt-2 sm:my-4 pb-2 sm:pb-0">
+        <div className="w-full max-w-5xl mx-auto grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 relative z-10 sm:flex-1 mt-1 sm:mt-2 pb-2 sm:pb-0">
           {question.options.map((opt, idx) => (
             <button
               key={idx}
               disabled={hasAnswered || isHost || timeLeft <= 0}
               onClick={() => handleSelectAnswer(idx)}
-              className={`rounded-xl sm:rounded-2xl border-2 px-5 py-4 sm:px-8 sm:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] ${isHost
+              className={`rounded-xl sm:rounded-2xl border-2 px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] min-h-[56px] ${isHost
                   ? optionHostColors[idx]
                   : hasAnswered
                     ? selectedIdx === idx
@@ -617,10 +627,10 @@ export default function LiveQuiz() {
                       : optionColors[idx]
                 }`}
             >
-              <div className="flex items-center gap-3 sm:gap-5">
+              <div className="flex items-center gap-3 sm:gap-5 min-w-0">
                 {/* Kahoot Solid White Shape Icon */}
                 {optionShapes[idx]}
-                <span className="text-xs sm:text-lg md:text-xl font-black tracking-wide text-white line-clamp-1">
+                <span className="text-sm sm:text-base md:text-lg font-black tracking-wide text-white break-words min-w-0 overflow-hidden">
                   {opt}
                 </span>
               </div>

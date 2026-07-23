@@ -6,6 +6,7 @@ import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertCircle, Play, Sparkles
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { login } from '../services/authService';
+import Avatar from '../components/Avatar';
 import { joinGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 
@@ -14,8 +15,8 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('host'); // 'host' or 'student'
   const { setPin, setPlayerName } = useGame();
-  const [selectedAvatar, setSelectedAvatar] = useState('🐶');
-  const avatars = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮'];
+  const [selectedAvatar, setSelectedAvatar] = useState('dog');
+  const avatars = ['dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda', 'koala', 'tiger', 'lion', 'cow'];
 
   const hostForm = useForm({
     defaultValues: {
@@ -44,7 +45,7 @@ export default function Login() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        toast.success(`Welcome back, ${response.user.name}! 👋`);
+        toast.success(`Welcome back, ${response.user.name}!`);
         
         // Wait briefly for toast to show, then redirect to Dashboard
         setTimeout(() => {
@@ -76,7 +77,7 @@ export default function Login() {
       if (response.success) {
         setPin(data.pin);
         setPlayerName(data.playerName);
-        toast.success(`Welcome to the lobby, ${data.playerName}! 🛡️`);
+        toast.success(`Welcome to the lobby, ${data.playerName}!`);
         setTimeout(() => {
           navigate(`/waiting/${data.pin}`);
         }, 800);
@@ -94,7 +95,7 @@ export default function Login() {
 
   return (
     <AnimatedPage>
-      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-12 sm:px-6 lg:px-8 bg-background">
+      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-background">
         
         {/* Glow Spheres */}
         <div className="absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-glow-primary pointer-events-none opacity-45"></div>
@@ -105,7 +106,7 @@ export default function Login() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
+          className="w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden"
         >
           {/* Subtle light border decoration at the top */}
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
@@ -366,7 +367,7 @@ export default function Login() {
                           : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
                       }`}
                     >
-                      <span className="drop-shadow-md">{avatar}</span>
+                      <Avatar emoji={avatar} className="w-10 h-10 object-contain drop-shadow-md" />
                       {selectedAvatar === avatar && (
                         <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
                           <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

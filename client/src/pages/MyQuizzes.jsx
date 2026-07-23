@@ -43,7 +43,7 @@ export default function MyQuizzes() {
     mutationFn: createGame,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success('Lobby created! PIN active 🚀');
+        toast.success('Lobby created! PIN active');
         navigate(`/host/lobby/${data.game.pin}`);
       } else {
         toast.error(data.message || 'Lobby creation failed');
@@ -101,7 +101,7 @@ export default function MyQuizzes() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8">
+      <div className="relative min-h-screen bg-background text-gray-200 p-4 sm:p-6 md:p-8 overflow-x-hidden">
         
         {/* Glow Spheres */}
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
@@ -130,7 +130,7 @@ export default function MyQuizzes() {
               className="btn-premium btn-primary-gradient px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold shadow-premium-glow"
             >
               <Plus className="h-4 w-4" />
-              <span>Forge a Quiz</span>
+              <span>Create a Quiz</span>
             </Link>
           </div>
 
@@ -183,7 +183,7 @@ export default function MyQuizzes() {
               <p className="text-xs text-gray-400 max-w-[280px] mx-auto leading-relaxed">
                 {searchQuery || selectedCategory !== 'all' 
                   ? "We couldn't find any quizzes matching your search keyword or selected category filter."
-                  : "You haven't forged any quizzes yet. Click 'Forge a Quiz' to start creating your first multiplayer room."}
+                  : "You haven't created any quizzes yet. Click 'Create a Quiz' to start creating your first multiplayer room."}
               </p>
               {(searchQuery || selectedCategory !== 'all') && (
                 <button
@@ -205,7 +205,7 @@ export default function MyQuizzes() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="glass-panel rounded-2xl p-5.5 flex flex-col justify-between h-52 border border-white/5 hover:border-primary/25 transition-all group relative"
+                    className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[200px] sm:h-52 border border-white/5 hover:border-primary/25 transition-all group relative"
                   >
                     <div className="flex flex-col gap-2">
                       {/* Badge / Header bar */}
@@ -242,7 +242,7 @@ export default function MyQuizzes() {
                     </div>
 
                     {/* Launch + Reports buttons */}
-                    <div className="flex items-center gap-2 mt-4 pt-3.5 border-t border-white/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-3 sm:mt-4 pt-3 sm:pt-3.5 border-t border-white/5">
                       <button
                         onClick={() => handleHostGame(quiz._id)}
                         className="flex-1 btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow"
@@ -259,7 +259,7 @@ export default function MyQuizzes() {
                         });
 
                         const hasResults = quizResults.length > 0;
-                        const medals = ['🥇', '🥈', '🥉'];
+                        const medals = [null, null, null]; // medals handled by icons
 
                         return (
                           <button

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Trophy, ArrowRight, ArrowLeft, Loader2, Award, Users, Crown,
+  Trophy, ArrowRight, ArrowLeft, Loader2, Award, Users, Crown, Medal,
   Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
   Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
   Globe, Compass, Map, Scroll, Landmark, Anchor, History,
@@ -66,12 +66,12 @@ export default function Leaderboard() {
     emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
-      toast.success('Commencing next question! ⚔️');
+      toast.success('Commencing next question!');
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
     socket.on('quiz_ended', (data) => {
-      toast.success('Battle finished! 🏆');
+      toast.success('Battle finished!');
       navigate(`/final-result/${pin}`);
     });
 
@@ -216,7 +216,7 @@ export default function Leaderboard() {
                   transition={{ type: 'spring', stiffness: 50, delay: 0.2 }}
                   className="w-full bg-gradient-to-t from-white/5 to-white/15 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
                 >
-                  <span className="font-outfit text-xl font-bold text-gray-400">🥈</span>
+                  <Medal className="h-6 w-6 text-gray-400" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
@@ -234,7 +234,7 @@ export default function Leaderboard() {
                   className="w-full bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20 rounded-t-2xl flex items-center justify-center mt-2 relative"
                 >
                   <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-                  <span className="font-outfit text-2xl font-black text-white">👑</span>
+                  <Crown className="h-8 w-8 text-yellow-400" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
@@ -250,7 +250,7 @@ export default function Leaderboard() {
                   transition={{ type: 'spring', stiffness: 50, delay: 0.3 }}
                   className="w-full bg-gradient-to-t from-white/5 to-white/10 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
                 >
-                  <span className="font-outfit text-lg font-bold text-amber-700">🥉</span>
+                  <Medal className="h-6 w-6 text-amber-700" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}

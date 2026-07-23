@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Upload } from 'lucide-react';
+import { Image, Upload, Sparkles, Monitor, Smartphone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const BG_PRESETS = {
@@ -241,7 +241,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            🖼️ Built-in Gallery
+            <span className="flex items-center justify-center gap-1.5">
+              <Image className="h-3.5 w-3.5" />
+              Built-in Gallery
+            </span>
           </button>
           <button
             type="button"
@@ -252,7 +255,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            📤 Upload Background
+            <span className="flex items-center justify-center gap-1.5">
+              <Upload className="h-3.5 w-3.5" />
+              Upload Background
+            </span>
           </button>
           <button
             type="button"
@@ -263,7 +269,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            🤖 AI Art Library
+            <span className="flex items-center justify-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              AI Art Library
+            </span>
           </button>
         </div>
 
@@ -303,7 +312,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                       onClick={() => updateField('url', img.url)}
                       onDoubleClick={() => {
                         updateField('url', img.url);
-                        toast.success(`Applied "${img.label}" background! 🌟`);
+                        toast.success(`Applied "${img.label}" background!`);
                       }}
                       className={`relative group aspect-video rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                         config.url === img.url
@@ -342,7 +351,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                     try {
                       const compressedUrl = await compressAndResizeImage(file);
                       updateField('url', compressedUrl);
-                      toast.success(`Custom image "${file.name}" uploaded successfully! 🚀`, { id: toastId });
+                      toast.success(`Custom image "${file.name}" uploaded successfully!`, { id: toastId });
                     } catch (error) {
                       console.error('[IMAGE COMPRESSION ERROR]', error);
                       toast.error('Failed to compress image. Using raw upload.', { id: toastId });
@@ -418,7 +427,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
           {activeBgTab === 'ai' && (
             <div className="space-y-4">
               <p className="text-xs font-bold text-primary flex items-center gap-1">
-                <span>✨ Premium Curated Illustration Artworks</span>
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-yellow-400" />
+                  Premium Curated Illustration Artworks
+                </span>
               </p>
               <div className="grid grid-cols-3 gap-3">
                 {AI_LIBRARY.map(img => (
@@ -599,7 +611,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                💻 Desktop
+                <span className="flex items-center gap-1"><Monitor className="h-3 w-3" />Desktop</span>
               </button>
               <button
                 type="button"
@@ -610,7 +622,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                📱 Mobile
+                <span className="flex items-center gap-1"><Smartphone className="h-3 w-3" />Mobile</span>
               </button>
             </div>
           </div>

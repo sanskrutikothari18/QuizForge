@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
   Settings, CheckCircle, Clock, Eye, AlertCircle, FileSpreadsheet, Play,
-  Image, Upload, X, ChevronDown, ChevronUp
+  Image, Upload, X, ChevronDown, ChevronUp, Palette, Copy
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -87,7 +87,7 @@ export default function CreateQuiz() {
           const parsed = parseCSV(text);
           if (parsed.length > 0) {
             setValue('questions', parsed);
-            toast.success(`Imported ${parsed.length} questions from CSV! 📊`);
+            toast.success(`Imported ${parsed.length} questions from CSV!`);
           } else {
             toast.error('No valid questions found in CSV file.');
           }
@@ -108,7 +108,7 @@ export default function CreateQuiz() {
           const parsed = parseExcelRows(jsonData);
           if (parsed.length > 0) {
             setValue('questions', parsed);
-            toast.success(`Imported ${parsed.length} questions from Excel sheet! 📊`);
+            toast.success(`Imported ${parsed.length} questions from Excel sheet!`);
           } else {
             toast.error('No valid questions found in Excel sheet.');
           }
@@ -210,7 +210,7 @@ export default function CreateQuiz() {
     try {
       const response = await createQuiz(payload);
       if (response.success) {
-        toast.success('Quiz forged successfully! 🏆');
+        toast.success('Quiz created successfully!');
         navigate('/dashboard');
       } else {
         toast.error(response.message || 'Failed to save quiz');
@@ -254,12 +254,12 @@ export default function CreateQuiz() {
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
-                <h1 className="font-outfit text-3xl font-extrabold text-white">Forge a Quiz</h1>
+                <h1 className="font-outfit text-3xl font-extrabold text-white">Create Quiz</h1>
                 <p className="text-xs text-gray-400 mt-1">Design customized questions and timers.</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
               <button
                 type="button"
                 onClick={() => setIsPreviewMode(!isPreviewMode)}
@@ -285,31 +285,27 @@ export default function CreateQuiz() {
                           backgroundImage: useSameBgForAll ? '' : (q.backgroundImage || '')
                         }))
                       };
-                      toast.loading('Forging and initializing lobby...', { id: 'forge-host' });
-                      try {
-                        const response = await createQuiz(payload);
-                        if (response.success) {
-                          const gameRes = await createGame(response.quiz._id);
-                          if (gameRes.success) {
-                            toast.success('Lobby active! PIN initialized 🚀', { id: 'forge-host' });
+                      toast.loading('Initializing lobby...', { id: 'forge-host' });
+                      const response = await createQuiz(saveData);
+                      if (response.success) {
+                        const newQuiz = response.quiz;
+                        const gameRes = await createGame(newQuiz._id);
+                        if (gameRes.success) {
+                          toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
                             navigate(`/host/lobby/${gameRes.game.pin}`);
                           } else {
                             toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
                             navigate('/dashboard');
                           }
-                        } else {
-                          toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
-                        }
-                      } catch (error) {
-                        console.error('[CREATE & HOST ERROR]', error);
-                        toast.error(error.response?.data?.message || 'Error saving/hosting quiz', { id: 'forge-host' });
+                      } else {
+                        toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                       }
                     }, onInvalid)}
                     className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
                     style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
                   >
                     <Play className="h-4 w-4 fill-current" />
-                    <span>Forge & Host Live</span>
+                    <span>Host Live</span>
                   </button>
 
                   <button
@@ -318,7 +314,7 @@ export default function CreateQuiz() {
                     style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                   >
                     <Save className="h-4 w-4" />
-                    <span>Forge Quiz</span>
+                    <span>Save Quiz</span>
                   </button>
                 </>
               )}
@@ -465,7 +461,10 @@ export default function CreateQuiz() {
                 ) : (
                   <div className="p-8 rounded-2xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-3">
                     <Image className="h-10 w-10 text-primary mx-auto opacity-70" />
-                    <h4 className="text-sm font-bold text-gray-300">Different Background Mode Active 🎨</h4>
+                    <h4 className="text-sm font-bold text-gray-300 flex items-center gap-1.5">
+                    <Palette className="h-4 w-4 text-secondary" />
+                    Different Background Mode Active
+                  </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto">
                       Each question can now have its own unique background setup! Customize them below inside the Questions List using the "Customize Background" option.
                     </p>
@@ -491,7 +490,7 @@ export default function CreateQuiz() {
                     Questions List ({fields.length})
                   </h3>
                   
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3 mt-3 sm:mt-0">
                     {/* Hidden File Input for Excel/CSV */}
                     <input
                       type="file"
@@ -664,7 +663,7 @@ export default function CreateQuiz() {
                                   className="btn-premium px-3.5 py-2 flex items-center gap-1.5 text-xs font-bold text-white shadow-md cursor-pointer"
                                   style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', border: 'none' }}
                                 >
-                                  🎨 Customize Background
+                                  <span className="flex items-center gap-1.5"><Palette className="h-3.5 w-3.5" />Customize Background</span>
                                 </button>
                                 {watch(`questions.${index}.backgroundImage`) && (
                                   <button
@@ -742,7 +741,7 @@ export default function CreateQuiz() {
                 }}
                 className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 hover:text-white transition-colors cursor-pointer"
               >
-                📋 Copy Global Background
+                <span className="flex items-center gap-1.5"><Copy className="h-3.5 w-3.5" />Copy Global Background</span>
               </button>
               <button
                 type="button"
@@ -752,7 +751,7 @@ export default function CreateQuiz() {
                 }}
                 className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-colors cursor-pointer"
               >
-                🗑️ Clear Custom Background
+                <span className="flex items-center gap-1.5"><Trash2 className="h-3.5 w-3.5" />Clear Custom Background</span>
               </button>
               <button
                 type="button"

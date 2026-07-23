@@ -63,8 +63,15 @@ app.use('/quiz', quizRoutes);
 app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
 
+// Dual-mount /api/* paths for universal API compatibility
+app.use('/api/auth', authRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/game', gameRoutes);
+app.use('/api/result', resultRoutes);
+app.use('/api/results', resultRoutes);
+
 app.get('/', (req, res) => {
-    res.send('QuizForge API is running...');
+    res.send('Quiz API is running...');
 });
 
 const PORT = Number(process.env.PORT) || 5000;

@@ -68,7 +68,7 @@ export default function Register() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        toast.success('Account created successfully! 🎉');
+        toast.success('Account created successfully!');
         
         setTimeout(() => {
           navigate('/dashboard');
@@ -94,7 +94,7 @@ export default function Register() {
 
   return (
     <AnimatedPage>
-      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[85vh] px-4 py-12 sm:px-6 lg:px-8 bg-background">
+      <div className="relative flex flex-1 flex-col items-center justify-center min-h-[85vh] px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-background">
         
         {/* Glow Spheres */}
         <div className="absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-glow-primary pointer-events-none opacity-45"></div>
@@ -105,7 +105,7 @@ export default function Register() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
+          className="w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden"
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
@@ -140,7 +140,7 @@ export default function Register() {
               Create Account
             </h2>
             <p className="mt-2 text-sm text-gray-400">
-              Forge a nickname and connect your battle logs.
+              Create a nickname and connect your battle logs.
             </p>
           </div>
 
@@ -192,7 +192,7 @@ export default function Register() {
                 </div>
                 <input
                   type="email"
-                  placeholder="warrior@forge.com"
+                  placeholder="warrior@quiz.com"
                   {...register('email', {
                     required: 'Email address is required',
                     pattern: {
@@ -312,7 +312,7 @@ export default function Register() {
               {isLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  <span>Forging Account...</span>
+                  <span>Creating Account...</span>
                 </div>
               ) : (
                 <>

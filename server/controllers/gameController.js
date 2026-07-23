@@ -152,13 +152,13 @@ const joinGame = async (req, res) => {
         }
 
         const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const updatedGame = await GameSession.findOneAndUpdate(
+        let updatedGame = await GameSession.findOneAndUpdate(
             {
                 pin,
                 status: 'waiting',
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
-            { $push: { players: { name: playerName, avatar: avatar || '👤', totalScore: 0, answers: [] } } },
+            { $push: { players: { name: playerName, avatar: avatar || 'dog', totalScore: 0, answers: [] } } },
             { new: true }
         );
 
@@ -170,16 +170,24 @@ const joinGame = async (req, res) => {
                     message: 'Game not found. Check your PIN!'
                 });
             }
-            if (checkGame.status !== 'waiting') {
+
+            const existingPlayer = checkGame.players?.find(
+                p => p.name.toLowerCase() === playerName.trim().toLowerCase()
+            );
+
+            if (existingPlayer) {
+                updatedGame = checkGame;
+            } else if (checkGame.status !== 'waiting') {
                 return res.status(400).json({
                     success: false,
                     message: 'Game has already started!'
                 });
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This name is already taken!'
+                });
             }
-            return res.status(400).json({
-                success: false,
-                message: 'This name is already taken!'
-            });
         }
 
         const io = req.app.get('io');

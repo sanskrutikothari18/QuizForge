@@ -123,7 +123,7 @@ export default function WaitingRoom() {
 
     socket.on('question_started', (data) => {
       console.log('[SOCKET CLIENT] Battle started! Redirecting...', data);
-      toast.success('Commencing battle! Get ready! ⚔️');
+      toast.success('Commencing battle! Get ready!');
       // Store the global background before navigating
       const globalBg = localStorage.getItem('quiz_global_bg_image') || '';
       const questionBg = data?.question?.backgroundImage || '';
@@ -142,7 +142,7 @@ export default function WaitingRoom() {
 
     socket.on('player_connected', ({ username }) => {
       if (username !== localPlayerName) {
-        toast(`${username} entered the waiting room`, { icon: '🛡️' });
+        toast(`${username} entered the waiting room`);
       }
     });
 

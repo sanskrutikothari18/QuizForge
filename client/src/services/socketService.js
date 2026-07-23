@@ -1,14 +1,21 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const getSocketUrl = () => {
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location) {
+        const { protocol, hostname } = window.location;
+        return `${protocol}//${hostname}:5000`;
+    }
+    return 'http://localhost:5000';
+};
 
-const socket = io(SOCKET_URL, {
+const socket = io(getSocketUrl(), {
     autoConnect: false,
-    transports: ['websocket']
+    transports: ['websocket', 'polling']
 });
 
-// FIXED: was missing `return socket` — caused every component to get `undefined`
-// and crash when calling socket.on(...)
 export const connectSocket = () => {
     if (!socket.connected) {
         socket.connect();
@@ -24,8 +31,6 @@ export const disconnectSocket = () => {
 
 export const getSocket = () => socket;
 
-// FIXED: emitJoinRoom now uses `room_${pin}` prefix to match the server's
-// io.to(`room_${pin}`) emit calls in gameController.js
 export const emitJoinRoom = (pin, roleOrName = 'Host') => {
     const normalizedRole = String(roleOrName || '').toLowerCase();
 

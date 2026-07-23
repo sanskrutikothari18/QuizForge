@@ -94,8 +94,8 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
               </>
             ) : results.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-6 text-center space-y-4">
-                <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-gray-800/80 border border-indigo-100/50 dark:border-gray-700/50 flex items-center justify-center text-3xl shadow-sm text-indigo-500">
-                  📊
+                <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-gray-800/80 border border-indigo-100/50 dark:border-gray-700/50 flex items-center justify-center shadow-sm text-indigo-500">
+                  <BarChart3 className="h-8 w-8 text-primary" />
                 </div>
                 <h4 className="font-outfit text-lg font-bold text-slate-800 dark:text-white">
                   No Battle Reports Yet
@@ -169,15 +169,15 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                             
                             if (rank === 1) {
                               rankColor = "text-amber-500 font-bold";
-                              rankIcon = "🥇";
+                              rankIcon = <Trophy className="h-4 w-4 text-yellow-500 inline-block" />;
                               bgClass = "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500/20";
                             } else if (rank === 2) {
                               rankColor = "text-slate-400 font-bold";
-                              rankIcon = "🥈";
+                              rankIcon = <Trophy className="h-4 w-4 text-slate-400 inline-block" />;
                               bgClass = "bg-slate-400/10 dark:bg-slate-400/5 border-slate-400/20";
                             } else if (rank === 3) {
                               rankColor = "text-amber-700 font-bold";
-                              rankIcon = "🥉";
+                              rankIcon = <Trophy className="h-4 w-4 text-amber-700 inline-block" />;
                               bgClass = "bg-amber-700/10 dark:bg-amber-700/5 border-amber-700/20";
                             } else if (isWinner) {
                               bgClass = "bg-green-500/10 dark:bg-green-500/5 border-green-500/20";
@@ -189,9 +189,9 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                                 className={`flex items-center justify-between text-xs px-3 py-1.5 rounded-xl border ${bgClass} transition-all`}
                               >
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <span className={`w-5 text-center ${rankColor}`}>{rankIcon}</span>
+                                  <span className={`w-5 flex items-center justify-center ${rankColor}`}>{rankIcon}</span>
                                   <span className={`font-semibold truncate ${isWinner ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-slate-200'}`}>
-                                    {player.name} {isWinner && '🏆'}
+                                    {player.name} {isWinner && <Trophy className="inline h-3.5 w-3.5 text-yellow-500 ml-1" />}
                                   </span>
                                 </div>
                                 <span className="font-bold text-blue-600 dark:text-blue-400 shrink-0">{player.totalScore || 0} pts</span>

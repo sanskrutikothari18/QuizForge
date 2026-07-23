@@ -1004,4 +1004,284 @@ input:-webkit-autofill:active {
 .light .bg-\[\#25D366\],
 .light .bg-\[\#25D366\] * {
   color: #ffffff !important;
-}
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS & SPACING IMPROVEMENTS
+   ══════════════════════════════════════════════════════════ */
+
+/* Prevent horizontal scroll on all screens */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Ensure touch targets are large enough on mobile */
+@media (max-width: 640px) {
+  button, a {
+    min-height: 40px;
+  }
+
+  /* Navbar adjustments for mobile */
+  header .flex.h-16 {
+    height: auto;
+    min-height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  /* Better card spacing on mobile */
+  .glass-panel {
+    padding: 1rem;
+  }
+
+  /* Ensure forms don't overflow */
+  form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Input fields full width on mobile */
+  input, textarea, select {
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+
+  /* Dashboard sidebar becomes horizontal scroll on mobile */
+  .sidebar-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Leaderboard player cards compact on mobile */
+  .leaderboard-card {
+    padding: 0.75rem;
+  }
+
+  /* Hero section padding adjustment */
+  section.hero-section {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  /* Better image scaling */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Stats grid becomes 2 columns minimum on small screens */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Footer stack properly */
+  footer .flex {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+}
+
+/* Extra small screens (320px+) */
+@media (max-width: 380px) {
+  .font-outfit.text-3xl {
+    font-size: 1.5rem;
+  }
+
+  .font-outfit.text-4xl {
+    font-size: 2rem;
+  }
+
+  /* Tighter padding on very small screens */
+  .glass-panel {
+    padding: 0.875rem;
+  }
+
+  /* Avatar grid adjustment */
+  .avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   TIMER STYLING (Above Question Card)
+   ══════════════════════════════════════════════════════════ */
+
+.quiz-timer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.quiz-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  font-family: 'Inter', monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.quiz-timer.urgent {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* ══════════════════════════════════════════════════════════
+   IMPROVED SPACING & PADDING CONSISTENCY
+   ══════════════════════════════════════════════════════════ */
+
+/* Consistent section padding */
+.section-padding {
+  padding: 4rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .section-padding {
+    padding: 5rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding: 6rem 2rem;
+  }
+}
+
+/* Consistent card padding */
+.card-padding {
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .card-padding {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-padding {
+    padding: 2rem;
+  }
+}
+
+/* Ensure content doesn't clip on mobile screens */
+@media (max-width: 768px) {
+  /* Dashboard layout stacks on mobile */
+  .flex-1.p-6.sm\:p-8.lg\:p-10 {
+    padding: 1rem;
+  }
+
+  /* Scrollable nav section */
+  nav.flex.flex-row.md\:flex-col {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+
+  nav.flex.flex-row.md\:flex-col::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Answer buttons on mobile use full width and are more tappable */
+  .answer-btn {
+    padding: 1rem 1.25rem;
+    min-height: 56px;
+  }
+
+  /* No horizontal overflow on quiz cards */
+  .quiz-card {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Better modal fit on mobile */
+  .modal-panel {
+    margin: 0.75rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Leaderboard table responsive */
+  .leaderboard-table {
+    font-size: 0.75rem;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   IMPROVED TEXT WRAPPING ON MOBILE
+   ══════════════════════════════════════════════════════════ */
+
+/* Prevent text overflow and ensure wrapping */
+.text-wrap-mobile {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Question text should wrap properly */
+@media (max-width: 640px) {
+  h2.font-outfit {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Options text should not overflow */
+  span.text-xs.sm\:text-lg {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-clamp: unset;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   BUTTON SPACING IMPROVEMENTS
+   ══════════════════════════════════════════════════════════ */
+
+/* Consistent button gap */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-group .btn-premium {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   VIEWPORT META INSURANCE (handled via tailwind overflow-x-hidden on body)
+   ══════════════════════════════════════════════════════════ */
+
+/* Scrollbar hiding utility */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

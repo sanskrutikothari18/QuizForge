@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, BarChart3, Loader2, RefreshCw, CheckCircle, Save,
   BookOpen, Clock, XCircle, AlertCircle, Award,
-  Moon, Sun, Trophy, Target, TrendingUp, Percent
+  Moon, Sun, Trophy, Target, TrendingUp, Percent, User, Crown
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
@@ -65,7 +65,7 @@ export default function FinalResult() {
           const res = await saveResult(sessionId);
           if (res.success) {
             setIsSaved(true);
-            toast.success('Battle metrics saved to Dashboard! 💾');
+            toast.success('Battle metrics saved to Dashboard!');
           }
         } catch (err) {
           console.log('Result save status:', err?.response?.data?.message || err?.message);
@@ -343,7 +343,7 @@ export default function FinalResult() {
                       ? 'bg-white/5 border-white/10 text-gray-200' 
                       : 'bg-gray-100 border-gray-200 text-gray-700'
                   }`}>
-                    <span>🎉 Congratulations to all players!</span>
+                    <span>Congratulations to all players!</span>
                   </div>
                 </div>
               </motion.div>
@@ -366,7 +366,7 @@ export default function FinalResult() {
                     }}
                     className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
                   >
-                    {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : '👤'}
+                    {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : <User className="w-16 h-16 text-white/50" />}
                   </motion.div>
                   <div className="text-center mb-2 px-2 z-10">
                     <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{second.name}</div>
@@ -418,7 +418,7 @@ export default function FinalResult() {
                     transition={{ delay: 4.2, type: 'spring' }}
                     className="absolute -top-3 md:-top-5 lg:-top-6 left-1/2 -translate-x-1/2 text-3xl md:text-4xl lg:text-5xl z-20 drop-shadow-md origin-bottom-left"
                   >
-                    👑
+                    <Crown className="w-10 h-10 text-yellow-400" />
                   </motion.div>
                   
                   {/* Golden Trophy floating next to avatar */}
@@ -427,13 +427,13 @@ export default function FinalResult() {
                     transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                     className="absolute -right-6 bottom-0 text-3xl md:text-4xl filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
                   >
-                    🏆
+                    <Trophy className="w-8 h-8 text-yellow-500" />
                   </motion.div>
 
                   {/* Golden Halo aura behind 1st place */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
 
-                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24 relative z-10" /> : '👤'}
+                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-20 h-20 text-white/50" />}
                 </motion.div>
 
                 <div className="text-center mb-2 px-2 z-10">
@@ -479,7 +479,7 @@ export default function FinalResult() {
                     }}
                     className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
                   >
-                    {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : '👤'}
+                    {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : <User className="w-14 h-14 text-white/50" />}
                   </motion.div>
                   <div className="text-center mb-2 px-2 z-10">
                     <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{third.name}</div>
@@ -542,7 +542,7 @@ export default function FinalResult() {
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-white/50 font-black w-6 text-right">{player.rank}</span>
-                        <div className="flex justify-center items-center">{player.avatar ? <Avatar emoji={player.avatar} className="w-8 h-8" /> : '👤'}</div>
+                        <div className="flex justify-center items-center">{player.avatar ? <Avatar emoji={player.avatar} className="w-8 h-8" /> : <User className="w-6 h-6 text-white/50" />}</div>
                         <span className="font-bold text-white text-base md:text-lg">{player.name}</span>
                       </div>
                       <div className="flex flex-col items-end">

@@ -76,7 +76,7 @@ export default function HostLobby() {
 
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
-    const shareMessage = `Join my Fourise Quiz Hub arena! 🚀\n\n📌 *Game PIN*: ${pin}\n\n🔗 *Join Link*:\n${customUrl}`;
+    const shareMessage = `Join my Fourise Quiz Hub arena!\n\nGame PIN: ${pin}\n\nJoin Link:\n${customUrl}`;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const baseUrl = isMobile 
       ? 'https://api.whatsapp.com/send' 
@@ -109,7 +109,7 @@ export default function HostLobby() {
     });
 
     socket.on('player_connected', ({ username }) => {
-      toast.success(`${username} joined the battle! ⚔️`);
+      toast.success(`${username} joined the battle!`);
     });
 
     socket.on('player_disconnected', ({ username }) => {
@@ -144,7 +144,7 @@ export default function HostLobby() {
     try {
       const response = await startQuestion(pin);
       if (response.success) {
-        toast.success('Battle commenced! 🚀');
+        toast.success('Battle commenced!');
         // FIXED: Do NOT navigate here — the socket `question_started` event is
         // the canonical navigation trigger (guarded by hasNavigatedRef).
         // If the socket somehow doesn't fire within 2s, fallback navigate here.
@@ -227,13 +227,13 @@ export default function HostLobby() {
     
     setCustomUrl(newUrl);
     setIsEditingIp(false);
-    toast.success('Join URL updated! 🌐');
+    toast.success('Join URL updated!');
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(customUrl);
     setCopiedLink(true);
-    toast.success('Join link copied! 🔗');
+    toast.success('Join link copied!');
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
@@ -246,7 +246,7 @@ export default function HostLobby() {
           [blob.type]: blob
         })
       ]);
-      toast.success('QR Code copied as image! 📋 Paste it into WhatsApp.');
+      toast.success('QR Code copied as image! Paste it into WhatsApp.');
     } catch (err) {
       console.error(err);
       toast.error('Could not copy QR image directly. Share the link instead!');
@@ -257,7 +257,7 @@ export default function HostLobby() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center">
+      <div className="relative min-h-screen bg-background text-gray-200 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center overflow-x-hidden">
         
         {/* Glow Spheres */}
         <div className="absolute top-[5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
@@ -274,7 +274,7 @@ export default function HostLobby() {
           </button>
         </div>
 
-        <div className="w-full max-w-4xl relative z-10 grid gap-8 md:grid-cols-3 text-left">
+        <div className="w-full max-w-4xl relative z-10 grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-3 text-left">
           
           {/* LEFT/CENTER PANELS: PIN & QR CODE */}
           <div className="md:col-span-2 space-y-6">
@@ -288,7 +288,7 @@ export default function HostLobby() {
                   Host Lobby Room
                 </span>
                 <h2 className="font-outfit text-xl font-extrabold text-white mt-2">{game?.quiz?.title || 'Commencing Battle'}</h2>
-                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or go to Fourise Quiz Hub and enter the PIN below.</p>
+                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or visit Fourise Quiz Hub and enter the PIN below.</p>
               </div>
 
               <div className="space-y-1 text-center shrink-0">

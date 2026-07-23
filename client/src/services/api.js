@@ -1,13 +1,18 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-if (!import.meta.env.VITE_API_URL) {
-    console.warn('⚠️ VITE_API_URL is not defined, falling back to http://localhost:5000');
-}
+const getBaseUrl = () => {
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location) {
+        const { protocol, hostname } = window.location;
+        return `${protocol}//${hostname}:5000`;
+    }
+    return 'http://localhost:5000';
+};
 
 const API = axios.create({
-    baseURL: API_URL
+    baseURL: getBaseUrl()
 });
 
 API.interceptors.request.use((req) => {

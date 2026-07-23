@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
-  Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText
+  Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText, Sun, Moon, Crown, Medal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -172,7 +172,7 @@ export default function ResultsAnalytics() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      toast.success('Report exported successfully! 📊');
+      toast.success('Report exported successfully!');
     } catch (err) {
       toast.error('Error generating CSV export');
     }
@@ -366,7 +366,7 @@ export default function ResultsAnalytics() {
       }
 
       doc.save(`Fourise_Quiz_Hub_Report_${id}.pdf`);
-      toast.success('PDF report downloaded! 📄');
+      toast.success('PDF report downloaded!');
     } catch (err) {
       console.error(err);
       toast.error('Error generating PDF report');
@@ -422,7 +422,7 @@ export default function ResultsAnalytics() {
                 </div>
 
                 <div className="space-y-2">
-                  <h1 className={`font-outfit text-3xl sm:text-4xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{result.quizTitle || 'Quiz Forge Match'}</h1>
+                  <h1 className={`font-outfit text-3xl sm:text-4xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{result.quizTitle || 'Quiz Match'}</h1>
                   <div className={`flex flex-wrap gap-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     <span className={`rounded-full px-3 py-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>Category: {result.quizCategory || result.quiz?.category || 'General'}</span>
                     <span className={`rounded-full px-3 py-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>Player: {winnerName}</span>
@@ -432,8 +432,8 @@ export default function ResultsAnalytics() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button onClick={toggleThemeMode} className={`rounded-xl px-3 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                  {isDark ? '☀ Light' : '🌙 Dark'}
+                <button onClick={toggleThemeMode} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+                  {isDark ? <><Sun className="h-4 w-4"/> Light</> : <><Moon className="h-4 w-4"/> Dark</>}
                 </button>
                 <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
                   <Download className="h-4 w-4" />
@@ -548,7 +548,7 @@ export default function ResultsAnalytics() {
                 <tbody>
                   {playerSummaries.map((player) => (
                     <tr key={player.rank} className={`border-b transition hover:opacity-90 ${isDark ? 'border-slate-800 hover:bg-slate-800/60' : 'border-slate-200 hover:bg-slate-50'}`}>
-                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : `#${player.rank}`}</td>
+                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{player.rank === 1 ? <Crown className="inline h-4 w-4 text-yellow-500" /> : player.rank === 2 ? <Medal className="inline h-4 w-4 text-slate-400" /> : player.rank === 3 ? <Medal className="inline h-4 w-4 text-amber-600" /> : `#${player.rank}`}</td>
                       <td className={`px-3 py-3 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{player.name}</td>
                       <td className={`px-3 py-3 text-center ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{player.correct}</td>
                       <td className={`px-3 py-3 text-center ${isDark ? 'text-rose-400' : 'text-rose-600'}`}>{player.wrong}</td>

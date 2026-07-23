@@ -8,7 +8,8 @@ import {
   Leaf, TreePine, Bird,
   Music, Radio, Speaker,
   Film, Video, Clapperboard,
-  Waves, Fish, Shell
+  Waves, Fish, Shell,
+  Flower2, PartyPopper, Hexagon, Sparkles
 } from 'lucide-react';
 
 const ThemeBackground = ({ children }) => {
@@ -58,6 +59,18 @@ const ThemeBackground = ({ children }) => {
         const icons = [Waves, Fish, Shell];
         IconComponent = icons[i % icons.length];
         iconColor = activeTheme.colors.accent;
+      } else if (type === 'petals') {
+        IconComponent = Flower2;
+        iconColor = activeTheme?.colors?.accent || 'rgba(255,255,255,0.15)';
+      } else if (type === 'confetti') {
+        IconComponent = PartyPopper;
+        iconColor = activeTheme?.colors?.primary || 'rgba(255,255,255,0.15)';
+      } else if (type === 'nodes') {
+        IconComponent = Hexagon;
+        iconColor = activeTheme?.colors?.secondary || 'rgba(255,255,255,0.15)';
+      } else {
+        IconComponent = Sparkles;
+        iconColor = activeTheme?.colors?.accent || 'rgba(255,255,255,0.15)';
       }
 
       return (
@@ -82,13 +95,7 @@ const ThemeBackground = ({ children }) => {
             ease: 'linear'
           }}
         >
-          {IconComponent ? (
-            <IconComponent size={size} strokeWidth={1.5} />
-          ) : (
-            <div style={{ fontSize: `${size}px` }}>
-              {type === 'petals' ? '🌸' : type === 'confetti' ? '🎊' : type === 'nodes' ? '⬡' : '✨'}
-            </div>
-          )}
+          <IconComponent size={size} strokeWidth={1.5} />
         </motion.div>
       );
     });
