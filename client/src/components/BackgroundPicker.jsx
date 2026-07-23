@@ -697,22 +697,39 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
               {/* Mock Quiz UI Container */}
               <div className="absolute inset-0 flex flex-col justify-between p-3 relative z-10 select-none">
-                <div className="flex justify-between items-center text-[8px] text-gray-300 font-bold border-b border-white/10 pb-1.5">
-                  <span className="bg-primary/25 border border-primary/30 px-1.5 py-0.5 rounded uppercase tracking-wider text-primary truncate max-w-[100px]">
-                    {displayCategory}
-                  </span>
-                  <span className="shrink-0">⏱️ {displayTime}s</span>
+                
+                {/* Top Section */}
+                <div className="flex flex-col">
+                  {/* Header Indicator */}
+                  <div className="flex justify-start items-center pb-1 relative z-10 shrink-0">
+                    <span className="bg-primary/25 border border-primary/30 px-1.5 py-0.5 rounded uppercase tracking-wider text-[8px] text-primary truncate max-w-[120px] font-bold">
+                      {displayCategory}
+                    </span>
+                  </div>
+
+                  {/* Timer Display */}
+                  <div className="flex justify-center relative z-10 shrink-0 my-1">
+                    <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10">
+                      <span className="text-[7px]">⏱️</span>
+                      <span className="text-[9px] font-mono tracking-widest text-white font-bold">
+                        00:{displayTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mock Card */}
+                  <div className="bg-white rounded-lg p-2.5 border border-gray-200 shadow-sm text-center mx-1 my-1 shrink-0 relative z-10">
+                    <p className="text-[10px] leading-snug tracking-tight text-gray-900 font-black line-clamp-3">
+                      {displayQuestion}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Mock Card */}
-                <div className="bg-white rounded-lg p-2.5 border border-gray-200 shadow-sm text-center my-auto mx-2">
-                  <p className="text-[10px] leading-snug tracking-tight text-gray-900 font-black line-clamp-3">
-                    {displayQuestion}
-                  </p>
-                </div>
+                {/* Flexible spacer (this will naturally push options to the bottom) */}
+                <div className="flex-1" />
 
                 {/* Options grid */}
-                <div className={`grid gap-1.5 ${previewDevice === 'mobile' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                <div className={`grid gap-1.5 relative z-10 w-full pb-1 ${previewDevice === 'mobile' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                   {displayOptions.map((optText, optIdx) => {
                     const isCorrect = Number(displayCorrectAnswer) === optIdx;
                     const optionBgClasses = [
