@@ -17,7 +17,6 @@ import BackgroundPicker from '../components/BackgroundPicker';
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
@@ -245,7 +244,7 @@ export default function CreateQuiz() {
         <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
           
           {/* Header Actions */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-5">
+          <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-md pt-4 -mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4 mb-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-b-2xl px-2 -mx-2">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate('/dashboard')}
@@ -260,108 +259,72 @@ export default function CreateQuiz() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
-              <button
-                type="button"
-                onClick={() => setIsPreviewMode(!isPreviewMode)}
-                className="btn-premium px-4 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md"
+              {/* Hidden File Input for Excel/CSV */}
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                id="excel-file-upload"
+                onChange={handleExcelUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="excel-file-upload"
+                className="btn-premium px-4 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
               >
-                <Eye className="h-4 w-4" />
-                <span>{isPreviewMode ? 'Back to Editor' : 'Live Preview'}</span>
-              </button>
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Upload Excel/CSV</span>
+              </label>
               
-              {!isPreviewMode && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleSubmit(async (data) => {
-                      const payload = {
-                        ...data,
-                        backgroundImage: data.backgroundImage || '',
-                        questions: data.questions.map(q => ({
-                          ...q,
-                          correctAnswer: Number(q.correctAnswer),
-                          timeLimit: Number(q.timeLimit),
-                          backgroundImage: useSameBgForAll ? '' : (q.backgroundImage || '')
-                        }))
-                      };
-                      toast.loading('Initializing lobby...', { id: 'forge-host' });
-                      const response = await createQuiz(saveData);
-                      if (response.success) {
-                        const newQuiz = response.quiz;
-                        const gameRes = await createGame(newQuiz._id);
-                        if (gameRes.success) {
-                          toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
-                            navigate(`/host/lobby/${gameRes.game.pin}`);
-                          } else {
-                            toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
-                            navigate('/dashboard');
-                          }
+              <button
+                type="button"
+                onClick={handleSubmit(async (data) => {
+                  const payload = {
+                    ...data,
+                    backgroundImage: data.backgroundImage || '',
+                    questions: data.questions.map(q => ({
+                      ...q,
+                      correctAnswer: Number(q.correctAnswer),
+                      timeLimit: Number(q.timeLimit),
+                      backgroundImage: useSameBgForAll ? '' : (q.backgroundImage || '')
+                    }))
+                  };
+                  toast.loading('Initializing lobby...', { id: 'forge-host' });
+                  const response = await createQuiz(payload);
+                  if (response.success) {
+                    const newQuiz = response.quiz;
+                    const gameRes = await createGame(newQuiz._id);
+                    if (gameRes.success) {
+                      toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
+                        navigate(`/host/lobby/${gameRes.game.pin}`);
                       } else {
-                        toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
+                        toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
+                        navigate('/dashboard');
                       }
-                    }, onInvalid)}
-                    className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
-                  >
-                    <Play className="h-4 w-4 fill-current" />
-                    <span>Host Live</span>
-                  </button>
+                  } else {
+                    toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
+                  }
+                }, onInvalid)}
+                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                <span>Launch Quiz</span>
+              </button>
 
-                  <button
-                    onClick={handleSubmit(onSubmit, onInvalid)}
-                    className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
-                  >
-                    <Save className="h-4 w-4" />
-                    <span>Save Quiz</span>
-                  </button>
-                </>
-              )}
+              <button
+                onClick={handleSubmit(onSubmit, onInvalid)}
+                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
+              >
+                <Save className="h-4 w-4" />
+                <span>Save Quiz</span>
+              </button>
             </div>
           </div>
 
-          {isPreviewMode ? (
-            /* PREVIEW LAYOUT */
-            <div className="space-y-6">
-              <div className="glass-panel rounded-3xl p-6 border border-white/5">
-                <span className="text-[10px] font-bold text-secondary bg-secondary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  {watchAllFields.category}
-                </span>
-                <h2 className="font-outfit text-2xl font-extrabold text-white mt-3">{watchAllFields.title || 'Untitled Quiz'}</h2>
-                <p className="text-sm text-gray-400 mt-1.5">{watchAllFields.description || 'No description provided.'}</p>
-              </div>
-
-              <div className="space-y-4">
-                {watchAllFields.questions.map((q, idx) => (
-                  <div key={idx} className="glass-panel rounded-2xl p-6 border border-white/5 space-y-4">
-                    <div className="flex justify-between items-center text-xs font-bold text-gray-500 border-b border-white/5 pb-3">
-                      <span>QUESTION {idx + 1} OF {watchAllFields.questions.length}</span>
-                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {q.timeLimit} Seconds</span>
-                    </div>
-                    <h3 className="text-base font-semibold text-white">{q.questionText || 'Enter question text...'}</h3>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {q.options.map((opt, optIdx) => (
-                        <div 
-                          key={optIdx} 
-                          className={`p-4 rounded-xl border text-sm flex items-center justify-between ${
-                            Number(q.correctAnswer) === optIdx 
-                              ? 'bg-green-500/10 border-green-500/30 text-green-400 font-semibold' 
-                              : 'bg-white/5 border-white/10 text-gray-300'
-                          }`}
-                        >
-                          <span>{opt || `Option ${optIdx + 1}`}</span>
-                          {Number(q.correctAnswer) === optIdx && <CheckCircle className="h-4 w-4" />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* EDITOR LAYOUT */
-            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
+          {/* EDITOR LAYOUT */}
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               {/* QUIZ INFORMATION METADATA */}
               <div className="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
@@ -457,6 +420,13 @@ export default function CreateQuiz() {
                   <BackgroundPicker
                     value={watch('backgroundImage')}
                     onChange={(val) => setValue('backgroundImage', val)}
+                    previewData={{
+                      category: watch('category'),
+                      timeLimit: watch('questions.0.timeLimit') || 20,
+                      questionText: watch('questions.0.questionText') || "Enter question text...",
+                      options: watch('questions.0.options') || ["", "", "", ""],
+                      correctAnswer: watch('questions.0.correctAnswer') || 0
+                    }}
                   />
                 ) : (
                   <div className="p-8 rounded-2xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-3">
@@ -491,23 +461,6 @@ export default function CreateQuiz() {
                   </h3>
                   
                   <div className="flex flex-wrap items-center gap-3 mt-3 sm:mt-0">
-                    {/* Hidden File Input for Excel/CSV */}
-                    <input
-                      type="file"
-                      accept=".xlsx,.xls,.csv"
-                      id="excel-file-upload"
-                      onChange={handleExcelUpload}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="excel-file-upload"
-                      className="btn-premium px-4 py-2 flex items-center gap-1.5 text-sm font-bold text-white cursor-pointer shadow-md"
-                      style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)', border: 'none' }}
-                    >
-                      <FileSpreadsheet className="h-4 w-4" />
-                      <span>Upload Excel/CSV</span>
-                    </label>
-
                     <button
                       type="button"
                       onClick={() => append({ questionText: '', options: ['', '', '', ''], correctAnswer: 0, timeLimit: 20, backgroundImage: '' })}
@@ -702,7 +655,6 @@ export default function CreateQuiz() {
               </div>
 
             </form>
-          )}
 
         </div>
       </div>
@@ -728,6 +680,13 @@ export default function CreateQuiz() {
               <BackgroundPicker
                 value={watch(`questions.${bgModalTarget}.backgroundImage`)}
                 onChange={(val) => setValue(`questions.${bgModalTarget}.backgroundImage`, val)}
+                previewData={{
+                  category: watch('category'),
+                  timeLimit: watch(`questions.${bgModalTarget}.timeLimit`) || 20,
+                  questionText: watch(`questions.${bgModalTarget}.questionText`) || "Enter question text...",
+                  options: watch(`questions.${bgModalTarget}.options`) || ["", "", "", ""],
+                  correctAnswer: watch(`questions.${bgModalTarget}.correctAnswer`) || 0
+                }}
               />
             </div>
 

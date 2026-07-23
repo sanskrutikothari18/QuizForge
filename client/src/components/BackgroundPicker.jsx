@@ -210,8 +210,29 @@ const compressAndResizeImage = (file) => {
   });
 };
 
-export default function BackgroundPicker({ value, onChange, showPreview = true }) {
+export default function BackgroundPicker({ value, onChange, showPreview = true, previewData }) {
   const config = parseBgConfig(value);
+
+  const defaultPreviewData = {
+    category: 'Preview Category',
+    timeLimit: 15,
+    questionText: 'What organelle generates chemical energy for the cell?',
+    options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
+    correctAnswer: 1
+  };
+  const pd = previewData || defaultPreviewData;
+  const displayCategory = pd.category || 'Preview Category';
+  const displayTime = pd.timeLimit || 20;
+  const displayQuestion = pd.questionText || 'Question text...';
+  const displayOptions = pd.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+  const displayCorrectAnswer = pd.correctAnswer || 0;
+
+  const optionShapes = [
+    <svg className="h-2.5 w-2.5 fill-white stroke-transparent shrink-0" viewBox="0 0 24 24" key="triangle"><path d="M12 3l10 17H2L12 3z" /></svg>,
+    <svg className="h-2.5 w-2.5 fill-white stroke-transparent shrink-0 rotate-45" viewBox="0 0 24 24" key="diamond"><rect x="5" y="5" width="14" height="14" /></svg>,
+    <div className="h-2.5 w-2.5 rounded-full bg-white shrink-0 shadow-sm" key="circle" />,
+    <div className="h-2.5 w-2.5 rounded bg-white shrink-0 shadow-sm" key="square" />
+  ];
 
   // Picker local UI states
   const [activeBgTab, setActiveBgTab] = useState('gallery'); // 'upload' | 'gallery' | 'ai'
@@ -677,23 +698,23 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
               {/* Mock Quiz UI Container */}
               <div className="absolute inset-0 flex flex-col justify-between p-3 relative z-10 select-none">
                 <div className="flex justify-between items-center text-[8px] text-gray-300 font-bold border-b border-white/10 pb-1.5">
-                  <span className="bg-primary/25 border border-primary/30 px-1.5 py-0.5 rounded uppercase tracking-wider text-primary">
-                    Preview Category
+                  <span className="bg-primary/25 border border-primary/30 px-1.5 py-0.5 rounded uppercase tracking-wider text-primary truncate max-w-[100px]">
+                    {displayCategory}
                   </span>
-                  <span>⏱️ 15s</span>
+                  <span className="shrink-0">⏱️ {displayTime}s</span>
                 </div>
 
                 {/* Mock Card */}
-                <div className="bg-white rounded-lg p-2.5 border border-gray-200 shadow-sm text-center my-auto">
-                  <p className="text-[10px] leading-snug tracking-tight text-gray-900 font-black">
-                    What organelle generates chemical energy for the cell?
+                <div className="bg-white rounded-lg p-2.5 border border-gray-200 shadow-sm text-center my-auto mx-2">
+                  <p className="text-[10px] leading-snug tracking-tight text-gray-900 font-black line-clamp-3">
+                    {displayQuestion}
                   </p>
                 </div>
 
                 {/* Options grid */}
-                <div className="grid grid-cols-2 gap-1.5">
-                  {['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'].map((optText, optIdx) => {
-                    const isCorrect = optIdx === 1;
+                <div className={`grid gap-1.5 ${previewDevice === 'mobile' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                  {displayOptions.map((optText, optIdx) => {
+                    const isCorrect = Number(displayCorrectAnswer) === optIdx;
                     const optionBgClasses = [
                       'bg-[#e21b3c] border-[#e21b3c]',
                       'bg-[#1368ce] border-[#1368ce]',
@@ -704,11 +725,14 @@ export default function BackgroundPicker({ value, onChange, showPreview = true }
                     return (
                       <div 
                         key={optIdx} 
-                        className={`rounded-md p-1.5 text-[7px] flex items-center justify-between gap-1.5 border text-white shadow-sm ${optionBgClasses[optIdx]} ${
+                        className={`rounded-md p-1.5 text-[7px] flex items-center justify-between gap-1 border text-white shadow-sm ${optionBgClasses[optIdx]} ${
                           isCorrect ? 'ring-2 ring-white/50 scale-[1.01]' : 'opacity-90'
                         }`}
                       >
-                        <span className="font-extrabold">{optText}</span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {optionShapes[optIdx]}
+                          <span className="font-extrabold truncate">{optText || `Option ${optIdx + 1}`}</span>
+                        </div>
                         <div className="h-3 w-3 rounded-full border border-white/70 flex items-center justify-center shrink-0">
                           {isCorrect && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
                         </div>

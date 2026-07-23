@@ -205,11 +205,11 @@ export default function MyQuizzes() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[200px] sm:h-52 border border-white/5 hover:border-primary/25 transition-all group relative"
+                    className="glass-panel rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] border border-white/5 hover:border-primary/25 transition-all group relative"
                   >
                     <div className="flex flex-col gap-2">
                       {/* Badge / Header bar */}
-                      <div className="flex justify-between items-center gap-2">
+                      <div className="flex justify-between items-center gap-2 mb-2">
                         <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
                           {quiz.category || 'General'}
                         </span>
@@ -228,7 +228,7 @@ export default function MyQuizzes() {
                       </div>
 
                       {/* Title & Description */}
-                      <div className="px-1 pt-2">
+                      <div className="px-1 pt-3">
                         <h3
                           className="font-outfit text-white text-base group-hover:text-primary transition-colors line-clamp-2 leading-snug"
                           style={{ fontWeight: 900, letterSpacing: '-0.02em' }}
@@ -242,7 +242,7 @@ export default function MyQuizzes() {
                     </div>
 
                     {/* Launch + Reports buttons */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-3 sm:mt-4 pt-3 sm:pt-3.5 border-t border-white/5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-5 pt-4 border-t border-white/5">
                       <button
                         onClick={() => handleHostGame(quiz._id)}
                         className="flex-1 btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow"

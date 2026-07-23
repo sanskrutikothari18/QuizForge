@@ -2,21 +2,15 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertCircle, Play, Sparkles, User, Hash } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { login } from '../services/authService';
-import Avatar from '../components/Avatar';
-import { joinGame } from '../services/gameService';
-import { useGame } from '../context/GameContext';
 
 export default function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('host'); // 'host' or 'student'
-  const { setPin, setPlayerName } = useGame();
-  const [selectedAvatar, setSelectedAvatar] = useState('dog');
-  const avatars = ['dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda', 'koala', 'tiger', 'lion', 'cow'];
+
 
   const hostForm = useForm({
     defaultValues: {
@@ -26,12 +20,6 @@ export default function Login() {
     }
   });
 
-  const studentForm = useForm({
-    defaultValues: {
-      pin: '',
-      playerName: '',
-    }
-  });
 
   const onHostSubmit = async (data) => {
     setIsLoading(true);
@@ -70,29 +58,6 @@ export default function Login() {
     }
   };
 
-  const onStudentSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await joinGame(data.pin, data.playerName, selectedAvatar);
-      if (response.success) {
-        setPin(data.pin);
-        setPlayerName(data.playerName);
-        toast.success(`Welcome to the lobby, ${data.playerName}!`);
-        setTimeout(() => {
-          navigate(`/waiting/${data.pin}`);
-        }, 800);
-      } else {
-        toast.error(response.message || 'Lobby join failed. Check the PIN.');
-      }
-    } catch (error) {
-      console.error('[JOIN LOBBY ERROR]', error);
-      const errMsg = error.response?.data?.message || 'Could not join lobby. Check your PIN!';
-      toast.error(errMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <AnimatedPage>
       <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-background">
@@ -120,39 +85,12 @@ export default function Login() {
               Fourise Quiz Hub Entry
             </h2>
             <p className="mt-2 text-sm text-gray-400 font-medium">
-              {activeTab === 'host' ? 'Log in as a host to manage quizzes' : 'Enter a Game PIN to join the arena'}
+              Log in as a host to manage quizzes
             </p>
           </div>
 
-          {/* Tab Group */}
-          <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl mb-6">
-            <button
-              type="button"
-              onClick={() => setActiveTab('host')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'host'
-                  ? 'bg-gradient-to-r from-primary to-purple-700 text-white shadow-premium-glow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Host / Instructor
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('student')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'student'
-                  ? 'bg-gradient-to-r from-secondary to-cyan-600 text-white shadow-secondary-glow'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Student / Player
-            </button>
-          </div>
-
-          {activeTab === 'host' ? (
-            /* HOST LOGIN FORM */
-            <form onSubmit={hostForm.handleSubmit(onHostSubmit)} className="space-y-6">
+          {/* HOST LOGIN FORM */}
+          <form onSubmit={hostForm.handleSubmit(onHostSubmit)} className="space-y-6">
               
               {/* Email Field */}
               <div className="space-y-2">
@@ -266,142 +204,6 @@ export default function Login() {
                 )}
               </button>
             </form>
-          ) : (
-            /* STUDENT JOIN FORM */
-            <form onSubmit={studentForm.handleSubmit(onStudentSubmit)} className="space-y-6">
-              
-              {/* Lobby PIN */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
-                  Lobby Game PIN
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
-                    <Hash className="h-4.5 w-4.5" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="e.g. 748498"
-                    maxLength="6"
-                    onInput={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
-                    }}
-                    {...studentForm.register('pin', {
-                      required: 'Lobby Game PIN is required',
-                      pattern: {
-                        value: /^\d{6}$/,
-                        message: 'Lobby PIN must be a 6-digit number',
-                      },
-                    })}
-                    className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-secondary/35 focus:border-secondary ${
-                      studentForm.formState.errors.pin ? 'border-accent/40' : 'border-white/10'
-                    }`}
-                  />
-                </div>
-                {studentForm.formState.errors.pin && (
-                  <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    <span>{studentForm.formState.errors.pin.message}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Player Username/Nickname */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
-                  Student Username / Nickname
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
-                    <User className="h-4.5 w-4.5" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="e.g. CyberKnight"
-                    maxLength="10"
-                    onInput={(e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
-                    }}
-                    {...studentForm.register('playerName', {
-                      required: 'Nickname is required',
-                      minLength: {
-                        value: 2,
-                        message: 'Nickname must be at least 2 characters',
-                      },
-                      maxLength: {
-                        value: 10,
-                        message: 'Nickname cannot exceed 10 characters',
-                      },
-                      pattern: {
-                        value: /^[a-zA-Z0-9]+$/,
-                        message: 'Nickname can only contain letters and numbers',
-                      }
-                    })}
-                    className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
-                      studentForm.formState.errors.playerName ? 'border-accent/40' : 'border-white/10'
-                    }`}
-                  />
-                </div>
-                {studentForm.formState.errors.playerName && (
-                  <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    <span>{studentForm.formState.errors.playerName.message}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Avatar Selection */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
-                  Choose Avatar
-                </label>
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                  {avatars.map((avatar) => (
-                    <button
-                      key={avatar}
-                      type="button"
-                      onClick={() => setSelectedAvatar(avatar)}
-                      className={`relative text-3xl h-14 w-full rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                        selectedAvatar === avatar
-                          ? 'bg-gradient-to-br from-[#864CBF] to-[#46178F] border-2 border-white scale-110 shadow-[0_0_20px_rgba(134,76,191,0.6)] z-10'
-                          : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
-                      }`}
-                    >
-                      <Avatar emoji={avatar} className="w-10 h-10 object-contain drop-shadow-md" />
-                      {selectedAvatar === avatar && (
-                        <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
-                          <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={`w-full btn-premium btn-secondary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>Joining Arena...</span>
-                  </div>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4" />
-                    <span>Join Lobby Room</span>
-                  </>
-                )}
-              </button>
-            </form>
-          )}
 
           {/* Footer link */}
           <div className="mt-8 text-center border-t border-white/5 pt-6">

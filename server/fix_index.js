@@ -8,6 +8,7 @@ code = code.replace(/=======\r?\napp\.listen\(PORT, '0\.0\.0\.0', \(\) => {\r?\n
 code = code.replace(/server\.listen\(PORT, \(\) => {\r?\n  console\.log\(`QuizForge server listening on port \${PORT}`\);\r?\n}\);\r?\n=======\r?\napp\.listen\(PORT, '0\.0\.0\.0', \(\) => {\r?\n=======\r?\nserver\.listen\(PORT, '0\.0\.0\.0', \(\) => {\r?\n>>>>>>> [^\n]+\r?\n    console\.log\(`QuizForge server listening on port \${PORT}`\);\r?\n}\);\r?\n>>>>>>> [^\n]+\r?\n/g, 'server.listen(PORT, \'0.0.0.0\', () => {\n  console.log(`QuizForge server listening on port ${PORT}`);\n});\n');
 
 // 2. Remove QUESTIONS
+
 code = code.replace(/const QUESTIONS = \[\s*\{[\s\S]*?\}\s*\];\s*/, '');
 
 // 3. Remove BOT_NAMES

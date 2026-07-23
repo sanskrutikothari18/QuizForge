@@ -222,26 +222,26 @@ export default function Dashboard() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   {quizzesData?.quizzes?.slice(0, 4).map((quiz) => (
-                    <div key={quiz._id} className="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[180px] sm:h-48 group border border-white/5 hover:border-primary/30 transition-all relative">
+                    <div key={quiz._id} className="glass-panel rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border border-white/5 hover:border-primary/30 transition-all relative">
                       <div>
-                        <div className="flex justify-between items-start gap-2">
+                        <div className="flex justify-between items-start gap-2 mb-2">
                           <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
                             {quiz.category || 'General'}
                           </span>
                           <span className="text-[10px] text-gray-500 font-semibold">{quiz.questions?.length || 0} Questions</span>
                         </div>
-                        <h4 className="font-bold text-white mt-3 text-sm group-hover:text-primary transition-colors line-clamp-1">{quiz.title}</h4>
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{quiz.description || 'No description provided.'}</p>
+                        <h4 className="font-bold text-white mt-4 text-sm sm:text-base group-hover:text-primary transition-colors line-clamp-1">{quiz.title}</h4>
+                        <p className="text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">{quiz.description || 'No description provided.'}</p>
                       </div>
 
-                      <div className="flex flex-col gap-2 mt-3 sm:mt-4 pt-3 border-t border-white/5">
+                      <div className="flex flex-col gap-2.5 mt-5 pt-4 border-t border-white/5">
                         <button
                           onClick={() => handleHostGame(quiz._id)}
-                          className="flex-1 btn-premium btn-primary-gradient py-2 px-3 flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-wider shadow-premium-glow"
+                          className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-premium-glow"
                         >
-                          <Play className="h-3 w-3 fill-current" />
+                          <Play className="h-3.5 w-3.5 fill-current" />
                           <span>Launch Lobby</span>
                         </button>
 
@@ -254,7 +254,7 @@ export default function Dashboard() {
                                   e.stopPropagation();
                                   setOpenReportMenuId(quiz._id);
                                 }}
-                                className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+                                className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
                                 title={`View reports (${quizResults.length} session${quizResults.length > 1 ? 's' : ''})`}
                               >
                                 <BarChart3 className="h-3.5 w-3.5 text-secondary animate-pulse" />
