@@ -20,7 +20,10 @@ const register = async (req, res) => {
             });
         }
 
-        const existingUser = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+        const trimmedName = name.trim();
+
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -28,7 +31,7 @@ const register = async (req, res) => {
             });
         }
 
-        const user = await User.create({ name, email, password });
+        const user = await User.create({ name: trimmedName, email: normalizedEmail, password });
         const token = generateToken(user._id);
 
         res.status(201).json({
@@ -61,7 +64,9 @@ const login = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(401).json({
                 success: false,

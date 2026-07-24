@@ -25,7 +25,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await login({
-        email: data.email,
+        email: data.email ? data.email.trim() : '',
         password: data.password,
       });
 
