@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -18,11 +19,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter your password'],
         minlength: [6, 'Password must be at least 6 characters']
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpire: {
+        type: Date
     }
 }, {
     timestamps: true
 });
 
+// Encrypt password before saving
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         next();
@@ -31,8 +39,23 @@ userSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Compare password
 userSchema.methods.comparePassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Generate 4-digit OTP for password reset
+userSchema.methods.getResetPasswordOtp = function() {
+    const otp = String(Math.floor(1000 + Math.random() * 9000));
+
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(otp)
+        .digest('hex');
+
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return otp;
 };
 
 module.exports = mongoose.model('User', userSchema);
