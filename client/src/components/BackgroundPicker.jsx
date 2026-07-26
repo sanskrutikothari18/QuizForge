@@ -1321,8 +1321,16 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
     }
 
     try {
-      const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const apiUrl = `http://${hostname}:5000/api/images/search?q=${encodeURIComponent(query)}&page=${page}`;
+      // On Vercel/production: VITE_API_URL is set (e.g. https://quizforge-server.onrender.com)
+      // On local dev: falls back to http://hostname:5000
+      let baseUrl;
+      if (import.meta.env.VITE_API_URL) {
+        baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, '');
+      } else {
+        const { protocol, hostname } = window.location;
+        baseUrl = `${protocol}//${hostname}:5000/api`;
+      }
+      const apiUrl = `${baseUrl}/images/search?q=${encodeURIComponent(query)}&page=${page}`;
       
       const headers = {};
       const pexelsKey = customKey || localStorage.getItem('user_pexels_api_key');
@@ -1343,6 +1351,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
     }
     return { photos: [], hasMore: false };
   };
+
 
   // Debounce search query input
   useEffect(() => {
