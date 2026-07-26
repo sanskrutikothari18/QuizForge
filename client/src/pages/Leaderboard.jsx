@@ -70,21 +70,46 @@ export default function Leaderboard() {
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
-    socket.on('quiz_ended', (data) => {
-      toast.success('Battle finished!');
-      navigate(`/final-result/${pin}`);
-    });
+    const handleQuizEnded = (data) => {
+      navigate(`/final-result/${pin}`, { state: { finalData: data } });
+    };
 
-    socket.on('room_closed', () => {
-      navigate('/join');
-    });
+    socket.on('quiz_ended', handleQuizEnded);
+    socket.on('show-final-result', handleQuizEnded);
+    socket.on('show_final_result', handleQuizEnded);
+
+    const handleHostEnded = (data) => {
+      if (!isUserHost && data?.reason === 'host_left') {
+        const msg = data?.message || 'Host has ended the quiz';
+        toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
+        localStorage.removeItem('guest_pin');
+        localStorage.removeItem('guest_playerName');
+        navigate('/join', { state: { endedMessage: msg } });
+      }
+    };
+
+    socket.on('room_closed', handleHostEnded);
+    socket.on('host_left', handleHostEnded);
 
     return () => {
       socket.off('question_started');
-      socket.off('quiz_ended');
-      socket.off('room_closed');
+      socket.off('quiz_ended', handleQuizEnded);
+      socket.off('show-final-result', handleQuizEnded);
+      socket.off('show_final_result', handleQuizEnded);
+      socket.off('room_closed', handleHostEnded);
+      socket.off('host_left', handleHostEnded);
     };
   }, [pin, playerName, navigate]);
+
+  const handleHostExit = () => {
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('host-end-quiz', { pin });
+    }
+    localStorage.removeItem('current_hosted_pin');
+    toast('Quiz session ended', { icon: '🚪' });
+    navigate('/dashboard');
+  };
 
   const handleNextStep = async () => {
     setIsLoadingNext(true);
@@ -181,11 +206,11 @@ export default function Leaderboard() {
           <div className="flex items-center gap-2">
             {isHost && (
               <button
-                onClick={() => navigate('/dashboard')}
-                className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider mr-2"
+                onClick={handleHostExit}
+                className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider mr-2 cursor-pointer"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Dashboard</span>
+                <span>Return to Dashboard</span>
               </button>
             )}
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Scoreboard Standings</span>

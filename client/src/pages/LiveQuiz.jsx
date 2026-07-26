@@ -319,10 +319,25 @@ export default function LiveQuiz() {
       }, 500);
     });
 
-    socket.on('room_closed', () => {
-      toast.error('The host terminated the session.');
-      navigate('/join');
-    });
+    const handleHostEnded = (data) => {
+      if (!isUserHost && data?.reason === 'host_left') {
+        const msg = data?.message || 'Host has ended the quiz';
+        toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
+        localStorage.removeItem('guest_pin');
+        localStorage.removeItem('guest_playerName');
+        navigate('/join', { state: { endedMessage: msg } });
+      }
+    };
+
+    const handleQuizEnded = (data) => {
+      navigate(`/final-result/${pin}`, { state: { finalData: data } });
+    };
+
+    socket.on('quiz_ended', handleQuizEnded);
+    socket.on('show-final-result', handleQuizEnded);
+    socket.on('show_final_result', handleQuizEnded);
+    socket.on('room_closed', handleHostEnded);
+    socket.on('host_left', handleHostEnded);
 
     return () => {
       socket.off('connect', joinRoom);
@@ -330,9 +345,23 @@ export default function LiveQuiz() {
       socket.off('player_answered');
       socket.off('question_started');
       socket.off('question_ended');
-      socket.off('room_closed');
+      socket.off('quiz_ended', handleQuizEnded);
+      socket.off('show-final-result', handleQuizEnded);
+      socket.off('show_final_result', handleQuizEnded);
+      socket.off('room_closed', handleHostEnded);
+      socket.off('host_left', handleHostEnded);
     };
   }, [pin, playerName, navigate, location.state]);
+
+  const handleHostExit = () => {
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('host-end-quiz', { pin });
+    }
+    localStorage.removeItem('current_hosted_pin');
+    toast('Quiz session ended', { icon: '🚪' });
+    navigate('/dashboard');
+  };
 
   const [isEnding, setIsEnding] = useState(false);
 
@@ -533,11 +562,11 @@ export default function LiveQuiz() {
           <div className="flex flex-wrap items-center gap-2">
             {isHost && (
               <button
-                onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-wider mr-1"
+                onClick={handleHostExit}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer"
               >
                 <ArrowLeft className="h-3 w-3" />
-                <span>Dashboard</span>
+                <span>Return to Dashboard</span>
               </button>
             )}
             <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>

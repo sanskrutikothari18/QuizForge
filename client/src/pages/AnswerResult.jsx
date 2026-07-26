@@ -333,18 +333,48 @@ export default function AnswerResult() {
       navigate(`/leaderboard/${pin}`);
     });
 
-    socket.on('quiz_ended', (data) => {
-      toast.success('Battle finished!');
-      navigate(`/final-result/${pin}`);
-    });
+    const handleQuizEnded = (data) => {
+      navigate(`/final-result/${pin}`, { state: { finalData: data } });
+    };
+
+    socket.on('quiz_ended', handleQuizEnded);
+    socket.on('show-final-result', handleQuizEnded);
+    socket.on('show_final_result', handleQuizEnded);
+
+    const handleHostEnded = (data) => {
+      if (!isUserHost && data?.reason === 'host_left') {
+        const msg = data?.message || 'Host has ended the quiz';
+        toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
+        localStorage.removeItem('guest_pin');
+        localStorage.removeItem('guest_playerName');
+        navigate('/join', { state: { endedMessage: msg } });
+      }
+    };
+
+    socket.on('room_closed', handleHostEnded);
+    socket.on('host_left', handleHostEnded);
 
     return () => {
       socket.off('connect', joinRoom);
       socket.off('question_started');
       socket.off('show_leaderboard');
-      socket.off('quiz_ended');
+      socket.off('quiz_ended', handleQuizEnded);
+      socket.off('show-final-result', handleQuizEnded);
+      socket.off('show_final_result', handleQuizEnded);
+      socket.off('room_closed', handleHostEnded);
+      socket.off('host_left', handleHostEnded);
     };
   }, [pin, playerName, navigate]);
+
+  const handleHostExit = () => {
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('host-end-quiz', { pin });
+    }
+    localStorage.removeItem('current_hosted_pin');
+    toast('Quiz session ended', { icon: '🚪' });
+    navigate('/dashboard');
+  };
 
   const [isShowingLeaderboard, setIsShowingLeaderboard] = useState(false);
 
@@ -470,7 +500,7 @@ export default function AnswerResult() {
         {isHost && (
           <div className="w-full max-w-4xl flex justify-between items-center mb-6 relative z-10 border-b border-white/5 pb-4">
             <button 
-              onClick={() => navigate('/dashboard')}
+              onClick={handleHostExit}
               className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider"
             >
               <ArrowLeft className="h-4 w-4" />

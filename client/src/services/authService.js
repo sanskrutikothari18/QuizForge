@@ -14,3 +14,13 @@ export const getProfile = async () => {
   const response = await API.get('/auth/profile');
   return response.data;
 };
+
+export const forgotPassword = async (emailData) => {
+  const response = await API.post('/auth/forgot-password', emailData);
+  return response.data;
+};
+
+export const resetPassword = async (token, passwordData) => {
+  const response = await API.post(`/auth/reset-password/${token}`, passwordData);
+  return response.data;
+};

@@ -74,6 +74,18 @@ export default function HostLobby() {
     }
   }, [game, pin]);
 
+  // Sync players list when initial game data is loaded
+  useEffect(() => {
+    if (game?.players) {
+      const activePlayers = game.players.map((p) => ({
+        username: p.name || p.username,
+        avatar: p.avatar || '👤',
+        score: p.totalScore || 0
+      }));
+      setPlayers(activePlayers);
+    }
+  }, [game]);
+
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
     const shareMessage = `Join my Fourise Quiz Hub arena!\n\nGame PIN: ${pin}\n\nJoin Link:\n${customUrl}`;
@@ -105,15 +117,26 @@ export default function HostLobby() {
     // 3. Listen to player updates
     socket.on('player_list', (data) => {
       console.log('[SOCKET] Received player list:', data.players);
-      setPlayers(data.players || []);
+      const activePlayers = (data.players || []).filter(
+        (p) => p.username && !p.username.startsWith('__LEAVE__:')
+      );
+      setPlayers(activePlayers);
     });
 
-    socket.on('player_connected', ({ username }) => {
-      toast.success(`${username} joined the battle!`);
-    });
-
-    socket.on('player_disconnected', ({ username }) => {
-      toast.error(`${username} left the lobby`);
+    socket.on('player-joined', ({ playerName }) => {
+      if (playerName) {
+        if (playerName.startsWith('__LEAVE__:')) {
+          const username = playerName.replace('__LEAVE__:', '');
+          setPlayers((prev) => prev.filter((p) => p.username !== username));
+          toast.error(`${username} left the lobby`);
+        } else {
+          setPlayers((prev) => {
+            if (prev.some((p) => p.username === playerName)) return prev;
+            return [...prev, { username: playerName, avatar: '👤', score: 0 }];
+          });
+          toast.success(`${playerName} joined the battle! ⚔️`);
+        }
+      }
     });
 
     socket.on('question_started', (data) => {
@@ -128,8 +151,7 @@ export default function HostLobby() {
       // Clean up event listeners on unmount
       socket.off('connect', joinRoom);
       socket.off('player_list');
-      socket.off('player_connected');
-      socket.off('player_disconnected');
+      socket.off('player-joined');
       socket.off('question_started');
     };
   }, [pin, navigate]);
@@ -255,6 +277,16 @@ export default function HostLobby() {
 
 
 
+  const handleHostExit = () => {
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('host-end-quiz', { pin });
+    }
+    localStorage.removeItem('current_hosted_pin');
+    toast('Quiz session ended', { icon: '🚪' });
+    navigate('/dashboard');
+  };
+
   return (
     <AnimatedPage>
       <div className="relative min-h-screen bg-background text-gray-200 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center overflow-x-hidden">
@@ -266,8 +298,8 @@ export default function HostLobby() {
         {/* Floating Return Button */}
         <div className="w-full max-w-4xl flex justify-start mb-4 relative z-10">
           <button 
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs font-black uppercase tracking-wider"
+            onClick={handleHostExit}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs font-black uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Return to Dashboard</span>

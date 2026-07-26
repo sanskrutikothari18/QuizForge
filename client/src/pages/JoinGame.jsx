@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Sparkles, AlertCircle, Loader2, QrCode, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,8 +12,10 @@ import { useGame } from '../context/GameContext';
 
 export default function JoinGame() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const urlPin = searchParams.get('pin') || '';
+  const endedMessage = location.state?.endedMessage;
   const { setPin, setPlayerName } = useGame();
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -146,6 +148,12 @@ export default function JoinGame() {
 
           {/* Header */}
           <div className="text-center mb-8">
+            {endedMessage && (
+              <div className="mb-6 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-bold flex items-center justify-center gap-2.5 shadow-lg">
+                <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
+                <span>{endedMessage}</span>
+              </div>
+            )}
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 border border-secondary/20 text-secondary mb-4">
               <Play className="h-6 w-6 fill-current" />
             </div>

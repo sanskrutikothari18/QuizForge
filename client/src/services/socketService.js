@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 const getSocketUrl = () => {
     if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+        return import.meta.env.VITE_API_URL.replace(/\/api$/, '').replace(/\/$/, '');
     }
     if (typeof window !== 'undefined' && window.location) {
         const { protocol, hostname } = window.location;

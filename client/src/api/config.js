@@ -6,9 +6,9 @@ const getBaseUrl = () => {
     }
     if (typeof window !== 'undefined' && window.location) {
         const { protocol, hostname } = window.location;
-        return `${protocol}//${hostname}:5000`;
+        return `${protocol}//${hostname}:5000/api`;
     }
-    return 'http://localhost:5000';
+    return 'http://localhost:5000/api';
 };
 
 const API = axios.create({

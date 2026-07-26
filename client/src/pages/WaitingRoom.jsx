@@ -71,7 +71,7 @@ export default function WaitingRoom() {
   const [isConnected, setIsConnected] = useState(false);
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
 
-  // Fetch quiz background image on mount
+  // Fetch quiz background image and players list on mount
   useEffect(() => {
     getGame(pin).then(res => {
       if (res.success) {
@@ -81,6 +81,15 @@ export default function WaitingRoom() {
         setBgImage(bg);
         localStorage.setItem('quiz_global_bg_image', bg);
         localStorage.setItem('last_bg_image', bg);
+
+        if (res.game?.players) {
+          const activePlayers = res.game.players.map((p) => ({
+            username: p.name || p.username,
+            avatar: p.avatar || '👤',
+            score: p.totalScore || 0
+          }));
+          setPlayers(activePlayers);
+        }
       }
     }).catch(() => {});
   }, [pin]);
@@ -118,7 +127,31 @@ export default function WaitingRoom() {
     // 3. Listen to state updates
     socket.on('player_list', (data) => {
       console.log('[SOCKET CLIENT] Received player list:', data.players);
-      setPlayers(data.players || []);
+      const activePlayers = (data.players || []).filter(
+        (p) => p.username && !p.username.startsWith('__LEAVE__:')
+      );
+      setPlayers(activePlayers);
+    });
+
+    // Listen to player-joined socket event (emitted by backend socket.on('player-join'))
+    socket.on('player-joined', ({ playerName }) => {
+      if (playerName) {
+        if (playerName.startsWith('__LEAVE__:')) {
+          const username = playerName.replace('__LEAVE__:', '');
+          setPlayers((prev) => prev.filter((p) => p.username !== username));
+          if (username !== localPlayerName) {
+            toast.error(`${username} left the lobby`);
+          }
+        } else {
+          setPlayers((prev) => {
+            if (prev.some((p) => p.username === playerName)) return prev;
+            return [...prev, { username: playerName, avatar: '👤', score: 0 }];
+          });
+          if (playerName !== localPlayerName) {
+            toast(`${playerName} entered the waiting room`, { icon: '🛡️' });
+          }
+        }
+      }
     });
 
     socket.on('question_started', (data) => {
@@ -133,12 +166,25 @@ export default function WaitingRoom() {
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
-    socket.on('room_closed', ({ message }) => {
-      toast.error(message || 'Host closed the room');
-      localStorage.removeItem('guest_pin');
-      localStorage.removeItem('guest_playerName');
-      navigate('/join');
-    });
+    const handleHostEnded = (data) => {
+      if (data?.reason === 'host_left') {
+        const msg = data?.message || 'Host has ended the quiz';
+        toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
+        localStorage.removeItem('guest_pin');
+        localStorage.removeItem('guest_playerName');
+        navigate('/join', { state: { endedMessage: msg } });
+      }
+    };
+
+    const handleQuizEnded = (data) => {
+      navigate(`/final-result/${pin}`, { state: { finalData: data } });
+    };
+
+    socket.on('quiz_ended', handleQuizEnded);
+    socket.on('show-final-result', handleQuizEnded);
+    socket.on('show_final_result', handleQuizEnded);
+    socket.on('room_closed', handleHostEnded);
+    socket.on('host_left', handleHostEnded);
 
     socket.on('player_connected', ({ username }) => {
       if (username !== localPlayerName) {
@@ -146,17 +192,26 @@ export default function WaitingRoom() {
       }
     });
 
-    socket.on('player_disconnected', ({ username }) => {
-      toast.error(`${username} left the lobby`);
-    });
+    const handleLeave = () => {
+      if (socket && socket.connected && localPlayerName) {
+        socket.emit('player-join', { pin, playerName: `__LEAVE__:${localPlayerName}` });
+      }
+    };
+
+    window.addEventListener('beforeunload', handleLeave);
 
     return () => {
+      handleLeave();
+      window.removeEventListener('beforeunload', handleLeave);
       socket.off('connect', joinRoom);
       socket.off('player_list');
+      socket.off('player-joined');
       socket.off('question_started');
-      socket.off('room_closed');
-      socket.off('player_connected');
-      socket.off('player_disconnected');
+      socket.off('quiz_ended', handleQuizEnded);
+      socket.off('show-final-result', handleQuizEnded);
+      socket.off('show_final_result', handleQuizEnded);
+      socket.off('room_closed', handleHostEnded);
+      socket.off('host_left', handleHostEnded);
     };
   }, [pin, localPlayerName, playerName, navigate]);
 

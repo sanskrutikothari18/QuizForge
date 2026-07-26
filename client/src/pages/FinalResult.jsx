@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '../context/ThemeContext';
 import { motion } from 'framer-motion';
@@ -23,11 +23,12 @@ const isUnansweredAnswer = (answer) => {
 
 const getSubmittedAnswers = (answers = []) => (answers || []).filter((answer) => !isUnansweredAnswer(answer));
 
-
-
 export default function FinalResult() {
   const { pin } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const socketData = location.state?.finalData;
+
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
@@ -52,9 +53,21 @@ export default function FinalResult() {
     queryKey: ['final-game', pin],
     queryFn: () => getGame(pin),
     refetchOnWindowFocus: false,
+    staleTime: 0
   });
 
-  const game = gameData?.game;
+  // Construct game object with instant socket state fallback
+  const game = gameData?.game || (socketData ? {
+    pin,
+    players: (socketData.finalLeaderboard || []).map(p => ({
+      name: p.username || p.name,
+      avatar: p.avatar,
+      totalScore: p.score !== undefined ? p.score : (p.totalScore || 0),
+      answers: p.answers || []
+    })),
+    winner: socketData.winner
+  } : null);
+
   const sessionId = game?.id;
 
   // Auto-save results to MongoDB Result schema for Host
@@ -223,7 +236,7 @@ export default function FinalResult() {
     rank: currentPlayer.rank || 0
   } : null;
 
-  if (isLoading) {
+  if (isLoading && !game) {
     return (
       <AnimatedPage>
         <div className={`flex-1 flex items-center justify-center min-h-screen ${isDark ? 'bg-[#46178F]' : 'bg-gray-100'}`}>

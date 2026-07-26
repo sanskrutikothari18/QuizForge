@@ -6,9 +6,9 @@ const getBaseUrl = () => {
     }
     if (typeof window !== 'undefined' && window.location) {
         const { protocol, hostname } = window.location;
-        return `${protocol}//${hostname}:5000`;
+        return `${protocol}//${hostname}:5000/api`;
     }
-    return 'http://localhost:5000';
+    return 'http://localhost:5000/api';
 };
 
 const API = axios.create({
@@ -22,5 +22,19 @@ API.interceptors.request.use((req) => {
     }
     return req;
 });
+
+API.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+                window.location.href = '/login?expired=true';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default API;

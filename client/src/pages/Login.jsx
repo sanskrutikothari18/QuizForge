@@ -12,6 +12,13 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired')) {
+      toast.error('Session expired or database reconnected. Please sign in again.');
+    }
+  }, []);
+
   const hostForm = useForm({
     defaultValues: {
       email: '',
@@ -132,13 +139,12 @@ export default function Login() {
                   <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
                     Password
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => toast.error('Forgot password endpoint is not implemented on the server!')}
+                  <Link
+                    to="/forgot-password"
                     className="text-xs font-medium text-secondary hover:underline cursor-pointer"
                   >
                     Forgot password?
-                  </button>
+                  </Link>
                 </div>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">

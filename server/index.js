@@ -57,11 +57,13 @@ const authRoutes = require('./routes/authRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const resultRoutes = require('./routes/resultRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 
 app.use('/auth', authRoutes);
 app.use('/quiz', quizRoutes);
 app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
+app.use('/images', imageRoutes);
 
 // Dual-mount /api/* paths for universal API compatibility
 app.use('/api/auth', authRoutes);
@@ -69,6 +71,7 @@ app.use('/api/quiz', quizRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/result', resultRoutes);
 app.use('/api/results', resultRoutes);
+app.use('/api/images', imageRoutes);
 
 app.get('/', (req, res) => {
     res.send('Quiz API is running...');

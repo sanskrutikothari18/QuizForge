@@ -510,16 +510,18 @@ const endGame = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            // Emit quiz_ended for the final results screen
-            io.to(`room_${pin}`).emit('quiz_ended', {
+            const payload = {
                 winner,
-                finalLeaderboard: finalLeaderboard
-            });
-            // FIXED: Also emit room_closed so WaitingRoom/LiveQuiz listeners can
-            // redirect players who haven't yet advanced past the waiting screen
-            io.to(`room_${pin}`).emit('room_closed', {
-                message: 'Game has ended. Thanks for playing!'
-            });
+                finalLeaderboard: finalLeaderboard,
+                message: 'Battle finished!'
+            };
+            // Emit all event aliases for maximum client compatibility
+            io.to(`room_${pin}`).emit('quiz_ended', payload);
+            io.to(pin).emit('quiz_ended', payload);
+            io.to(`room_${pin}`).emit('show_final_result', payload);
+            io.to(pin).emit('show_final_result', payload);
+            io.to(`room_${pin}`).emit('show-final-result', payload);
+            io.to(pin).emit('show-final-result', payload);
         }
 
         res.status(200).json({
