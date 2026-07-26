@@ -58,8 +58,8 @@ export default function Register() {
     setIsLoading(true);
     try {
       const response = await registerUser({
-        name: data.name,
-        email: data.email,
+        name: data.name ? data.name.trim() : '',
+        email: data.email ? data.email.trim() : '',
         password: data.password,
       });
 

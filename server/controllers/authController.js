@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 const generateToken = (userId) => {
     return jwt.sign(
         { id: userId },
@@ -20,7 +21,10 @@ const register = async (req, res) => {
             });
         }
 
-        const existingUser = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+        const trimmedName = name.trim();
+
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -28,7 +32,7 @@ const register = async (req, res) => {
             });
         }
 
-        const user = await User.create({ name, email, password });
+        const user = await User.create({ name: trimmedName, email: normalizedEmail, password });
         const token = generateToken(user._id);
 
         res.status(201).json({
@@ -61,7 +65,9 @@ const login = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -127,4 +133,196 @@ const getProfile = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile };
+const hashOtp = (otp) =>
+    crypto.createHash('sha256').update(String(otp)).digest('hex');
+
+const findUserByEmailAndOtp = async (email, otp) => {
+    const resetPasswordToken = hashOtp(otp);
+
+    return User.findOne({
+        email,
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    });
+};
+
+const forgotPassword = async (req, res) => {
+    let user;
+    try {
+        const { getEmailConfig } = require('../utils/sendEmail');
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide an email address'
+            });
+        }
+
+        user = await User.findOne({ email });
+
+        const successResponse = {
+            success: true,
+            message: 'If an account exists with that email, a 4-digit OTP has been sent.'
+        };
+
+        if (!user) {
+            return res.status(200).json(successResponse);
+        }
+
+        const otp = user.getResetPasswordOtp();
+        await user.save({ validateBeforeSave: false });
+
+        const emailMessage = `
+            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
+                <h1 style="color: #6d28d9;">QuizForge Password Reset</h1>
+                <p>You requested to reset your password. Use the OTP below:</p>
+                <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 12px; margin: 24px 0;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e1840;">${otp}</span>
+                </div>
+                <p style="color: #6b7280;">This OTP expires in 10 minutes. If you did not request this, you can ignore this email.</p>
+            </div>
+        `;
+
+        const hasEmailConfig = !!getEmailConfig();
+
+        if (hasEmailConfig) {
+            await sendEmail({
+                email: user.email,
+                subject: 'QuizForge - Password Reset OTP',
+                html: emailMessage
+            });
+
+            return res.status(200).json(successResponse);
+        }
+
+        console.log('\n--- DEVELOPMENT MODE: PASSWORD RESET OTP ---');
+        console.log(`Email: ${user.email}`);
+        console.log(`OTP: ${otp}`);
+        console.log('--------------------------------------------\n');
+
+        return res.status(200).json({
+            ...successResponse,
+            message: 'OTP generated. [DEV MODE] Check the server console or use the OTP below.',
+            devOtp: otp
+        });
+
+    } catch (error) {
+        if (user) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            try {
+                await user.save({ validateBeforeSave: false });
+            } catch (saveError) {
+                console.error('Error clearing reset OTP:', saveError.message);
+            }
+        }
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide email and OTP'
+            });
+        }
+
+        if (!/^\d{4}$/.test(String(otp))) {
+            return res.status(400).json({
+                success: false,
+                message: 'OTP must be a 4-digit number'
+            });
+        }
+
+        const user = await findUserByEmailAndOtp(email, otp);
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired OTP'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'OTP verified successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, password } = req.body;
+
+        if (!email || !otp || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide email, OTP, and new password'
+            });
+        }
+
+        if (!/^\d{4}$/.test(String(otp))) {
+            return res.status(400).json({
+                success: false,
+                message: 'OTP must be a 4-digit number'
+            });
+        }
+
+        const user = await findUserByEmailAndOtp(email, otp);
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired OTP'
+            });
+        }
+
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+
+
+
+
+
+
+
+module.exports = {
+    register,
+    login,
+    getProfile,
+    forgotPassword,
+    verifyOtp,
+    resetPassword
+};

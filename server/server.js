@@ -9,7 +9,7 @@
  * Run with: npm start  OR  npm run dev
  */
 
-const dns = require('dns');
+const dns = require('dn');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
 const cors = require('cors');
