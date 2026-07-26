@@ -20,7 +20,13 @@ export const getQuizById = async (id) => {
   return response.data;
 };
 
+export const updateQuiz = async ({ id, data }) => {
+  const response = await API.put(`/quiz/${id}`, data);
+  return response.data;
+};
+
 export const deleteQuiz = async (id) => {
   const response = await API.delete(`/quiz/${id}`);
   return response.data;
 };
+

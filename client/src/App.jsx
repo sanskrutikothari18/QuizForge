@@ -15,6 +15,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import CreateQuiz from './pages/CreateQuiz';
+import EditQuiz from './pages/EditQuiz';
 import MyQuizzes from './pages/MyQuizzes';
 import HostLobby from './pages/HostLobby';
 import JoinGame from './pages/JoinGame';
@@ -55,6 +56,7 @@ function AnimatedRoutes() {
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quiz/create" element={<CreateQuiz />} />
+            <Route path="/quiz/edit/:id" element={<EditQuiz />} />
             <Route path="/quiz/my" element={<MyQuizzes />} />
             <Route path="/host/lobby/:pin" element={<HostLobby />} />
             <Route path="/join" element={<JoinGame />} />

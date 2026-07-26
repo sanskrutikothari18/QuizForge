@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Award, Play, Trash2, Search, Filter, Plus, ArrowLeft, 
   HelpCircle, MoreVertical, Calendar, ArrowRight, ShieldCheck,
-  BarChart3, Trophy, Users
+  BarChart3, Trophy, Users, Pencil
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -216,6 +216,15 @@ export default function MyQuizzes() {
                         <div className="flex items-center gap-3">
                           <span className="text-[10px] text-gray-500 font-semibold">{quiz.questions?.length || 0} Questions</span>
                           
+                          {/* Edit Button */}
+                          <button
+                            onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
+                            className="p-1 rounded-lg border border-primary/20 text-primary/50 hover:text-primary hover:bg-primary/10 hover:border-primary/40 transition-colors"
+                            title="Edit Quiz"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+
                           {/* Delete Button */}
                           <button
                             onClick={() => handleDeleteQuiz(quiz._id)}

@@ -170,10 +170,52 @@ const getMyQuizzes = async (req, res) => {
     }
 };
 
+const updateQuiz = async (req, res) => {
+    try {
+        const quiz = await Quiz.findById(req.params.id);
+
+        if (!quiz) {
+            return res.status(404).json({ success: false, message: 'Quiz not found' });
+        }
+
+        const createdByStr = quiz.createdBy?.toString();
+        const reqUserIdStr = req.user?._id?.toString();
+        if (createdByStr !== reqUserIdStr) {
+            return res.status(401).json({ success: false, message: 'Not authorized to edit this quiz' });
+        }
+
+        const { title, category, description, questions, backgroundImage } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ success: false, message: 'Please provide quiz title' });
+        }
+        if (!questions || questions.length === 0) {
+            return res.status(400).json({ success: false, message: 'Please provide at least 1 question' });
+        }
+        for (let i = 0; i < questions.length; i++) {
+            if (questions[i].options.length !== 4) {
+                return res.status(400).json({ success: false, message: `Question ${i + 1} must have exactly 4 options` });
+            }
+        }
+
+        quiz.title          = title;
+        quiz.category       = category || quiz.category;
+        quiz.description    = description || '';
+        quiz.questions      = questions;
+        quiz.backgroundImage = backgroundImage || '';
+        await quiz.save();
+
+        res.status(200).json({ success: true, message: 'Quiz updated successfully', quiz });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 module.exports = {
     createQuiz,
     listQuizzes,
     getQuiz,
     deleteQuiz,
-    getMyQuizzes
+    getMyQuizzes,
+    updateQuiz
 };
