@@ -26,13 +26,21 @@ const pageTransition = {
 };
 
 export default function AnimatedPage({ children }) {
+  const ref = React.useRef(null);
+  
   return (
     <motion.div
+      ref={ref}
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
       transition={pageTransition}
+      onAnimationComplete={(definition) => {
+        if (definition === 'animate' && ref.current) {
+          ref.current.style.transform = 'none';
+        }
+      }}
       className="flex-1 flex flex-col w-full"
     >
       {children}

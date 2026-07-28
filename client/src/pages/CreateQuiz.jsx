@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +21,26 @@ export default function CreateQuiz() {
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
+
+  // Sticky toolbar states
+  const [isSticky, setIsSticky] = useState(false);
+  const toolbarRef = useRef(null);
+  const placeholderRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!placeholderRef.current) return;
+      const rect = placeholderRef.current.getBoundingClientRect();
+      if (rect.top <= 64) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Helper to parse background config
   const parseBgConfig = (bgStr) => {
@@ -243,8 +263,14 @@ export default function CreateQuiz() {
 
         <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
           
+          {/* Header Actions Placeholder */}
+          <div ref={placeholderRef} className="w-full" style={{ height: isSticky ? (toolbarRef.current?.offsetHeight || 88) : 0 }} />
+          
           {/* Header Actions */}
-          <div className="sticky top-16 z-50 bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl">
+          <div 
+            ref={toolbarRef}
+            className={`${isSticky ? 'fixed top-16 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50' : 'relative z-50'} bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl`}
+          >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
               <button 
