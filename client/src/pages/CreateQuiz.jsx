@@ -241,11 +241,11 @@ export default function CreateQuiz() {
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-24 sm:pt-20">
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
           
           {/* Header Actions */}
-          <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]">
-            <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
+          <div className="sticky top-16 z-50 bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate('/dashboard')}
@@ -323,9 +323,9 @@ export default function CreateQuiz() {
               </button>
             </div>
           </div>
-          </div>
-
-          {/* EDITOR LAYOUT */}
+        </div>
+          
+        {/* EDITOR LAYOUT */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               {/* QUIZ INFORMATION METADATA */}
