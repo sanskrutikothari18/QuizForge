@@ -31,7 +31,8 @@ export default function CreateQuiz() {
     const handleScroll = () => {
       if (!placeholderRef.current) return;
       const rect = placeholderRef.current.getBoundingClientRect();
-      if (rect.top <= 64) {
+      // 80px is the height of the navbar (64px) plus the 16px gap
+      if (rect.top <= 80) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
@@ -263,6 +264,11 @@ export default function CreateQuiz() {
 
         <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
           
+          {/* Fading gap mask */}
+          {isSticky && (
+            <div className="fixed top-16 left-0 right-0 h-8 z-40 bg-gradient-to-b from-background via-background/90 to-transparent pointer-events-none" />
+          )}
+
           {/* Header Actions Placeholder */}
           <div ref={placeholderRef} className="w-full" style={{ height: isSticky ? (toolbarRef.current?.offsetHeight || 88) : 0 }} />
           
@@ -271,11 +277,11 @@ export default function CreateQuiz() {
             ref={toolbarRef}
             className={`${
               isSticky 
-                ? 'fixed top-14 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50 bg-background/95 backdrop-blur-xl border-white/10 border-x border-b rounded-b-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.7)]' 
-                : 'relative z-50 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'
-            } transition-all duration-300`}
+                ? 'fixed top-20 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50' 
+                : 'relative z-50'
+            } bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl transition-all duration-300`}
           >
-            <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 sm:px-8 transition-all duration-300 ${isSticky ? 'py-3' : 'py-4'}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate('/dashboard')}
@@ -283,9 +289,9 @@ export default function CreateQuiz() {
               >
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
-              <div className={`transition-all duration-500 ease-in-out overflow-hidden flex flex-col justify-center ${isSticky ? 'opacity-0 max-w-0 max-h-0 m-0 blur-md scale-95' : 'opacity-100 max-w-md max-h-20 blur-none scale-100'}`}>
-                <h1 className="font-outfit text-3xl font-extrabold text-white whitespace-nowrap">Create Quiz</h1>
-                <p className="text-xs text-gray-400 mt-1 whitespace-nowrap">Design customized questions and timers.</p>
+              <div>
+                <h1 className="font-outfit text-3xl font-extrabold text-white">Create Quiz</h1>
+                <p className="text-xs text-gray-400 mt-1">Design customized questions and timers.</p>
               </div>
             </div>
 
