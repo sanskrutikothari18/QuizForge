@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
@@ -31,9 +31,37 @@ import { GameProvider } from './context/GameContext';
 
 const queryClient = new QueryClient();
 
+// Scrolls to the element matching the URL hash (e.g. #features) on the landing page.
+function useScrollToHash() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      // Poll for the element since AnimatePresence mode="wait" delays rendering
+      // of the new page until the exit animation finishes.
+      const id = location.hash.replace('#', '');
+      let attempts = 0;
+      const maxAttempts = 20; // 20 x 50ms = 1s max wait
+      const interval = setInterval(() => {
+        attempts++;
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          clearInterval(interval);
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval);
+        }
+      }, 50);
+      return () => clearInterval(interval);
+    } else {
+      window.scrollTo({ top: 0 });
+    }
+  }, [location]);
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
-  
+  useScrollToHash();
+
   // Hide Navbar & Footer during gameplay for full immersion
   const isGameplayView = [
     '/live', 
@@ -66,6 +94,7 @@ function AnimatedRoutes() {
             <Route path="/leaderboard/:pin" element={<Leaderboard />} />
             <Route path="/final-result/:pin" element={<FinalResult />} />
             <Route path="/results/:sessionId" element={<ResultsAnalytics />} />
+            <Route path="/reviews" element={<Navigate to="/#testimonials" replace />} />
           </Routes>
         </AnimatePresence>
       </main>

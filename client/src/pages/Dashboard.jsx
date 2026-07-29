@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  LayoutDashboard, Award, PlusCircle, BarChart3, User, Mail, 
-  Calendar, FileText, ArrowRight, Play, Trash2, Trophy, Users, HelpCircle 
+import {
+  LayoutDashboard, Award, PlusCircle, Mail,
+  Calendar, FileText, ArrowRight, Play, Users, HelpCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
-import ReportsModal from '../components/ReportsModal';
 import { getProfile } from '../services/authService';
-import { getMyQuizzes, deleteQuiz } from '../services/quizService';
+import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [openReportMenuId, setOpenReportMenuId] = useState(null);
 
   // Clear any lingering guest credentials so Host testing doesn't get bugged
   useEffect(() => {
@@ -197,6 +194,34 @@ export default function Dashboard() {
             ))}
           </div>
 
+          {/* CREATE GAME & JOIN GAME CARDS */}
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
+            <Link
+              to="/quiz/create"
+              className="glass-panel rounded-2xl p-6 text-left flex flex-col gap-3 group border border-white/5 hover:border-primary/30 transition-all relative overflow-hidden"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
+                <PlusCircle className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-outfit text-lg font-bold text-white group-hover:text-primary transition-colors">Create Game</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Build a custom quiz and host a live multiplayer battle session for your players.
+              </p>
+            </Link>
+            <Link
+              to="/join"
+              className="glass-panel rounded-2xl p-6 text-left flex flex-col gap-3 group border border-white/5 hover:border-secondary/30 transition-all relative overflow-hidden"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10 border border-secondary/20">
+                <Play className="h-6 w-6 text-secondary fill-current" />
+              </div>
+              <h3 className="font-outfit text-lg font-bold text-white group-hover:text-secondary transition-colors">Join Game</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Enter a game code and jump into an active quiz session hosted by another moderator.
+              </p>
+            </Link>
+          </div>
+
           {/* TWO PANEL CONTENT */}
           <div className="grid gap-8 lg:grid-cols-3">
             
@@ -244,26 +269,6 @@ export default function Dashboard() {
                           <Play className="h-3.5 w-3.5 fill-current" />
                           <span>Launch Lobby</span>
                         </button>
-
-                        {(() => {
-                          const quizResults = resultsData?.results?.filter(res => res.quizId?._id === quiz._id) || [];
-                          if (quizResults.length > 0) {
-                            return (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenReportMenuId(quiz._id);
-                                }}
-                                className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
-                                title={`View reports (${quizResults.length} session${quizResults.length > 1 ? 's' : ''})`}
-                              >
-                                <BarChart3 className="h-3.5 w-3.5 text-secondary animate-pulse" />
-                                <span>Reports ({quizResults.length})</span>
-                              </button>
-                            );
-                          }
-                          return null;
-                        })()}
                       </div>
                     </div>
                   ))}
@@ -298,32 +303,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Recent Results Summary */}
-              {resultsData?.results?.length > 0 && (
-                <div className="space-y-3.5">
-                  <h4 className="font-outfit text-xs font-bold text-gray-400 uppercase tracking-wider">Recent Battle Summaries</h4>
-                  <div className="space-y-3">
-                    {resultsData.results.slice(0, 3).map((res) => (
-                      <Link 
-                        key={res._id} 
-                        to={`/results/${res.sessionId}`} 
-                        className="glass-panel rounded-xl p-3.5 flex items-center justify-between hover:bg-white/5 border border-white/5 transition-all block"
-                      >
-                        <div className="overflow-hidden pr-2">
-                          <h5 className="font-bold text-white text-xs truncate">{res.quizTitle}</h5>
-                          <div className="flex gap-2 items-center text-[10px] text-gray-500 mt-1">
-                            <span className="flex items-center gap-0.5"><Users className="h-3 w-3" /> {res.players?.length || 0} players</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-0.5 text-green-400 font-semibold"><Trophy className="h-3 w-3" /> {res.winner || 'No winner'}</span>
-                          </div>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-gray-500 shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
             </div>
 
           </div>
@@ -331,17 +310,6 @@ export default function Dashboard() {
         </div>
 
       </div>
-
-      <ReportsModal
-        isOpen={!!openReportMenuId}
-        onClose={() => setOpenReportMenuId(null)}
-        quiz={quizzesData?.quizzes?.find(q => q._id === openReportMenuId)}
-        results={resultsData?.results?.filter(res => {
-          const rid = res.quizId?._id || res.quizId;
-          return rid === openReportMenuId || rid?.toString() === openReportMenuId?.toString();
-        })}
-        isLoading={isResultsLoading}
-      />
     </AnimatedPage>
   );
 }

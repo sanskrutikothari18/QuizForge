@@ -19,10 +19,9 @@ export default function Footer() {
 
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-6 text-xs font-medium text-gray-400">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-white transition-colors">How it Works</a>
-            <a href="#testimonials" className="hover:text-white transition-colors">Reviews</a>
-            <Link to="/join" className="hover:text-white transition-colors">Join Game</Link>
+            <Link to="/#features" className="hover:text-white transition-colors">Features</Link>
+            <Link to="/#how-it-works" className="hover:text-white transition-colors">How it Works</Link>
+            <Link to="/#testimonials" className="hover:text-white transition-colors">Reviews</Link>
           </div>
 
           {/* Socials & Copyright */}

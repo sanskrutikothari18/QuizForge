@@ -53,7 +53,7 @@ export default function Navbar() {
               </Link>
             </>
           ) : (
-            <Link to="/#features" className="text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
+            <Link to="/#features" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
               Features
             </Link>
           )}
