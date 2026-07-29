@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import {
   Play, Sparkles, Plus, Radio, KeyRound, Trophy, Zap, ShieldCheck, Smartphone,
   LogIn, Gamepad2, Clock, Timer, CheckCircle, ListOrdered, Star, Quote,
+  FileDown, QrCode,
 } from 'lucide-react';
 import AnimatedPage from '../components/AnimatedPage';
 
@@ -15,6 +16,8 @@ const features = [
   { title: 'Instant Results', icon: <Zap className="h-5 w-5 text-secondary" />, desc: 'Get immediate feedback and final scores the moment a game ends.' },
   { title: 'Secure Authentication', icon: <ShieldCheck className="h-5 w-5 text-accent" />, desc: 'Protected user accounts with JWT-based login and password recovery.' },
   { title: 'Responsive Design', icon: <Smartphone className="h-5 w-5 text-primary" />, desc: 'Enjoy a seamless experience across desktop, tablet, and mobile devices.' },
+  { title: 'Export Results & Analytics', icon: <FileDown className="h-5 w-5 text-secondary" />, desc: 'Download detailed game reports and player analytics as PDF or Excel.' },
+  { title: 'QR Code Game Join', icon: <QrCode className="h-5 w-5 text-accent" />, desc: 'Scan a QR code to instantly join any live quiz session without typing a PIN.' },
 ];
 
 const howItWorks = [
