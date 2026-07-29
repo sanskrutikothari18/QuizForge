@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Image, Upload, Settings, Search, Heart, ZoomIn, ZoomOut, Download, Check, ExternalLink, X, ChevronLeft, ChevronRight, Sparkles, Monitor, Smartphone } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../context/ThemeContext';
 
 const BG_PRESETS = {
   Education: [
@@ -1210,6 +1211,8 @@ const SUB_CATEGORIES = {
 
 export default function BackgroundPicker({ value, onChange, showPreview = true, previewData }) {
   const config = parseBgConfig(value);
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
 
   const defaultPreviewData = {
     category: 'Preview Category',
@@ -1279,6 +1282,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   const [selectedImageForPreview, setSelectedImageForPreview] = useState(null);
   const [zoomScale, setZoomScale] = useState(1);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [bgAppliedConfirm, setBgAppliedConfirm] = useState(false);
   
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
@@ -1540,7 +1544,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
           >
             <span className="flex items-center justify-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" />
-              Pixel Library
+              Pexels Library
             </span>
           </button>
         </div>
@@ -1643,13 +1647,13 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 <Sparkles className="h-6 w-6 animate-pulse" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Pexels Image Library</h4>
-                <p className="text-xs text-gray-400 max-w-xs mt-1">Browse millions of free HD stock photos without disrupting your editor layout.</p>
+                <h4 className={`text-sm font-bold ${isLight ? 'text-gray-800' : 'text-white'}`}>Pexels Image Library</h4>
+                <p className={`text-xs max-w-xs mt-1 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>Browse millions of free HD stock photos without disrupting your editor layout.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsPexelsModalOpen(true)}
-                className="btn-premium px-5 py-2.5 text-xs font-bold text-white shadow-premium-glow flex items-center gap-2 cursor-pointer"
+                className="btn-premium bg-primary px-5 py-2.5 text-xs font-bold text-white shadow-premium-glow flex items-center gap-2 cursor-pointer"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>Open Pexels Library</span>
@@ -1661,23 +1665,23 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
         {/* PEXELS LIBRARY PORTAL MODAL (REMOVED FROM NORMAL DOCUMENT FLOW) */}
         {isPexelsModalOpen && createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-hidden">
-            <div className="bg-[#121216] border border-white/10 rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden relative text-left">
+            <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden relative text-left`}>
               
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#18181f] shrink-0">
+              <div className={`flex items-center justify-between px-6 py-4 border-b ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-[#18181f]'} shrink-0`}>
                 <div className="flex items-center gap-2.5">
                   <div className="p-2 rounded-xl bg-primary/20 border border-primary/30 text-primary">
                     <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">Pexels Image Library</h3>
-                    <p className="text-[11px] text-gray-400">Search & select millions of free high-resolution stock photos</p>
+                    <h3 className={`text-base font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Pexels Image Library</h3>
+                    <p className={`text-[11px] ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>Search & select millions of free high-resolution stock photos</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsPexelsModalOpen(false)}
-                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  className={`p-2 rounded-xl border transition-all cursor-pointer ${isLight ? 'bg-gray-100 border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-200' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -1689,18 +1693,18 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {/* API Credentials Settings Popup Overlay */}
                 {showSettingsPopup && (
                   <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
-                    <div className="bg-[#18181f] border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+                    <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#18181f] border-white/10'} border rounded-2xl w-full max-w-md p-6 shadow-2xl relative`}>
                       <button
                         type="button"
                         onClick={() => setShowSettingsPopup(false)}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        className={`absolute top-4 right-4 transition-colors cursor-pointer ${isLight ? 'text-gray-400 hover:text-gray-900' : 'text-gray-400 hover:text-white'}`}
                       >
                         <X className="h-5 w-5" />
                       </button>
-                      <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-1.5">
+                      <h3 className={`text-sm font-bold mb-2 flex items-center gap-1.5 ${isLight ? 'text-gray-900' : 'text-white'}`}>
                         <Settings className="h-4 w-4 text-primary" /> Pexels API Key Configuration
                       </h3>
-                      <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">
+                      <p className={`text-[11px] mb-4 leading-relaxed ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
                         By default, we search keylessly using SourceSplash. Enter your personal Pexels API Key to unlock unlimited searching of millions of original photos.
                       </p>
                       <div className="space-y-3">
@@ -1712,7 +1716,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                             setUserPexelsKey(e.target.value);
                             localStorage.setItem('user_pexels_api_key', e.target.value);
                           }}
-                          className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-primary"
+                          className={`w-full rounded-xl border px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary ${isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'}`}
                         />
                         <div className="flex gap-2 justify-end pt-2">
                           {userPexelsKey && (
@@ -1747,7 +1751,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {/* Search Bar Row */}
                 <div className="flex gap-2.5 items-center relative">
                   <div className="relative flex-1">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                    <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${isLight ? 'text-gray-400' : 'text-gray-400'}`}>
                       <Search className="h-4 w-4" />
                     </span>
                     <input
@@ -1757,7 +1761,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                       onFocus={() => setShowSuggestions(true)}
                       onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                       onChange={(e) => setPixelSearchInput(e.target.value)}
-                      className="w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-9 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-primary"
+                      className={`w-full rounded-xl border pl-10 pr-9 py-2.5 text-xs focus:outline-none focus:border-primary ${isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'}`}
                     />
                     {pixelSearchInput && (
                       <button
@@ -1770,7 +1774,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     
                     {/* Suggestions Dropdown */}
                     {showSuggestions && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-[#18181f] border border-white/10 rounded-xl overflow-hidden shadow-2xl z-40 max-h-52 overflow-y-auto scrollbar-thin">
+                      <div className={`absolute top-full left-0 right-0 mt-1 border rounded-xl overflow-hidden shadow-2xl z-40 max-h-52 overflow-y-auto scrollbar-thin ${isLight ? 'bg-white border-gray-200' : 'bg-[#18181f] border-white/10'}`}>
                         {['Coffee', 'Latte Art', 'Espresso', 'Laptop', 'Coding', 'AI', 'Sunset', 'Nature', 'Forest', 'Ocean', 'Flowers', 'Roses', 'Birds', 'Food', 'Pizza', 'Burger', 'Gaming', 'Space', 'Galaxy', 'Abstract', 'Minimal'].filter(tag => 
                           !pixelSearchInput || tag.toLowerCase().startsWith(pixelSearchInput.toLowerCase())
                         ).map(suggestion => (
@@ -1781,7 +1785,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                               setPixelSearchInput(suggestion);
                               setPixelCategory('all');
                             }}
-                            className="w-full text-left px-3.5 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 cursor-pointer"
+                            className={`w-full text-left px-3.5 py-2 text-xs transition-colors border-b last:border-0 cursor-pointer ${isLight ? 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-gray-100' : 'text-gray-300 hover:text-white hover:bg-white/5 border-white/5'}`}
                           >
                             🔍 {suggestion}
                           </button>
@@ -1818,7 +1822,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {/* Recent Searches (last 20) */}
                 {recentSearches.length > 0 && !pixelShowFavoritesOnly && (
                   <div className="flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Recents:</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>Recents:</span>
                     <div className="flex flex-wrap gap-1.5 max-h-12 overflow-y-auto scrollbar-thin">
                       {recentSearches.map(queryItem => (
                         <button
@@ -1828,7 +1832,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                             setPixelCategory('all');
                             setPixelSearchInput(queryItem);
                           }}
-                          className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 hover:border-primary/30 text-[10px] text-gray-400 hover:text-white transition-all cursor-pointer"
+                          className={`px-2 py-0.5 rounded-md border text-[10px] transition-all cursor-pointer ${isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-primary/30' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:border-primary/30'}`}
                         >
                           {queryItem}
                         </button>
@@ -1885,7 +1889,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all border cursor-pointer ${
                           pixelCategory === cat.id
                             ? 'bg-primary border-primary text-white shadow-premium-glow'
-                            : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                            : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                         }`}
                       >
                         {cat.label}
@@ -1914,7 +1918,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                           className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 transition-all border cursor-pointer ${
                             pixelQuery === sub
                               ? 'bg-primary/20 border-primary text-primary'
-                              : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30'
+                              : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30'
                           }`}
                         >
                           {sub}
@@ -2186,7 +2190,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {/* LARGE PREVIEW MODAL INSIDE PORTAL */}
                 {selectedImageForPreview && (
                   <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 sm:p-6 animate-fade-in">
-                    <div className="bg-[#121216] border border-white/10 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row relative text-left">
+                    <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row relative text-left`}>
                       
                       {/* Close Button */}
                       <button
@@ -2195,7 +2199,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                           setSelectedImageForPreview(null);
                           setZoomScale(1);
                         }}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-1.5 transition-all z-30 cursor-pointer"
+                        className={`absolute top-4 right-4 rounded-full p-1.5 transition-all z-30 cursor-pointer ${isLight ? 'text-gray-500 hover:text-gray-900 bg-black/10 hover:bg-black/20' : 'text-gray-400 hover:text-white bg-black/40 hover:bg-black/60'}`}
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -2234,13 +2238,13 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                       </div>
 
                       {/* Right Side: Information Panel */}
-                      <div className="w-full md:w-72 p-5 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10 text-left bg-white/[0.01]">
+                      <div className={`w-full md:w-72 p-5 flex flex-col justify-between border-t md:border-t-0 md:border-l ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-white/[0.01]'} text-left`}>
                         <div className="space-y-4">
                           
                           {/* Header */}
                           <div>
                             <h4 className="text-[10px] font-bold text-primary uppercase tracking-wider">Image Metadata</h4>
-                            <p className="text-xs font-semibold text-white truncate mt-1">📸 By {selectedImageForPreview.photographer}</p>
+                            <p className={`text-xs font-semibold truncate mt-1 ${isLight ? 'text-gray-900' : 'text-white'}`}>📸 By {selectedImageForPreview.photographer}</p>
                             <a
                               href={selectedImageForPreview.photographer_url}
                               target="_blank"
@@ -2252,10 +2256,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                           </div>
 
                           {/* Stats */}
-                          <div className="grid grid-cols-2 gap-3 pt-2.5 border-t border-white/5">
+                          <div className={`grid grid-cols-2 gap-3 pt-2.5 border-t ${isLight ? 'border-gray-200' : 'border-white/5'}`}>
                             <div>
                               <span className="text-[9px] text-gray-500 font-bold block uppercase">Resolution</span>
-                              <span className="text-xs text-gray-300 font-semibold">{selectedImageForPreview.width} x {selectedImageForPreview.height}</span>
+                              <span className={`text-xs font-semibold ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>{selectedImageForPreview.width} x {selectedImageForPreview.height}</span>
                             </div>
                             <div>
                               <span className="text-[9px] text-gray-500 font-bold block uppercase">Quality</span>
@@ -2265,63 +2269,52 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                             </div>
                           </div>
 
-                          {/* Mock Color Palette */}
-                          <div className="space-y-1.5 pt-2.5 border-t border-white/5">
-                            <span className="text-[9px] text-gray-500 font-bold block uppercase">Accent Color Palette</span>
-                            <div className="flex gap-1.5">
-                              {['#1e293b', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'].map((color, idx) => (
-                                <div
-                                  key={idx}
-                                  className="h-5 w-5 rounded-full cursor-pointer hover:scale-110 transition-transform shadow border border-white/10"
-                                  style={{ backgroundColor: color }}
-                                  title={`Color hex ${color}`}
-                                  onClick={() => {
-                                    toast.success(`Copied hex: ${color}`);
-                                    navigator.clipboard.writeText(color);
-                                  }}
-                                ></div>
-                              ))}
-                            </div>
-                          </div>
-
                         </div>
 
                         {/* Actions Panel */}
                         <div className="space-y-2 pt-4 md:pt-0">
+
+                          {/* ✅ Inline Applied Confirmation Banner */}
+                          {bgAppliedConfirm && (
+                            <div className="flex items-center gap-2.5 bg-emerald-500 text-white rounded-xl px-4 py-3 shadow-lg animate-fade-in">
+                              <span className="text-lg">🌟</span>
+                              <div>
+                                <p className="text-xs font-bold">Background Applied!</p>
+                                <p className="text-[10px] opacity-80">Visible in your quiz preview</p>
+                              </div>
+                              <Check className="h-5 w-5 ml-auto shrink-0" />
+                            </div>
+                          )}
+
                           <button
                             type="button"
                             onClick={() => {
                               updateField('url', selectedImageForPreview.src.large2x);
                               addToRecents(selectedImageForPreview);
-                              toast.success('Background applied! 🌟');
+                              setBgAppliedConfirm(true);
+                              setTimeout(() => setBgAppliedConfirm(false), 3000);
                             }}
-                            className="w-full py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5 shadow-premium-glow cursor-pointer"
+                            className={`w-full py-2 rounded-xl text-xs font-bold text-white transition-all flex items-center justify-center gap-1.5 shadow-premium-glow cursor-pointer ${
+                              bgAppliedConfirm
+                                ? 'bg-emerald-500 hover:bg-emerald-600'
+                                : 'bg-primary hover:bg-primary-dark'
+                            }`}
                           >
-                            <Check className="h-3.5 w-3.5" /> Apply Background
+                            <Check className="h-3.5 w-3.5" />
+                            {bgAppliedConfirm ? 'Applied ✓' : 'Apply Background'}
                           </button>
 
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
+                          <button
                               type="button"
                               onClick={() => toggleFavorite(selectedImageForPreview)}
-                              className={`py-1.5 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                              className={`w-full py-1.5 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                                 pixelFavorites.some(f => f.id === selectedImageForPreview.id)
                                   ? 'bg-red-500/10 border-red-500/25 text-red-400'
-                                  : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                                  : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                               }`}
                             >
                               <Heart className="h-3.5 w-3.5 fill-current" /> Favorite
                             </button>
-                            <a
-                              href={selectedImageForPreview.src.original}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-bold text-gray-300 hover:text-white transition-all flex items-center justify-center gap-1"
-                              onClick={() => addToRecents(selectedImageForPreview)}
-                            >
-                              <Download className="h-3.5 w-3.5" /> Download
-                            </a>
-                          </div>
                         </div>
 
                       </div>

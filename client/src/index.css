@@ -192,6 +192,15 @@
 }
 
 /* Button Ripple & Hover Lift effect */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out both;
+}
+
 .btn-premium {
   @apply relative overflow-hidden transition-all duration-300 transform font-semibold rounded-xl text-center active:scale-95 hover:shadow-premium-glow hover:-translate-y-0.5;
 }
