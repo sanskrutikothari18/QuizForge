@@ -24,27 +24,27 @@ export default function Dashboard() {
   }, []);
 
   // React Queries
-  const { 
-    data: profileData, 
-    isLoading: isProfileLoading, 
-    error: profileError 
+  const {
+    data: profileData,
+    isLoading: isProfileLoading,
+    error: profileError
   } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
   });
 
-  const { 
-    data: quizzesData, 
-    isLoading: isQuizzesLoading, 
-    refetch: refetchQuizzes 
+  const {
+    data: quizzesData,
+    isLoading: isQuizzesLoading,
+    refetch: refetchQuizzes
   } = useQuery({
     queryKey: ['my-quizzes'],
     queryFn: getMyQuizzes,
   });
 
-  const { 
-    data: resultsData, 
-    isLoading: isResultsLoading 
+  const {
+    data: resultsData,
+    isLoading: isResultsLoading
   } = useQuery({
     queryKey: ['my-results'],
     queryFn: getMyResults,
@@ -98,7 +98,7 @@ export default function Dashboard() {
   return (
     <AnimatedPage>
       <div className="flex flex-1 flex-col md:flex-row min-h-screen bg-background overflow-x-hidden">
-        
+
         {/* SIDEBAR */}
         <aside className="w-full md:w-64 bg-background border-b md:border-b-0 md:border-r border-white/5 px-4 py-4 md:p-6 flex flex-col justify-between shrink-0">
           <div className="space-y-8">
@@ -110,25 +110,25 @@ export default function Dashboard() {
 
             {/* Nav links */}
             <nav className="flex flex-row md:flex-col gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none -mx-1 px-1">
-              <button 
+              <button
                 onClick={() => setActiveTab('overview')}
                 className={`flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide transition-all whitespace-nowrap ${
-                  activeTab === 'overview' 
-                    ? 'bg-primary/10 text-primary border border-primary/20' 
+                  activeTab === 'overview'
+                    ? 'bg-primary/10 text-primary border border-primary/20'
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
               >
                 <LayoutDashboard className="h-4.5 w-4.5" />
                 Overview
               </button>
-              <Link 
+              <Link
                 to="/quiz/my"
                 className="flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition-all whitespace-nowrap"
               >
                 <Award className="h-4.5 w-4.5" />
                 My Quizzes
               </Link>
-              <Link 
+              <Link
                 to="/quiz/create"
                 className="flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide text-gray-400 hover:text-white hover:bg-white/5 border border-transparent transition-all whitespace-nowrap"
               >
@@ -152,7 +152,7 @@ export default function Dashboard() {
 
         {/* MAIN DASHBOARD */}
         <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto overflow-x-hidden">
-          
+
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
             <div>
@@ -163,7 +163,7 @@ export default function Dashboard() {
                 Manage your active quizzes and view participant logs.
               </p>
             </div>
-            
+
             {/* Create Action button */}
             <Link
               to="/quiz/create"
@@ -224,7 +224,7 @@ export default function Dashboard() {
 
           {/* TWO PANEL CONTENT */}
           <div className="grid gap-8 lg:grid-cols-3">
-            
+
             {/* Left/Center: Recent Quizzes */}
             <div className="lg:col-span-2 space-y-6 text-left">
               <div className="flex justify-between items-center">
@@ -279,7 +279,7 @@ export default function Dashboard() {
             {/* Right Side: Profile Summary & Stats */}
             <div className="space-y-6 text-left">
               <h3 className="font-outfit text-lg font-bold text-white">Host Profile</h3>
-              
+
               <div className="glass-panel rounded-2xl p-6 space-y-5">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-base text-white">
