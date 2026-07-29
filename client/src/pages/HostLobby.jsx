@@ -386,7 +386,7 @@ export default function HostLobby() {
                 }`}
               >
                 <Play className="h-4 w-4 fill-current" />
-                <span>Commence Battle</span>
+                <span>Start Quiz</span>
               </button>
 
             </div>
