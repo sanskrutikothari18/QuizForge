@@ -140,7 +140,7 @@ export default function WaitingRoom() {
           const username = playerName.replace('__LEAVE__:', '');
           setPlayers((prev) => prev.filter((p) => p.username !== username));
           if (username !== localPlayerName) {
-            toast.error(`${username} left the lobby`);
+            toast.error(`${username} left the quiz`, { duration: 2500 });
           }
         } else {
           setPlayers((prev) => {
@@ -148,7 +148,7 @@ export default function WaitingRoom() {
             return [...prev, { username: playerName, avatar: '👤', score: 0 }];
           });
           if (playerName !== localPlayerName) {
-            toast(`${playerName} entered the waiting room`, { icon: '🛡️' });
+            toast(`${playerName} entered the quiz`, { icon: '👋', duration: 2500 });
           }
         }
       }
@@ -156,7 +156,6 @@ export default function WaitingRoom() {
 
     socket.on('question_started', (data) => {
       console.log('[SOCKET CLIENT] Battle started! Redirecting...', data);
-      toast.success('Commencing battle! Get ready!');
       // Store the global background before navigating
       const globalBg = localStorage.getItem('quiz_global_bg_image') || '';
       const questionBg = data?.question?.backgroundImage || '';
@@ -186,11 +185,7 @@ export default function WaitingRoom() {
     socket.on('room_closed', handleHostEnded);
     socket.on('host_left', handleHostEnded);
 
-    socket.on('player_connected', ({ username }) => {
-      if (username !== localPlayerName) {
-        toast(`${username} entered the waiting room`);
-      }
-    });
+    // NOTE: player_connected is intentionally not shown — player-joined already handles this.
 
     const handleLeave = () => {
       if (socket && socket.connected && localPlayerName) {
