@@ -269,7 +269,11 @@ export default function CreateQuiz() {
           {/* Header Actions */}
           <div 
             ref={toolbarRef}
-            className={`${isSticky ? 'fixed top-16 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50' : 'relative z-50'} bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl`}
+            className={`${
+              isSticky 
+                ? 'fixed top-16 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50 bg-background/60 backdrop-blur-xl border-white/10 border-x border-b rounded-b-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.7)]' 
+                : 'relative z-50 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'
+            } transition-all duration-300`}
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
