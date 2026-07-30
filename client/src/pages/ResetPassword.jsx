@@ -55,7 +55,7 @@ export default function ResetPassword() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await resetPassword(token, { password: data.password });
+      const response = await resetPassword({ password: data.password });
       if (response.success) {
         setIsResetComplete(true);
         toast.success('Password updated successfully! 🎉');
