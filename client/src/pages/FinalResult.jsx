@@ -328,7 +328,7 @@ export default function FinalResult() {
               </motion.div>
 
               {/* PODIUM CONTAINER */}
-          <div className="flex items-end justify-center w-full max-w-3xl h-[420px] md:h-[450px] mt-6 md:mt-10 mb-8 gap-1.5 md:gap-4 relative">
+          <div className="flex items-end justify-center w-full max-w-3xl h-[300px] sm:h-[380px] md:h-[450px] mt-2 sm:mt-4 md:mt-8 mb-4 sm:mb-8 gap-1 md:gap-4 relative">
             
             {/* 2ND PLACE */}
             <div className="flex flex-col items-center flex-1 z-10 w-1/3">
@@ -343,35 +343,35 @@ export default function FinalResult() {
                       y: { repeat: Infinity, duration: 1.1, ease: "easeInOut" },
                       rotate: { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
                     }}
-                    className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
+                    className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
                   >
-                    {second.avatar ? <Avatar emoji={second.avatar} className="w-16 h-16 md:w-20 md:h-20" /> : <User className="w-16 h-16 text-white/50" />}
+                    {second.avatar ? <Avatar emoji={second.avatar} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" /> : <User className="w-12 h-12 text-white/50" />}
                   </motion.div>
-                  <div className="text-center mb-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{second.name}</div>
-                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
+                  <div className="text-center mb-1 sm:mb-2 px-1 z-10">
+                    <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{second.name}</div>
+                    <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
                   </div>
                 </>
               ) : (
-                <div className="h-[96px] md:h-[128px] mb-5"></div>
+                <div className="h-[70px] sm:h-[96px] md:h-[128px] mb-3"></div>
               )}
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 120 }}
+                animate={{ height: '100%' }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
-                className="w-full bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[6px] border-[#ffffff]"
+                className="w-full h-[80px] sm:h-[100px] md:h-[120px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
               >
                 {/* Silver Medal */}
-                <div className="relative flex flex-col items-center mb-2 mt-2">
-                  <div className="w-4 h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
+                <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                  <div className="w-3 sm:w-4 h-4 sm:h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
                     <div className="w-1/3 h-full bg-white/30"></div>
                     <div className="w-1/3 h-full bg-transparent"></div>
                     <div className="w-1/3 h-full bg-white/30"></div>
                   </div>
-                  <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
+                  <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
                     <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
-                      <span className="font-outfit text-lg font-black text-white drop-shadow-md">2</span>
+                      <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">2</span>
                     </div>
                   </div>
                 </div>
@@ -380,63 +380,63 @@ export default function FinalResult() {
 
             {/* 1ST PLACE */}
             {winner ? (
-              <div className="flex flex-col items-center flex-1 z-20 w-1/3 -mx-2 md:-mx-4">
+              <div className="flex flex-col items-center flex-1 z-20 w-1/3 -mx-1 sm:-mx-2 md:-mx-4">
                 <motion.div 
                   initial={{ scale: 0 }}
-                  animate={{ scale: 1.15, y: [0, -22, 0, -12, 0], rotate: [0, -6, 6, -4, 4, 0] }}
+                  animate={{ scale: 1.1, y: [0, -14, 0, -8, 0], rotate: [0, -4, 4, -2, 2, 0] }}
                   transition={{ 
                     scale: { type: 'spring', delay: 3.6 },
                     y: { repeat: Infinity, duration: 1.8, ease: "easeInOut" },
                     rotate: { repeat: Infinity, duration: 1.8, ease: "easeInOut" }
                   }}
-                  className="text-7xl md:text-8xl mb-2 filter drop-shadow-2xl relative z-10 select-none cursor-pointer"
+                  className="text-5xl sm:text-7xl md:text-8xl mb-1 sm:mb-2 filter drop-shadow-2xl relative z-10 select-none cursor-pointer"
                 >
                   <motion.div 
-                    initial={{ y: -20, opacity: 0, rotate: -15 }}
+                    initial={{ y: -15, opacity: 0, rotate: -15 }}
                     animate={{ y: 0, opacity: 1, rotate: 10 }}
                     transition={{ delay: 4.2, type: 'spring' }}
-                    className="absolute -top-3 md:-top-5 lg:-top-6 left-1/2 -translate-x-1/2 text-3xl md:text-4xl lg:text-5xl z-20 drop-shadow-md origin-bottom-left"
+                    className="absolute -top-3 sm:-top-5 lg:-top-6 left-1/2 -translate-x-1/2 text-2xl sm:text-4xl lg:text-5xl z-20 drop-shadow-md origin-bottom-left"
                   >
-                    <Crown className="w-10 h-10 text-yellow-400" />
+                    <Crown className="w-7 h-7 sm:w-10 sm:h-10 text-yellow-400" />
                   </motion.div>
                   
                   {/* Golden Trophy floating next to avatar */}
                   <motion.div 
-                    animate={{ y: [0, -10, 0] }}
+                    animate={{ y: [0, -8, 0] }}
                     transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    className="absolute -right-6 bottom-0 text-3xl md:text-4xl filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
+                    className="absolute -right-4 sm:-right-6 bottom-0 text-2xl sm:text-4xl filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
                   >
-                    <Trophy className="w-8 h-8 text-yellow-500" />
+                    <Trophy className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-500" />
                   </motion.div>
 
                   {/* Golden Halo aura behind 1st place */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
 
-                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-20 h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-20 h-20 text-white/50" />}
+                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-14 h-14 text-white/50" />}
                 </motion.div>
 
-                <div className="text-center mb-2 px-2 z-10">
-                  <div className="font-extrabold text-white text-sm md:text-lg tracking-tight truncate max-w-[120px] drop-shadow-md">{winner.name}</div>
-                  <div className="font-black text-yellow-300 text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
+                <div className="text-center mb-1 sm:mb-2 px-1 z-10">
+                  <div className="font-extrabold text-white text-xs sm:text-sm md:text-lg tracking-tight truncate max-w-[90px] sm:max-w-[120px] drop-shadow-md">{winner.name}</div>
+                  <div className="font-black text-yellow-300 text-[10px] sm:text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
                 </div>
                 
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={{ height: 180 }}
+                  animate={{ height: '100%' }}
                   transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 3.2 }}
-                  className="w-full bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[6px] border-[#ffe082]"
+                  className="w-full h-[120px] sm:h-[150px] md:h-[180px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
                   style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
                 >
                   {/* Gold Medal */}
-                  <div className="relative flex flex-col items-center mb-2 mt-2">
-                    <div className="w-5 h-6 bg-red-600 rounded-sm mb-[-6px] z-0 shadow-inner border border-red-800 flex overflow-hidden">
+                  <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                    <div className="w-4 sm:w-5 h-5 sm:h-6 bg-red-600 rounded-sm mb-[-6px] z-0 shadow-inner border border-red-800 flex overflow-hidden">
                       <div className="w-1/3 h-full bg-white/30"></div>
                       <div className="w-1/3 h-full bg-transparent"></div>
                       <div className="w-1/3 h-full bg-white/30"></div>
                     </div>
-                    <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_4px_15px_rgba(255,200,0,0.5)] border-[3px] border-[#d4af37]">
+                    <div className="relative z-10 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_4px_15px_rgba(255,200,0,0.5)] border-[2px] sm:border-[3px] border-[#d4af37]">
                       <div className="w-[85%] h-[85%] rounded-full border border-yellow-200/50 flex items-center justify-center bg-gradient-to-tr from-yellow-600/30 to-transparent">
-                        <span className="font-outfit text-2xl font-black text-white drop-shadow-md">1</span>
+                        <span className="font-outfit text-base sm:text-2xl font-black text-white drop-shadow-md">1</span>
                       </div>
                     </div>
                   </div>
@@ -456,35 +456,35 @@ export default function FinalResult() {
                       y: { repeat: Infinity, duration: 1.3, ease: "easeInOut" },
                       rotate: { repeat: Infinity, duration: 1.3, ease: "easeInOut" }
                     }}
-                    className="text-6xl md:text-7xl mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
+                    className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
                   >
-                    {third.avatar ? <Avatar emoji={third.avatar} className="w-14 h-14 md:w-16 md:h-16" /> : <User className="w-14 h-14 text-white/50" />}
+                    {third.avatar ? <Avatar emoji={third.avatar} className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16" /> : <User className="w-10 h-10 text-white/50" />}
                   </motion.div>
-                  <div className="text-center mb-2 px-2 z-10">
-                    <div className="font-black text-white text-xs md:text-sm tracking-tight truncate max-w-[80px] drop-shadow-md">{third.name}</div>
-                    <div className="font-black text-gray-300 text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
+                  <div className="text-center mb-1 sm:mb-2 px-1 z-10">
+                    <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{third.name}</div>
+                    <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
                   </div>
                 </>
               ) : (
-                <div className="h-[96px] md:h-[128px] mb-5"></div>
+                <div className="h-[60px] sm:h-[96px] md:h-[128px] mb-3"></div>
               )}
                 
               <motion.div 
                 initial={{ height: 0 }}
-                animate={{ height: 90 }}
+                animate={{ height: '100%' }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
-                className="w-full bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-3xl flex flex-col items-center justify-start pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[6px] border-[#ffb74d]"
+                className="w-full h-[60px] sm:h-[75px] md:h-[90px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
               >
                 {/* Bronze Medal */}
-                <div className="relative flex flex-col items-center mb-2 mt-2">
-                  <div className="w-4 h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
+                <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                  <div className="w-3 sm:w-4 h-4 sm:h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
                     <div className="w-1/3 h-full bg-white/30"></div>
                     <div className="w-1/3 h-full bg-transparent"></div>
                     <div className="w-1/3 h-full bg-white/30"></div>
                   </div>
-                  <div className="relative z-10 w-9 h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
+                  <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
                     <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
-                      <span className="font-outfit text-lg font-black text-white drop-shadow-md">3</span>
+                      <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">3</span>
                     </div>
                   </div>
                 </div>
