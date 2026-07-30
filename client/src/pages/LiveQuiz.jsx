@@ -321,7 +321,7 @@ export default function LiveQuiz() {
 
     const handleHostEnded = (data) => {
       if (!isUserHost && data?.reason === 'host_left') {
-        const msg = data?.message || 'Host has ended the quiz';
+        const msg = 'Host ended the quiz';
         toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
         localStorage.removeItem('guest_pin');
         localStorage.removeItem('guest_playerName');
@@ -359,7 +359,6 @@ export default function LiveQuiz() {
       socket.emit('host-end-quiz', { pin });
     }
     localStorage.removeItem('current_hosted_pin');
-    toast('Quiz session ended', { icon: '🚪' });
     navigate('/dashboard');
   };
 
@@ -367,18 +366,14 @@ export default function LiveQuiz() {
 
   const handleManualEndQuestion = async () => {
     setIsEnding(true);
-    toast.loading('Ending question...', { id: 'end-q' });
     try {
       const response = await endQuestion(pin);
-      if (response.success) {
-        toast.success('Question ended!');
-      } else {
+      if (!response.success) {
         toast.error(response.message || 'Failed to end question');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error ending question');
     } finally {
-      toast.dismiss('end-q');
       setIsEnding(false);
     }
   };
@@ -388,14 +383,12 @@ export default function LiveQuiz() {
 
     setHasAnswered(true);
     setSelectedIdx(index);
-    toast.loading('Registering answer...', { id: 'submit-ans' });
 
     try {
       const player = playerName || localStorage.getItem('guest_playerName');
       const response = await submitAnswer(pin, player, index);
 
       if (response.success) {
-        toast.success('Answer locked!');
         localStorage.setItem('last_hasAnswered', 'true');
         localStorage.setItem('last_answerSubmitted', 'true');
         confetti({
@@ -410,8 +403,6 @@ export default function LiveQuiz() {
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error submitting answer');
       setHasAnswered(false);
-    } finally {
-      toast.dismiss('submit-ans');
     }
   };
 
