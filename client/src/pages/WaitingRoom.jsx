@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ShieldAlert, Zap, Loader2 } from 'lucide-react';
@@ -96,6 +96,7 @@ export default function WaitingRoom() {
 
   // Fallback if player refresh and context gets cleared
   const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
+  const knownPlayersRef = useRef(new Set());
 
   useEffect(() => {
     if (!playerName && !localStorage.getItem('guest_playerName')) {
@@ -130,6 +131,7 @@ export default function WaitingRoom() {
       const activePlayers = (data.players || []).filter(
         (p) => p.username && !p.username.startsWith('__LEAVE__:')
       );
+      activePlayers.forEach((p) => knownPlayersRef.current.add(p.username));
       setPlayers(activePlayers);
     });
 
@@ -138,17 +140,19 @@ export default function WaitingRoom() {
       if (playerName) {
         if (playerName.startsWith('__LEAVE__:')) {
           const username = playerName.replace('__LEAVE__:', '');
+          knownPlayersRef.current.delete(username);
           setPlayers((prev) => prev.filter((p) => p.username !== username));
           if (username !== localPlayerName) {
-            toast.error(`${username} left the quiz`, { duration: 2500 });
+            toast.error(`${username} left the lobby`, { id: `leave-${username}`, duration: 2500 });
           }
         } else {
           setPlayers((prev) => {
             if (prev.some((p) => p.username === playerName)) return prev;
             return [...prev, { username: playerName, avatar: '👤', score: 0 }];
           });
-          if (playerName !== localPlayerName) {
-            toast(`${playerName} entered the quiz`, { icon: '👋', duration: 2500 });
+          if (playerName !== localPlayerName && !knownPlayersRef.current.has(playerName)) {
+            knownPlayersRef.current.add(playerName);
+            toast(`${playerName} entered the quiz`, { id: `join-${playerName}`, icon: '👋', duration: 2500 });
           }
         }
       }
@@ -167,7 +171,7 @@ export default function WaitingRoom() {
 
     const handleHostEnded = (data) => {
       if (data?.reason === 'host_left') {
-        const msg = data?.message || 'Host has ended the quiz';
+        const msg = 'Host ended the quiz';
         toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
         localStorage.removeItem('guest_pin');
         localStorage.removeItem('guest_playerName');

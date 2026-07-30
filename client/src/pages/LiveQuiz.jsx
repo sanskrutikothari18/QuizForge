@@ -321,7 +321,7 @@ export default function LiveQuiz() {
 
     const handleHostEnded = (data) => {
       if (!isUserHost && data?.reason === 'host_left') {
-        const msg = data?.message || 'Host has ended the quiz';
+        const msg = 'Host ended the quiz';
         toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
         localStorage.removeItem('guest_pin');
         localStorage.removeItem('guest_playerName');

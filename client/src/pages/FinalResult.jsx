@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useTheme } from '../context/ThemeContext';
 import { motion } from 'framer-motion';
 import { 
   Home, BarChart3, Loader2, RefreshCw, CheckCircle, Save,
   BookOpen, Clock, XCircle, AlertCircle, Award,
-  Moon, Sun, Trophy, Target, TrendingUp, Percent, User, Crown
+  Trophy, Target, TrendingUp, Percent, User, Crown
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
@@ -36,13 +35,7 @@ export default function FinalResult() {
     return !!hostToken && (hostedPin === pin || !guestName);
   });
   const [isSaved, setIsSaved] = useState(false);
-  const { themeMode, toggleThemeMode } = useTheme();
-  const isDark = themeMode !== 'light';
   const localPlayerName = localStorage.getItem('guest_playerName');
-
-  const toggleTheme = () => {
-    toggleThemeMode();
-  };
 
   // Fetch final game data
   const { 
@@ -239,10 +232,10 @@ export default function FinalResult() {
   if (isLoading && !game) {
     return (
       <AnimatedPage>
-        <div className={`flex-1 flex items-center justify-center min-h-screen ${isDark ? 'bg-[#46178F]' : 'bg-gray-100'}`}>
+        <div className="flex-1 flex items-center justify-center min-h-screen bg-[#46178F]">
           <div className="text-center space-y-4">
-            <Loader2 className={`h-12 w-12 animate-spin mx-auto ${isDark ? 'text-white' : 'text-gray-800'}`} />
-            <p className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-white' : 'text-gray-800'}`}>Loading Results...</p>
+            <Loader2 className="h-12 w-12 animate-spin mx-auto text-white" />
+            <p className="text-sm font-bold uppercase tracking-widest text-white">Loading Results...</p>
           </div>
         </div>
       </AnimatedPage>
@@ -251,11 +244,7 @@ export default function FinalResult() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen font-outfit ${
-        isDark 
-          ? 'bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white' 
-          : 'bg-gray-50 text-gray-900'
-      } overflow-hidden flex flex-col justify-between`}>
+      <div className="relative min-h-screen font-outfit bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white overflow-hidden flex flex-col justify-between">
         
         {/* Component specific animations and keyframes */}
         <style>{`
@@ -309,31 +298,16 @@ export default function FinalResult() {
         <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#864CBF]/30 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
         <div className="relative z-10 flex flex-col items-center flex-1 w-full px-4 pt-6 pb-6">
-          {/* Theme Toggle and Header */}
+          {/* Header (Title & Category) */}
           <div className="w-full max-w-6xl flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <h1 className={`text-2xl md:text-3xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className="text-2xl md:text-3xl font-black text-white">
                 {game?.quiz?.title || 'Quiz Results'}
               </h1>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                isDark 
-                  ? 'bg-white/10 text-gray-300' 
-                  : 'bg-gray-200 text-gray-600'
-              }`}>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-white/10 text-gray-300">
                 {game?.quiz?.category || 'General'}
               </span>
             </div>
-            <button
-              onClick={toggleTheme}
-              className={`p-3 rounded-xl transition-all ${
-                isDark 
-                  ? 'bg-white/10 hover:bg-white/20 text-white' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-              }`}
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
           </div>
 
           {/* Show Podium for Everyone, Show Detailed Report for Players Below */}
@@ -343,26 +317,18 @@ export default function FinalResult() {
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', bounce: 0.5, duration: 0.8 }}
-                className={`backdrop-blur-md border rounded-2xl shadow-lg px-10 py-4 mb-auto text-center ${
-                  isDark 
-                    ? 'bg-white/10 border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)]' 
-                    : 'bg-white border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.1)]'
-                }`}
+                className="backdrop-blur-md border border-white/10 bg-white/10 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] px-10 py-4 mb-auto text-center"
               >
-                <h1 className={`text-3xl md:text-4xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>Battle Finished!</h1>
+                <h1 className="text-3xl md:text-4xl font-black text-white">Battle Finished!</h1>
                 <div className="flex justify-center mt-2">
-                  <div className={`inline-flex items-center gap-1.5 border px-4 py-1.5 rounded-full text-sm font-bold ${
-                    isDark 
-                      ? 'bg-white/5 border-white/10 text-gray-200' 
-                      : 'bg-gray-100 border-gray-200 text-gray-700'
-                  }`}>
+                  <div className="inline-flex items-center gap-1.5 border border-white/10 bg-white/5 px-4 py-1.5 rounded-full text-sm font-bold text-gray-200">
                     <span>Congratulations to all players!</span>
                   </div>
                 </div>
               </motion.div>
 
               {/* PODIUM CONTAINER */}
-          <div className="flex items-end justify-center w-full max-w-3xl h-[450px] mt-12 mb-8 gap-1.5 md:gap-4 relative">
+          <div className="flex items-end justify-center w-full max-w-3xl h-[420px] md:h-[450px] mt-6 md:mt-10 mb-8 gap-1.5 md:gap-4 relative">
             
             {/* 2ND PLACE */}
             <div className="flex flex-col items-center flex-1 z-10 w-1/3">
@@ -579,107 +545,75 @@ export default function FinalResult() {
                 >
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {/* Total Questions */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-white/5 border-white/10' 
-                        : 'bg-white border-gray-200 shadow-sm'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-white/5 border-white/10">
                       <div className="flex items-center gap-2 mb-2">
-                        <Target className={`h-4 w-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Total Questions</span>
+                        <Target className="h-4 w-4 text-blue-400" />
+                        <span className="text-xs font-bold uppercase text-gray-400">Total Questions</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.totalQuestions}</p>
+                      <p className="text-2xl font-black text-white">{playerStats.totalQuestions}</p>
                     </div>
 
                     {/* Correct Answers */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-green-500/10 border-green-500/20' 
-                        : 'bg-green-50 border-green-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-green-500/10 border-green-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-green-400' : 'text-green-600'}`}>Correct</span>
+                        <span className="text-xs font-bold uppercase text-green-400">Correct</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.correctAnswers}</p>
+                      <p className="text-2xl font-black text-white">{playerStats.correctAnswers}</p>
                     </div>
 
                     {/* Incorrect Answers */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-red-500/10 border-red-500/20' 
-                        : 'bg-red-50 border-red-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-red-500/10 border-red-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-red-400' : 'text-red-600'}`}>Incorrect</span>
+                        <span className="text-xs font-bold uppercase text-red-400">Incorrect</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.incorrectAnswers}</p>
+                      <p className="text-2xl font-black text-white">{playerStats.incorrectAnswers}</p>
                     </div>
 
                     {/* Not Submitted */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-orange-500/10 border-orange-500/20' 
-                        : 'bg-orange-50 border-orange-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-orange-500/10 border-orange-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <AlertCircle className="h-4 w-4 text-orange-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-orange-400' : 'text-orange-600'}`}>Not Submitted</span>
+                        <span className="text-xs font-bold uppercase text-orange-400">Not Submitted</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.notSubmitted}</p>
+                      <p className="text-2xl font-black text-white">{playerStats.notSubmitted}</p>
                     </div>
 
                     {/* Score */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-purple-500/10 border-purple-500/20' 
-                        : 'bg-purple-50 border-purple-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-purple-500/10 border-purple-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Trophy className="h-4 w-4 text-purple-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>Score</span>
+                        <span className="text-xs font-bold uppercase text-purple-400">Score</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.totalScore}</p>
+                      <p className="text-2xl font-black text-white">{playerStats.totalScore}</p>
                     </div>
 
                     {/* Percentage */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-blue-500/10 border-blue-500/20' 
-                        : 'bg-blue-50 border-blue-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-blue-500/10 border-blue-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Percent className="h-4 w-4 text-blue-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Percentage</span>
+                        <span className="text-xs font-bold uppercase text-blue-400">Percentage</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{playerStats.percentage}%</p>
+                      <p className="text-2xl font-black text-white">{playerStats.percentage}%</p>
                     </div>
 
                     {/* Rank */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-yellow-500/10 border-yellow-500/20' 
-                        : 'bg-yellow-50 border-yellow-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-yellow-500/10 border-yellow-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Award className="h-4 w-4 text-yellow-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>Rank</span>
+                        <span className="text-xs font-bold uppercase text-yellow-400">Rank</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>#{playerStats.rank}</p>
+                      <p className="text-2xl font-black text-white">#{playerStats.rank}</p>
                     </div>
 
                     {/* Completion */}
-                    <div className={`p-4 rounded-xl border ${
-                      isDark 
-                        ? 'bg-teal-500/10 border-teal-500/20' 
-                        : 'bg-teal-50 border-teal-200'
-                    }`}>
+                    <div className="p-4 rounded-xl border bg-teal-500/10 border-teal-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <TrendingUp className="h-4 w-4 text-teal-500" />
-                        <span className={`text-xs font-bold uppercase ${isDark ? 'text-teal-400' : 'text-teal-600'}`}>Completion</span>
+                        <span className="text-xs font-bold uppercase text-teal-400">Completion</span>
                       </div>
-                      <p className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      <p className="text-2xl font-black text-white">
                         {Math.round(((playerStats.totalQuestions - playerStats.notSubmitted) / playerStats.totalQuestions) * 100)}%
                       </p>
                     </div>
@@ -693,17 +627,13 @@ export default function FinalResult() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className={`w-full max-w-4xl mx-auto p-6 rounded-2xl text-left ${
-                    isDark 
-                      ? 'bg-white/5 border border-white/10' 
-                      : 'bg-white border border-gray-200 shadow-sm'
-                  }`}
+                  className="w-full max-w-4xl mx-auto p-6 rounded-2xl text-left bg-white/5 border border-white/10"
                 >
-                  <h2 className={`font-outfit text-xl font-bold mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <h2 className="font-outfit text-xl font-bold mb-2 flex items-center gap-2 text-white">
                     <BookOpen className="h-5 w-5 text-blue-500" />
                     <span>Your Performance Breakdown</span>
                   </h2>
-                  <p className={`text-xs mb-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-xs mb-6 text-gray-400">
                     Review your answers below to see where you excelled and where you can improve.
                   </p>
 
@@ -715,31 +645,27 @@ export default function FinalResult() {
                       const statusLabel = !hasAnswered ? 'Answer Not Submitted' : (isUserCorrect ? 'Correct Answer' : 'Incorrect Answer');
 
                       return (
-                        <div key={idx} className={`p-4 rounded-xl space-y-3 ${
-                          isDark 
-                            ? 'bg-white/[0.02] border border-white/5' 
-                            : 'bg-gray-50 border border-gray-200'
-                        }`}>
+                        <div key={idx} className="p-4 rounded-xl space-y-3 bg-white/[0.02] border border-white/5">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
-                              <span className={`text-[10px] uppercase font-bold tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
                                 Question {idx + 1}
                               </span>
-                              <h3 className={`text-sm font-semibold mt-0.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>{q.questionText}</h3>
+                              <h3 className="text-sm font-semibold mt-0.5 text-white">{q.questionText}</h3>
                             </div>
                             <div>
                               {hasAnswered ? (
                                 isUserCorrect ? (
-                                  <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-600 border border-green-500/20 px-3 py-1 rounded text-xs font-bold">
+                                  <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded text-xs font-bold">
                                     <CheckCircle className="h-3 w-3" /> Correct Answer
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-600 border border-red-500/20 px-3 py-1 rounded text-xs font-bold">
+                                  <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded text-xs font-bold">
                                     <XCircle className="h-3 w-3" /> Incorrect Answer
                                   </span>
                                 )
                               ) : (
-                                <span className="inline-flex items-center gap-1 bg-orange-500/10 text-orange-600 border border-orange-500/20 px-3 py-1 rounded text-xs font-bold">
+                                <span className="inline-flex items-center gap-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded text-xs font-bold">
                                   <AlertCircle className="h-3 w-3" /> Answer Not Submitted
                                 </span>
                               )}
@@ -747,21 +673,19 @@ export default function FinalResult() {
                           </div>
 
                           {!hasAnswered && (
-                            <div className={`rounded-lg border px-3 py-2 text-xs ${isDark ? 'border-orange-500/20 bg-orange-500/10 text-orange-300' : 'border-orange-200 bg-orange-50 text-orange-700'}`}>
+                            <div className="rounded-lg border px-3 py-2 text-xs border-orange-500/20 bg-orange-500/10 text-orange-300">
                               <span className="font-semibold">Status:</span> {statusLabel}
                             </div>
                           )}
 
                           {/* Your Answer and Correct Answer */}
-                          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 ${
-                            isDark ? 'text-gray-300' : 'text-gray-700'
-                          }`}>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-300">
                             <div>
-                              <span className={`text-[10px] font-bold uppercase ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Your Answer:</span>
+                              <span className="text-[10px] font-bold uppercase text-gray-500">Your Answer:</span>
                               <p className={`text-sm mt-1 ${
                                 hasAnswered 
-                                  ? (isUserCorrect ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold')
-                                  : 'text-orange-500 font-semibold'
+                                  ? (isUserCorrect ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold')
+                                  : 'text-orange-400 font-semibold'
                               }`}>
                                 {hasAnswered 
                                   ? q.options[userAnswer?.answerIndex] || 'Not selected'
@@ -770,35 +694,27 @@ export default function FinalResult() {
                               </p>
                             </div>
                             <div>
-                              <span className={`text-[10px] font-bold uppercase ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Correct Answer:</span>
-                              <p className={`text-sm mt-1 ${isDark ? 'text-green-400 font-semibold' : 'text-green-600 font-semibold'}`}>
+                              <span className="text-[10px] font-bold uppercase text-gray-500">Correct Answer:</span>
+                              <p className="text-sm mt-1 text-green-400 font-semibold">
                                 {q.options[q.correctAnswer]}
                               </p>
                             </div>
                           </div>
 
                           {/* Answer Options Grid */}
-                          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 ${
-                            isDark ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-gray-400">
                             {q.options.map((opt, optIdx) => {
                               const isCorrectOption = optIdx === q.correctAnswer;
                               const isSelectedOption = userAnswer && Number(userAnswer.answerIndex) === optIdx;
 
-                              let optClass = isDark 
-                                ? "border-white/5 bg-white/5 text-gray-400"
-                                : "border-gray-200 bg-gray-50 text-gray-600";
+                              let optClass = "border-white/5 bg-white/5 text-gray-400";
                               let icon = null;
 
                               if (isCorrectOption) {
-                                optClass = isDark
-                                  ? "border-green-500/30 bg-green-500/10 text-green-300 font-medium"
-                                  : "border-green-300 bg-green-50 text-green-700 font-medium";
+                                optClass = "border-green-500/30 bg-green-500/10 text-green-300 font-medium";
                                 icon = <CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />;
                               } else if (isSelectedOption && !isUserCorrect) {
-                                optClass = isDark
-                                  ? "border-red-500/30 bg-red-500/10 text-red-300 font-medium"
-                                  : "border-red-300 bg-red-50 text-red-700 font-medium";
+                                optClass = "border-red-500/30 bg-red-500/10 text-red-300 font-medium";
                                 icon = <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />;
                               }
 
@@ -816,13 +732,13 @@ export default function FinalResult() {
 
                           {/* Extra Info (Score & Time) */}
                           {hasAnswered && (
-                            <div className={`flex gap-4 text-[10xs] pt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <div className="flex gap-4 text-[10xs] pt-2 text-gray-400">
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 Time taken: {(userAnswer.timeTaken / 1000).toFixed(2)}s
                               </span>
                               {isUserCorrect && (
-                                <span className="flex items-center gap-1 text-yellow-600 font-bold">
+                                <span className="flex items-center gap-1 text-yellow-400 font-bold">
                                   <Award className="h-3 w-3" />
                                   +{userAnswer.score} pts
                                 </span>
@@ -850,7 +766,7 @@ export default function FinalResult() {
                 {isSaved ? (
                   <Link 
                     to={`/results/${game?.id}`}
-                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
+                    className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
                   >
                     <BarChart3 className="h-5 w-5" />
                     <span>View Full Analytics</span>
@@ -872,7 +788,7 @@ export default function FinalResult() {
                         toast.dismiss('save-res');
                       }
                     }}
-                    className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse"
+                    className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
                   >
                     <Save className="h-5 w-5" />
                     <span>Save Results to Dashboard</span>
@@ -880,7 +796,7 @@ export default function FinalResult() {
                 )}
                 <Link 
                   to="/dashboard"
-                  className="w-full bg-black/20 hover:bg-black/30 text-white py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all"
+                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border bg-white/10 hover:bg-white/20 text-white border-white/10"
                 >
                   <Home className="h-5 w-5" />
                   <span>Return to Dashboard</span>
@@ -890,14 +806,14 @@ export default function FinalResult() {
               <>
                 <Link 
                   to="/join"
-                  className="w-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 border border-white/10 py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all"
+                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
                 >
                   <RefreshCw className="h-5 w-5" />
                   <span>Play Again</span>
                 </Link>
                 <Link 
-                  to="/"
-                  className="w-full bg-black/20 hover:bg-black/30 text-white py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all"
+                  to="/join"
+                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border bg-white/10 hover:bg-white/20 text-white border-white/10"
                 >
                   <Home className="h-5 w-5" />
                   <span>Exit Game</span>
