@@ -194,34 +194,6 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* CREATE GAME & JOIN GAME CARDS */}
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
-            <Link
-              to="/quiz/create"
-              className="glass-panel rounded-2xl p-6 text-left flex flex-col gap-3 group border border-white/5 hover:border-primary/30 transition-all relative overflow-hidden"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-                <PlusCircle className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-outfit text-lg font-bold text-white group-hover:text-primary transition-colors">Create Game</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Build a custom quiz and host a live multiplayer battle session for your players.
-              </p>
-            </Link>
-            <Link
-              to="/join"
-              className="glass-panel rounded-2xl p-6 text-left flex flex-col gap-3 group border border-white/5 hover:border-secondary/30 transition-all relative overflow-hidden"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10 border border-secondary/20">
-                <Play className="h-6 w-6 text-secondary fill-current" />
-              </div>
-              <h3 className="font-outfit text-lg font-bold text-white group-hover:text-secondary transition-colors">Join Game</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Enter a game code and jump into an active quiz session hosted by another moderator.
-              </p>
-            </Link>
-          </div>
-
           {/* TWO PANEL CONTENT */}
           <div className="grid gap-8 lg:grid-cols-3">
 

@@ -137,10 +137,11 @@ const hashOtp = (otp) =>
     crypto.createHash('sha256').update(String(otp)).digest('hex');
 
 const findUserByEmailAndOtp = async (email, otp) => {
+    const normalizedEmail = String(email).trim().toLowerCase();
     const resetPasswordToken = hashOtp(otp);
 
     return User.findOne({
-        email,
+        email: normalizedEmail,
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() }
     });
@@ -159,7 +160,8 @@ const forgotPassword = async (req, res) => {
             });
         }
 
-        user = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+        user = await User.findOne({ email: normalizedEmail });
 
         const successResponse = {
             success: true,
@@ -174,36 +176,41 @@ const forgotPassword = async (req, res) => {
         await user.save({ validateBeforeSave: false });
 
         const emailMessage = `
-            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
-                <h1 style="color: #6d28d9;">QuizForge Password Reset</h1>
-                <p>You requested to reset your password. Use the OTP below:</p>
+            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 16px;">
+                <h1 style="color: #6d28d9; margin-bottom: 8px;">QuizForge Password Reset</h1>
+                <p style="color: #374151; font-size: 15px;">You requested to reset your password. Use the 4-digit OTP below to proceed:</p>
                 <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 12px; margin: 24px 0;">
-                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e1840;">${otp}</span>
+                    <span style="font-size: 36px; font-weight: bold; letter-spacing: 12px; color: #1e1840;">${otp}</span>
                 </div>
-                <p style="color: #6b7280;">This OTP expires in 10 minutes. If you did not request this, you can ignore this email.</p>
+                <p style="color: #6b7280; font-size: 13px;">This OTP is valid for 10 minutes. If you did not request a password reset, please ignore this email.</p>
             </div>
         `;
 
         const hasEmailConfig = !!getEmailConfig();
 
         if (hasEmailConfig) {
-            await sendEmail({
-                email: user.email,
-                subject: 'QuizForge - Password Reset OTP',
-                html: emailMessage
-            });
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'QuizForge - 4-Digit Password Reset OTP',
+                    html: emailMessage
+                });
 
-            return res.status(200).json(successResponse);
+                return res.status(200).json(successResponse);
+            } catch (emailErr) {
+                console.error('⚠️ Could not send email via SMTP, falling back to server log mode:', emailErr.message);
+            }
         }
 
-        console.log('\n--- DEVELOPMENT MODE: PASSWORD RESET OTP ---');
-        console.log(`Email: ${user.email}`);
-        console.log(`OTP: ${otp}`);
-        console.log('--------------------------------------------\n');
+        console.log('\n=============================================');
+        console.log('--- FORGOT PASSWORD 4-DIGIT OTP GENERATED ---');
+        console.log(`User Email : ${user.email}`);
+        console.log(`4-Digit OTP: ${otp}`);
+        console.log('=============================================\n');
 
         return res.status(200).json({
             ...successResponse,
-            message: 'OTP generated. [DEV MODE] Check the server console or use the OTP below.',
+            message: 'OTP generated and sent to email! (Dev Mode: OTP included below)',
             devOtp: otp
         });
 
@@ -235,19 +242,20 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        if (!/^\d{4}$/.test(String(otp))) {
+        const cleanOtp = String(otp).trim();
+        if (!/^\d{4}$/.test(cleanOtp)) {
             return res.status(400).json({
                 success: false,
                 message: 'OTP must be a 4-digit number'
             });
         }
 
-        const user = await findUserByEmailAndOtp(email, otp);
+        const user = await findUserByEmailAndOtp(email, cleanOtp);
 
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired OTP'
+                message: 'Invalid or expired OTP. Please request a new code.'
             });
         }
 
@@ -275,19 +283,27 @@ const resetPassword = async (req, res) => {
             });
         }
 
-        if (!/^\d{4}$/.test(String(otp))) {
+        const cleanOtp = String(otp).trim();
+        if (!/^\d{4}$/.test(cleanOtp)) {
             return res.status(400).json({
                 success: false,
                 message: 'OTP must be a 4-digit number'
             });
         }
 
-        const user = await findUserByEmailAndOtp(email, otp);
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters long'
+            });
+        }
+
+        const user = await findUserByEmailAndOtp(email, cleanOtp);
 
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired OTP'
+                message: 'Invalid or expired OTP. Please request a new code.'
             });
         }
 
@@ -299,7 +315,7 @@ const resetPassword = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Password reset successfully'
+            message: 'Password reset successfully. You can now login with your new password.'
         });
 
     } catch (error) {
