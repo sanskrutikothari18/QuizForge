@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, Check } from 'lucide-react';
-import toast from 'react-hot-toast';
-import AnimatedPage from '../components/AnimatedPage';
-import { resetPassword } from '../services/authService';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ResetPassword() {
-  const { token } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isResetComplete, setIsResetComplete] = useState(false);

@@ -33,6 +33,22 @@ export default function Leaderboard() {
   const [myRank, setMyRank] = useState(null);
   const [category, setCategory] = useState('general');
 
+  // Force dark purple stage background on root HTML element while on Leaderboard screen
+  useEffect(() => {
+    const root = document.documentElement;
+    const previousWasLight = root.classList.contains('light');
+
+    root.classList.remove('light');
+    root.classList.add('dark');
+
+    return () => {
+      if (previousWasLight) {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
     const isUserHost = !localPlayer && !!hostToken;
@@ -66,7 +82,6 @@ export default function Leaderboard() {
     emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
-      toast.success('Commencing next question!');
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
@@ -80,7 +95,7 @@ export default function Leaderboard() {
 
     const handleHostEnded = (data) => {
       if (!isUserHost && data?.reason === 'host_left') {
-        const msg = data?.message || 'Host has ended the quiz';
+        const msg = 'Host ended the quiz';
         toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
         localStorage.removeItem('guest_pin');
         localStorage.removeItem('guest_playerName');

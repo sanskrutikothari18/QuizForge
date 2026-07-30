@@ -13,11 +13,15 @@ export default function Login() {
 
 
   React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/dashboard');
+    }
     const params = new URLSearchParams(window.location.search);
     if (params.get('expired')) {
       toast.error('Session expired or database reconnected. Please sign in again.');
     }
-  }, []);
+  }, [navigate]);
 
   const hostForm = useForm({
     defaultValues: {

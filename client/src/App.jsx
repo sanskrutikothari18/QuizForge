@@ -98,7 +98,6 @@ function AnimatedRoutes() {
           </Routes>
         </AnimatePresence>
       </main>
-      {!isGameplayView && <Footer />}
     </div>
   );
 }
