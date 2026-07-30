@@ -33,6 +33,22 @@ export default function Leaderboard() {
   const [myRank, setMyRank] = useState(null);
   const [category, setCategory] = useState('general');
 
+  // Force dark purple stage background on root HTML element while on Leaderboard screen
+  useEffect(() => {
+    const root = document.documentElement;
+    const previousWasLight = root.classList.contains('light');
+
+    root.classList.remove('light');
+    root.classList.add('dark');
+
+    return () => {
+      if (previousWasLight) {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
     const isUserHost = !localPlayer && !!hostToken;
