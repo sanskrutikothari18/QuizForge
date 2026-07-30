@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Play, Sparkles, Plus, Radio, KeyRound, Trophy, Zap, ShieldCheck, Smartphone,
@@ -69,6 +69,15 @@ const reviews = [
 ];
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
   return (
     <AnimatedPage>
       <div className="relative min-h-screen overflow-hidden bg-background">

@@ -31,8 +31,7 @@ export default function CreateQuiz() {
     const handleScroll = () => {
       if (!placeholderRef.current) return;
       const rect = placeholderRef.current.getBoundingClientRect();
-      // 80px is the height of the navbar (64px) plus the 16px gap
-      if (rect.top <= 80) {
+      if (rect.top <= 64) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
@@ -264,11 +263,6 @@ export default function CreateQuiz() {
 
         <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
           
-          {/* Fading gap mask */}
-          {isSticky && (
-            <div className="fixed top-16 left-0 right-0 h-8 z-40 bg-gradient-to-b from-background via-background/90 to-transparent pointer-events-none" />
-          )}
-
           {/* Header Actions Placeholder */}
           <div ref={placeholderRef} className="w-full" style={{ height: isSticky ? (toolbarRef.current?.offsetHeight || 88) : 0 }} />
           
@@ -277,9 +271,9 @@ export default function CreateQuiz() {
             ref={toolbarRef}
             className={`${
               isSticky 
-                ? 'fixed top-20 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50' 
-                : 'relative z-50'
-            } bg-background/95 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] rounded-2xl transition-all duration-300`}
+                ? 'fixed top-16 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50 bg-background/60 backdrop-blur-xl border-white/10 border-x border-b rounded-b-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.7)]' 
+                : 'relative z-50 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'
+            } transition-all duration-300`}
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
