@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,9 +12,12 @@ export default function ForgotPassword() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialEmail = location.state?.email || '';
+
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail);
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [resetToken, setResetToken] = useState('');
   const [remainingAttempts, setRemainingAttempts] = useState(null);
@@ -22,8 +25,20 @@ export default function ForgotPassword() {
   const {
     register: registerEmail,
     handleSubmit: handleSubmitEmail,
+    setValue: setEmailValue,
     formState: { errors: errorsEmail },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: initialEmail,
+    },
+  });
+
+  React.useEffect(() => {
+    if (initialEmail) {
+      setEmailValue('email', initialEmail);
+      setEmail(initialEmail);
+    }
+  }, [initialEmail, setEmailValue]);
 
   const {
     register: registerAnswer,
@@ -212,7 +227,7 @@ export default function ForgotPassword() {
                 onSubmit={handleSubmitAnswer(onAnswerSubmit)} 
                 className="space-y-6"
               >
-                <div className={`p-4 rounded-2xl border text-sm font-medium mb-4 text-center ${isLight ? 'bg-secondary/5 border-secondary/20 text-gray-800' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
+                <div className={`p-4 rounded-2xl border text-sm font-semibold mb-4 text-center ${isLight ? 'bg-secondary/10 border-secondary/30 text-gray-900' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
                   {securityQuestion}
                 </div>
 
@@ -256,9 +271,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full btn-premium py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
-                    isLight ? 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200' : 'btn-secondary-gradient text-white'
-                  } ${
+                  className={`w-full btn-premium btn-secondary-gradient text-white py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >

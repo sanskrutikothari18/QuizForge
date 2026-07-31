@@ -6,8 +6,11 @@ import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { login } from '../services/authService';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Login() {
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -92,10 +95,10 @@ export default function Login() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20 text-primary mb-4">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
+            <h2 className={`font-outfit text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Fourise Quiz Hub Entry
             </h2>
-            <p className="mt-2 text-sm text-gray-400 font-medium">
+            <p className={`mt-2 text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
               Log in as a host to manage quizzes
             </p>
           </div>
@@ -105,7 +108,7 @@ export default function Login() {
               
               {/* Email Field */}
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                   Email Address
                 </label>
                 <div className="relative">
@@ -122,10 +125,12 @@ export default function Login() {
                         message: 'Please enter a valid email address',
                       },
                     })}
-                    className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
+                    className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                      isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                    } ${
                       hostForm.formState.errors.email 
                         ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
-                        : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                        : 'focus:border-primary focus:ring-primary/30'
                     }`}
                   />
                 </div>
@@ -140,15 +145,16 @@ export default function Login() {
               {/* Password Field */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+                  <label className={`text-xs font-semibold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                     Password
                   </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-medium text-secondary hover:underline cursor-pointer"
+                  <button
+                    type="button"
+                    onClick={() => navigate('/forgot-password', { state: { email: hostForm.getValues('email') } })}
+                    className="text-xs font-medium text-secondary hover:underline cursor-pointer bg-transparent border-0 p-0"
                   >
                     Forgot password?
-                  </Link>
+                  </button>
                 </div>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
@@ -164,10 +170,12 @@ export default function Login() {
                         message: 'Password must be at least 6 characters',
                       },
                     })}
-                    className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
+                    className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                      isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                    } ${
                       hostForm.formState.errors.password 
                         ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
-                        : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                        : 'focus:border-primary focus:ring-primary/30'
                     }`}
                   />
                 </div>
@@ -187,7 +195,7 @@ export default function Login() {
                   {...hostForm.register('rememberMe')}
                   className="h-4 w-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/30 focus:ring-offset-background"
                 />
-                <label htmlFor="rememberMe" className="ml-2 text-xs font-semibold text-gray-400 uppercase tracking-wide cursor-pointer select-none">
+                <label htmlFor="rememberMe" className={`ml-2 text-xs font-semibold uppercase tracking-wide cursor-pointer select-none ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                   Remember my session
                 </label>
               </div>
@@ -217,7 +225,7 @@ export default function Login() {
 
           {/* Footer link */}
           <div className="mt-8 text-center border-t border-white/5 pt-6">
-            <p className="text-xs text-gray-400">
+            <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
               New to Fourise Quiz Hub?{' '}
               <Link to="/register" className="font-semibold text-secondary hover:underline">
                 Create an account
