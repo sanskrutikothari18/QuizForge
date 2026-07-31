@@ -114,60 +114,7 @@ export default function Dashboard() {
 
   return (
     <AnimatedPage>
-      <div className="flex flex-1 flex-col md:flex-row min-h-screen bg-background overflow-x-hidden">
-
-        {/* SIDEBAR */}
-        <aside className="w-full md:w-64 bg-background border-b md:border-b-0 md:border-r border-white/5 px-4 py-4 md:p-6 flex flex-col justify-between shrink-0">
-          <div className="space-y-8">
-            {/* Logo area */}
-            <div className="flex items-center gap-2.5">
-              <Logo className="h-9 w-9" />
-              <span className="font-outfit text-lg font-bold text-white">Fourise <span className="text-secondary">Quiz Hub</span></span>
-            </div>
-
-            {/* Nav links */}
-            <nav className="flex flex-row md:flex-col gap-1.5 sm:gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none -mx-1 px-1">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide transition-all whitespace-nowrap ${
-                  activeTab === 'overview'
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                <span>Dashboard Overview</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/quiz/my')}
-                className={`flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide transition-all whitespace-nowrap text-gray-400 hover:text-white hover:bg-white/5 border border-transparent`}
-              >
-                <FileText className="h-4 w-4" />
-                <span>My Quizzes</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/quiz/create')}
-                className={`flex items-center gap-2.5 px-4 py-3 text-xs font-semibold rounded-xl tracking-wide transition-all whitespace-nowrap text-gray-400 hover:text-white hover:bg-white/5 border border-transparent`}
-              >
-                <PlusCircle className="h-4 w-4" />
-                <span>Create New Quiz</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* User Mini Profile Card */}
-          <div className="hidden md:flex items-center gap-3 border-t border-white/5 pt-6 mt-6">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-bold text-sm text-white">
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
-            <div className="text-left overflow-hidden">
-              <h4 className="text-xs font-bold text-white truncate">{user?.name}</h4>
-              <p className="text-[10px] text-gray-500 truncate">{user?.email}</p>
-            </div>
-          </div>
-        </aside>
+      <div className="flex flex-1 flex-col min-h-screen bg-background overflow-x-hidden">
 
         {/* MAIN DASHBOARD */}
         <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto overflow-x-hidden">

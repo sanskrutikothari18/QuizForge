@@ -122,7 +122,7 @@ export default function JoinGame() {
       }
     } catch (error) {
       console.error('[JOIN LOBBY ERROR]', error);
-      const errMsg = error.response?.data?.message || 'Could not join lobby. Check your PIN!';
+      const errMsg = error.response?.data?.message || (error.message?.includes('Network Error') || !error.response ? 'Cannot connect to server. Ensure your phone and PC are on the same Wi-Fi network.' : 'Could not join lobby. Check your PIN!');
       toast.error(errMsg);
     } finally {
       setIsLoading(false);
