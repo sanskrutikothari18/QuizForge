@@ -1,62 +1,107 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Copy, Check } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { forgotPassword } from '../services/authService';
+import { forgotPassword, verifySecurityAnswer, resetPassword } from '../services/authService';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ForgotPassword() {
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
-  const [simulatedUrl, setSimulatedUrl] = useState('');
-  const [isCopied, setIsCopied] = useState(false);
+  const [email, setEmail] = useState('');
+  const [securityQuestion, setSecurityQuestion] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [remainingAttempts, setRemainingAttempts] = useState(null);
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: '',
-    }
-  });
+    register: registerEmail,
+    handleSubmit: handleSubmitEmail,
+    formState: { errors: errorsEmail },
+  } = useForm();
 
-  const onSubmit = async (data) => {
+  const {
+    register: registerAnswer,
+    handleSubmit: handleSubmitAnswer,
+    formState: { errors: errorsAnswer },
+  } = useForm();
+
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    watch: watchPassword,
+    formState: { errors: errorsPassword },
+  } = useForm();
+
+  const onEmailSubmit = async (data) => {
     setIsLoading(true);
     try {
       const response = await forgotPassword({ email: data.email });
       if (response.success) {
-        setResetSent(true);
-        if (response.resetUrl) {
-          setSimulatedUrl(response.resetUrl);
-        }
-        toast.success('Reset code generated successfully! 🔑');
+        setEmail(data.email);
+        setSecurityQuestion(response.securityQuestion);
+        setStep(2);
       } else {
-        toast.error(response.message || 'Failed to process request.');
+        toast.error(response.message || 'No account found.');
       }
     } catch (error) {
       console.error('[FORGOT PASSWORD ERROR]', error);
-      let errMsg = 'Could not request password reset';
-      if (error.response) {
-        errMsg = error.response.data?.message || errMsg;
-      } else if (error.request) {
-        errMsg = 'Connection failed. Please ensure the backend server is running.';
-      } else {
-        errMsg = error.message || errMsg;
-      }
-      toast.error(errMsg);
+      toast.error('Could not request password reset');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(simulatedUrl);
-    setIsCopied(true);
-    toast.success('Reset URL copied to clipboard! 📋');
-    setTimeout(() => setIsCopied(false), 2000);
+  const onAnswerSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      const response = await verifySecurityAnswer({ email, answer: data.answer });
+      if (response.success) {
+        setResetToken(response.resetToken);
+        setStep(3);
+        toast.success('Answer verified!');
+      }
+    } catch (error) {
+      console.error('[VERIFY ANSWER ERROR]', error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+        if (error.response.data.remainingAttempts !== undefined) {
+          setRemainingAttempts(error.response.data.remainingAttempts);
+        }
+      } else {
+        toast.error('Failed to verify answer');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onPasswordSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      const response = await resetPassword({
+        email,
+        resetToken,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
+      if (response.success) {
+        toast.success('Password changed successfully.');
+        navigate('/login');
+      } else {
+        toast.error(response.message || 'Failed to change password');
+      }
+    } catch (error) {
+      console.error('[RESET PASSWORD ERROR]', error);
+      toast.error(error.response?.data?.message || 'Failed to change password');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,7 +119,6 @@ export default function ForgotPassword() {
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
           className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
         >
-          {/* Subtle light border decoration at the top */}
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
           {/* Header */}
@@ -82,140 +126,266 @@ export default function ForgotPassword() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20 text-primary mb-4">
               <KeyRound className="h-6 w-6" />
             </div>
-            <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
+            <h2 className={`font-outfit text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Forgot Password
             </h2>
-            <p className="mt-2 text-sm text-gray-400 font-medium">
-              {!resetSent 
-                ? 'Enter your email to receive instructions to reset your password' 
-                : 'Check below for your password reset link'}
+            <p className={`mt-2 text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+              {step === 1 && 'Enter your email to verify your account'}
+              {step === 2 && 'Answer your security question'}
+              {step === 3 && 'Create a new password'}
             </p>
           </div>
 
-          {!resetSent ? (
-            /* EMAIL INPUT FORM */
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              
-              {/* Email Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
-                    <Mail className="h-4.5 w-4.5" />
-                  </div>
-                  <input
-                    type="email"
-                    placeholder="name@company.com"
-                    {...register('email', {
-                      required: 'Email address is required',
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Please enter a valid email address',
-                      },
-                    })}
-                    className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
-                      errors.email 
-                        ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
-                        : 'border-white/10 focus:border-primary focus:ring-primary/30'
-                    }`}
-                  />
-                </div>
-                {errors.email && (
-                  <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    <span>{errors.email.message}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={`w-full btn-premium btn-primary-gradient py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow cursor-pointer ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.form 
+                key="step1"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                onSubmit={handleSubmitEmail(onEmailSubmit)} 
+                className="space-y-6"
               >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>Processing...</span>
+                <div className="space-y-2">
+                  <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                      <Mail className="h-4.5 w-4.5" />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="name@company.com"
+                      {...registerEmail('email', {
+                        required: 'Email address is required',
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: 'Please enter a valid email address',
+                        },
+                      })}
+                      className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                        isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                      } ${
+                        errorsEmail.email 
+                          ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                          : 'focus:border-primary focus:ring-primary/30'
+                      }`}
+                    />
                   </div>
-                ) : (
-                  <>
-                    <span>Send Reset Instructions</span>
-                    <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
-                  </>
-                )}
-              </button>
-            </form>
-          ) : (
-            /* SUCCESS & SIMULATION COMPONENT */
-            <div className="space-y-6 text-center">
-              <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium">
-                If an account exists for that email, a password reset request has been processed!
-              </div>
+                  {errorsEmail.email && (
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{errorsEmail.email.message}</span>
+                    </div>
+                  )}
+                </div>
 
-              {simulatedUrl && (
-                <div className="space-y-3 text-left">
-                  <div className="text-xs font-semibold text-secondary uppercase tracking-wider block">
-                    Developer Mode: Simulated Reset Link
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    Since email delivery is not configured, you can use the link below to reset your password:
-                  </p>
-                  <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`w-full btn-premium btn-primary-gradient py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow cursor-pointer ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>Continue</span>
+                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            )}
+
+            {step === 2 && (
+              <motion.form 
+                key="step2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                onSubmit={handleSubmitAnswer(onAnswerSubmit)} 
+                className="space-y-6"
+              >
+                <div className={`p-4 rounded-2xl border text-sm font-medium mb-4 text-center ${isLight ? 'bg-secondary/5 border-secondary/20 text-gray-800' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
+                  {securityQuestion}
+                </div>
+
+                <div className="space-y-2">
+                  <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
+                    Your Answer
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                      <ShieldCheck className="h-4.5 w-4.5" />
+                    </div>
                     <input
                       type="text"
-                      readOnly
-                      value={simulatedUrl}
-                      className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs text-gray-300 focus:outline-none"
+                      placeholder="Type your answer"
+                      {...registerAnswer('answer', {
+                        required: 'Answer is required',
+                      })}
+                      className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                        isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                      } ${
+                        errorsAnswer.answer 
+                          ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                          : 'focus:border-primary focus:ring-primary/30'
+                      }`}
                     />
-                    <button
-                      type="button"
-                      onClick={copyToClipboard}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"
-                    >
-                      {isCopied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
-                    </button>
                   </div>
-
-                  <Link
-                    to={`/reset-password/${simulatedUrl.split('/').pop()}`}
-                    className="w-full mt-3 btn-premium btn-secondary-gradient py-3 px-4 flex items-center justify-center gap-2 text-xs font-bold shadow-secondary-glow cursor-pointer"
-                  >
-                    <span>Proceed to Reset Password Page</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
+                  {errorsAnswer.answer && (
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{errorsAnswer.answer.message}</span>
+                    </div>
+                  )}
+                  {remainingAttempts !== null && (
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{remainingAttempts} attempts remaining</span>
+                    </div>
+                  )}
                 </div>
-              )}
 
-              <div className="pt-2">
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`w-full btn-premium py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
+                    isLight ? 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200' : 'btn-secondary-gradient text-white'
+                  } ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span>Return to Sign In</span>
-                </Link>
-              </div>
-            </div>
-          )}
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Verifying...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>Submit Answer</span>
+                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            )}
 
-          {/* Footer Back link (only when form is showing) */}
-          {!resetSent && (
-            <div className="mt-8 text-center border-t border-white/5 pt-6">
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+            {step === 3 && (
+              <motion.form 
+                key="step3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                onSubmit={handleSubmitPassword(onPasswordSubmit)} 
+                className="space-y-6"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Back to Sign In</span>
-              </Link>
-            </div>
-          )}
+                <div className="space-y-2">
+                  <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                      <Lock className="h-4.5 w-4.5" />
+                    </div>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      {...registerPassword('newPassword', {
+                        required: 'Password is required',
+                        minLength: {
+                          value: 6,
+                          message: 'Password must be at least 6 characters',
+                        },
+                      })}
+                      className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                        isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                      } ${
+                        errorsPassword.newPassword 
+                          ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                          : 'focus:border-primary focus:ring-primary/30'
+                      }`}
+                    />
+                  </div>
+                  {errorsPassword.newPassword && (
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{errorsPassword.newPassword.message}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                      <Lock className="h-4.5 w-4.5" />
+                    </div>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      {...registerPassword('confirmPassword', {
+                        required: 'Please confirm your password',
+                        validate: (val) => val === watchPassword('newPassword') || 'Passwords do not match',
+                      })}
+                      className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                        isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                      } ${
+                        errorsPassword.confirmPassword 
+                          ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                          : 'focus:border-primary focus:ring-primary/30'
+                      }`}
+                    />
+                  </div>
+                  {errorsPassword.confirmPassword && (
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{errorsPassword.confirmPassword.message}</span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`w-full btn-premium btn-primary-gradient py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow cursor-pointer ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Changing Password...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>Change Password</span>
+                      <Check className="h-4 w-4 ml-1" />
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Footer Back link */}
+          <div className="mt-8 text-center border-t border-white/5 pt-6">
+            <Link
+              to="/login"
+              className={`inline-flex items-center gap-2 text-xs font-semibold transition-colors ${isLight ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'}`}
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Back to Sign In</span>
+            </Link>
+          </div>
 
         </motion.div>
       </div>

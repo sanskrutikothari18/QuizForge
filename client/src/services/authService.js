@@ -20,7 +20,12 @@ export const forgotPassword = async (emailData) => {
   return response.data;
 };
 
-export const resetPassword = async (token, passwordData) => {
-  const response = await API.post(`/auth/reset-password/${token}`, passwordData);
+export const verifySecurityAnswer = async (data) => {
+  const response = await API.post('/auth/verify-security-answer', data);
+  return response.data;
+};
+
+export const resetPassword = async (data) => {
+  const response = await API.post('/auth/reset-password', data);
   return response.data;
 };
