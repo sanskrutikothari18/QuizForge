@@ -117,7 +117,7 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Section ONLY */}
-        <section className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 lg:px-8">
+        <section className="relative mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-20 sm:pb-12 lg:px-8">
           <div className="text-center">
 
             {/* Promo Pill */}
@@ -179,7 +179,7 @@ export default function LandingPage() {
         </section>
 
         {/* FEATURES SECTION */}
-        <section id="features" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 scroll-mt-20">
+        <section id="features" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-20 scroll-mt-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

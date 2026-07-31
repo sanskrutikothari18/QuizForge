@@ -2,8 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
+const dns = require('dns');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
+
+// Use public DNS servers to fix querySrv ECONNREFUSED errors with MongoDB Atlas
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 dotenv.config();
 
