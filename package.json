@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix server run dev",
-    "start": "npm --prefix server run start"
+    "start": "npm --prefix server run start",
+    "client": "npm --prefix client run dev",
+    "dev:full": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\""
   },
   "devDependencies": {
+    "concurrently": "^10.0.4",
     "nodemon": "^3.1.14"
   },
   "dependencies": {
