@@ -1,4 +1,4 @@
-import API from './api';
+﻿import API from './api';
 
 export const register = async (userData) => {
   const response = await API.post('/auth/register', userData);
@@ -29,4 +29,3 @@ export const resetPassword = async (data) => {
   const response = await API.post('/auth/reset-password', data);
   return response.data;
 };
-

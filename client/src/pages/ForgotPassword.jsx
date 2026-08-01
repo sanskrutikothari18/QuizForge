@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, Lock, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { forgotPassword, verifySecurityAnswer, resetPassword } from '../services/authService';
@@ -16,29 +16,20 @@ export default function ForgotPassword() {
   const initialEmail = location.state?.email || '';
 
   const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState(initialEmail);
+  const [userEmail, setUserEmail] = useState(initialEmail);
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [resetToken, setResetToken] = useState('');
   const [remainingAttempts, setRemainingAttempts] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResetComplete, setIsResetComplete] = useState(false);
 
   const {
     register: registerEmail,
     handleSubmit: handleSubmitEmail,
-    setValue: setEmailValue,
     formState: { errors: errorsEmail },
   } = useForm({
-    defaultValues: {
-      email: initialEmail,
-    },
+    defaultValues: { email: initialEmail },
   });
-
-  React.useEffect(() => {
-    if (initialEmail) {
-      setEmailValue('email', initialEmail);
-      setEmail(initialEmail);
-    }
-  }, [initialEmail, setEmailValue]);
 
   const {
     register: registerAnswer,
@@ -58,16 +49,18 @@ export default function ForgotPassword() {
     try {
       const email = data.email.trim().toLowerCase();
       const response = await forgotPassword({ email });
+
       if (response.success) {
-        setEmail(data.email);
-        setSecurityQuestion(response.securityQuestion);
+        setUserEmail(email);
+        setSecurityQuestion(response.securityQuestion || '');
         setStep(2);
+        toast.success('Security question ready.');
       } else {
         toast.error(response.message || 'No account found.');
       }
     } catch (error) {
       console.error('[FORGOT PASSWORD ERROR]', error);
-      toast.error('Could not request password reset');
+      toast.error(error.response?.data?.message || 'Could not request password reset');
     } finally {
       setIsLoading(false);
     }
@@ -76,21 +69,28 @@ export default function ForgotPassword() {
   const onAnswerSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await verifySecurityAnswer({ email, answer: data.answer });
+      const response = await verifySecurityAnswer({
+        email: userEmail,
+        answer: data.answer,
+      });
+
       if (response.success) {
         setResetToken(response.resetToken);
+        setRemainingAttempts(null);
         setStep(3);
         toast.success('Answer verified!');
+      } else {
+        toast.error(response.message || 'Could not verify answer');
+        if (response.remainingAttempts !== undefined) {
+          setRemainingAttempts(response.remainingAttempts);
+        }
       }
     } catch (error) {
       console.error('[VERIFY ANSWER ERROR]', error);
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-        if (error.response.data.remainingAttempts !== undefined) {
-          setRemainingAttempts(error.response.data.remainingAttempts);
-        }
-      } else {
-        toast.error('Failed to verify answer');
+      const errMsg = error.response?.data?.message || 'Could not verify answer';
+      toast.error(errMsg);
+      if (error.response?.data?.remainingAttempts !== undefined) {
+        setRemainingAttempts(error.response.data.remainingAttempts);
       }
     } finally {
       setIsLoading(false);
@@ -101,20 +101,22 @@ export default function ForgotPassword() {
     setIsLoading(true);
     try {
       const response = await resetPassword({
-        email,
+        email: userEmail,
         resetToken,
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
       });
+
       if (response.success) {
-        toast.success('Password changed successfully.');
-        navigate('/login');
+        setIsResetComplete(true);
+        toast.success('Password updated successfully.');
+        setTimeout(() => navigate('/login'), 1500);
       } else {
-        toast.error(response.message || 'Failed to change password');
+        toast.error(response.message || 'Could not reset password');
       }
     } catch (error) {
       console.error('[RESET PASSWORD ERROR]', error);
-      toast.error(error.response?.data?.message || 'Failed to change password');
+      toast.error(error.response?.data?.message || 'Could not reset password');
     } finally {
       setIsLoading(false);
     }
@@ -123,12 +125,9 @@ export default function ForgotPassword() {
   return (
     <AnimatedPage>
       <div className="relative flex flex-1 flex-col items-center justify-center min-h-[80vh] px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-background">
-
-        {/* Glow Spheres */}
         <div className="absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full bg-glow-primary pointer-events-none opacity-45"></div>
         <div className="absolute bottom-[10%] right-[20%] h-[400px] w-[400px] rounded-full bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* Main Card Container */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -137,7 +136,6 @@ export default function ForgotPassword() {
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
-          {/* Success Overlay Animation */}
           {isResetComplete && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -154,25 +152,26 @@ export default function ForgotPassword() {
               </motion.div>
               <h3 className="font-outfit text-2xl font-bold text-white mb-2">Password Reset Successful!</h3>
               <p className="text-sm text-gray-400 max-w-[280px] leading-relaxed">
-                Your new password is saved in the database. Redirecting to login...
+                Your new password has been saved. Redirecting to login...
               </p>
             </motion.div>
           )}
 
-          {/* Header */}
           <div className="text-center mb-6">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 border border-primary/20 text-primary mb-4">
               {step === 1 && <KeyRound className="h-6 w-6" />}
-              {step === 2 && <Mail className="h-6 w-6" />}
+              {step === 2 && <ShieldCheck className="h-6 w-6" />}
               {step === 3 && <Lock className="h-6 w-6 text-secondary" />}
             </div>
-            <h2 className={`font-outfit text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>
-              Forgot Password
+            <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              {step === 1 && 'Forgot Password'}
+              {step === 2 && 'Verify Security Answer'}
+              {step === 3 && 'Set New Password'}
             </h2>
-            <p className={`mt-2 text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-              {step === 1 && 'Enter your email to verify your account'}
-              {step === 2 && 'Answer your security question'}
-              {step === 3 && 'Create a new password'}
+            <p className="mt-2 text-xs sm:text-sm text-gray-400 font-medium">
+              {step === 1 && 'Enter your email to continue'}
+              {step === 2 && `Answer your security question for ${userEmail || 'your account'}`}
+              {step === 3 && 'Create a new password for your account'}
             </p>
           </div>
 
@@ -187,7 +186,7 @@ export default function ForgotPassword() {
                 className="space-y-6"
               >
                 <div className="space-y-2">
-                  <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
+                  <label className="text-xs font-semibold uppercase tracking-wider block text-left text-gray-400">
                     Email Address
                   </label>
                   <div className="relative">
@@ -233,7 +232,7 @@ export default function ForgotPassword() {
                   ) : (
                     <>
                       <span>Continue</span>
-                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="h-4 w-4 ml-1" />
                     </>
                   )}
                 </button>
@@ -250,7 +249,7 @@ export default function ForgotPassword() {
                 className="space-y-6"
               >
                 <div className={`p-4 rounded-2xl border text-sm font-semibold mb-4 text-center ${isLight ? 'bg-secondary/10 border-secondary/30 text-gray-900' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
-                  {securityQuestion}
+                  {securityQuestion || 'Answer your security question'}
                 </div>
 
                 <div className="space-y-2">
@@ -264,9 +263,7 @@ export default function ForgotPassword() {
                     <input
                       type="text"
                       placeholder="Type your answer"
-                      {...registerAnswer('answer', {
-                        required: 'Answer is required',
-                      })}
+                      {...registerAnswer('answer', { required: 'Answer is required' })}
                       className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
                         } ${errorsAnswer.answer
                           ? 'border-accent/40 focus:border-accent focus:ring-accent/30'
@@ -302,7 +299,7 @@ export default function ForgotPassword() {
                   ) : (
                     <>
                       <span>Submit Answer</span>
-                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="h-4 w-4 ml-1" />
                     </>
                   )}
                 </button>
@@ -364,7 +361,7 @@ export default function ForgotPassword() {
                       placeholder="••••••••"
                       {...registerPassword('confirmPassword', {
                         required: 'Please confirm your password',
-                        validate: (val) => val === watchPassword('newPassword') || 'Passwords do not match',
+                        validate: (value) => value === watchPassword('newPassword') || 'Passwords do not match',
                       })}
                       className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
                         } ${errorsPassword.confirmPassword
@@ -390,7 +387,7 @@ export default function ForgotPassword() {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                      <span>Changing Password...</span>
+                      <span>Updating...</span>
                     </div>
                   ) : (
                     <>
@@ -403,7 +400,6 @@ export default function ForgotPassword() {
             )}
           </AnimatePresence>
 
-          {/* Footer Back link */}
           <div className="mt-8 text-center border-t border-white/5 pt-6">
             <Link
               to="/login"
@@ -413,7 +409,6 @@ export default function ForgotPassword() {
               <span>Back to Sign In</span>
             </Link>
           </div>
-
         </motion.div>
       </div>
     </AnimatedPage>

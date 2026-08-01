@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, Lock, Check } from 'lucide-react';
+import toast from 'react-hot-toast';
+import AnimatedPage from '../components/AnimatedPage';
+import { resetPassword } from '../services/authService';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const { token } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isResetComplete, setIsResetComplete] = useState(false);
 
@@ -48,7 +55,7 @@ export default function ResetPassword() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await resetPassword({ password: data.password });
+      const response = await resetPassword({ token, password: data.password });
       if (response.success) {
         setIsResetComplete(true);
         toast.success('Password updated successfully! 🎉');

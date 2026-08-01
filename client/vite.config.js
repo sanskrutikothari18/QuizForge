@@ -174,6 +174,7 @@ function ngrokPlugin() {
 export default defineConfig({
   plugins: [react(), ngrokPlugin()],
   server: {
+    open: true,
     allowedHosts: true,
     proxy: {
       '/api': {
