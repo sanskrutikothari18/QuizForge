@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Heart, Github, Twitter, Linkedin, HelpCircle, Shield, FileText } from 'lucide-react';
+import { Sparkles, Heart, Globe, Share2, Code2, HelpCircle, Shield, FileText } from 'lucide-react';
 import Logo from './Logo';
 import { useTheme } from '../context/ThemeContext';
 
@@ -43,9 +43,9 @@ export default function Footer() {
                 rel="noreferrer"
                 className="p-2 rounded-xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
                 style={{ background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.05)' }}
-                aria-label="GitHub"
+                aria-label="Code Repository"
               >
-                <Github className="h-4 w-4 text-primary" />
+                <Code2 className="h-4 w-4 text-primary" />
               </a>
               <a
                 href="https://twitter.com"
@@ -53,9 +53,9 @@ export default function Footer() {
                 rel="noreferrer"
                 className="p-2 rounded-xl border border-white/10 hover:border-secondary/50 transition-all hover:scale-105"
                 style={{ background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.05)' }}
-                aria-label="Twitter"
+                aria-label="Community"
               >
-                <Twitter className="h-4 w-4 text-secondary" />
+                <Share2 className="h-4 w-4 text-secondary" />
               </a>
               <a
                 href="https://linkedin.com"
@@ -63,9 +63,9 @@ export default function Footer() {
                 rel="noreferrer"
                 className="p-2 rounded-xl border border-white/10 hover:border-accent/50 transition-all hover:scale-105"
                 style={{ background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.05)' }}
-                aria-label="LinkedIn"
+                aria-label="Website"
               >
-                <Linkedin className="h-4 w-4 text-accent" />
+                <Globe className="h-4 w-4 text-accent" />
               </a>
             </div>
           </div>
