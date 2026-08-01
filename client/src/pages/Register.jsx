@@ -24,6 +24,8 @@ export default function Register() {
       email: '',
       password: '',
       confirmPassword: '',
+      securityQuestion: '',
+      securityAnswer: '',
     }
   });
 
@@ -61,6 +63,8 @@ export default function Register() {
         name: data.name ? data.name.trim() : '',
         email: data.email ? data.email.trim() : '',
         password: data.password,
+        securityQuestion: data.securityQuestion,
+        securityAnswer: data.securityAnswer ? data.securityAnswer.trim().toLowerCase() : '',
       });
 
       if (response.success) {
@@ -297,6 +301,71 @@ export default function Register() {
                 <div className="flex items-center gap-1.5 mt-1 text-xs text-accent">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{errors.confirmPassword.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Security Question Field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+                Security Question
+              </label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                  <ShieldCheck className="h-4.5 w-4.5" />
+                </div>
+                <select
+                  {...register('securityQuestion', {
+                    required: 'Please select a security question',
+                  })}
+                  className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white transition-all focus:outline-none focus:ring-1 appearance-none ${
+                    errors.securityQuestion 
+                      ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                      : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                  }`}
+                >
+                  <option value="" disabled className="bg-[#1e1840]">Select a question</option>
+                  <option value="What is your favourite colour?" className="bg-[#1e1840]">What is your favourite colour?</option>
+                  <option value="What was your first school?" className="bg-[#1e1840]">What was your first school?</option>
+                  <option value="What is your favourite food?" className="bg-[#1e1840]">What is your favourite food?</option>
+                  <option value="What is your childhood nickname?" className="bg-[#1e1840]">What is your childhood nickname?</option>
+                  <option value="What is your favourite teacher's name?" className="bg-[#1e1840]">What is your favourite teacher's name?</option>
+                </select>
+              </div>
+              {errors.securityQuestion && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.securityQuestion.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Security Answer Field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+                Security Answer
+              </label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                  <Lock className="h-4.5 w-4.5" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Your answer"
+                  {...register('securityAnswer', {
+                    required: 'Security answer is required',
+                  })}
+                  className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
+                    errors.securityAnswer 
+                      ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
+                      : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                  }`}
+                />
+              </div>
+              {errors.securityAnswer && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.securityAnswer.message}</span>
                 </div>
               )}
             </div>
