@@ -13,9 +13,13 @@ import { getProfile } from '../services/authService';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
+
   const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
 
@@ -103,7 +107,9 @@ export default function Dashboard() {
         <div className="flex-1 flex items-center justify-center min-h-[70vh] bg-background">
           <div className="text-center space-y-4">
             <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-sm font-semibold tracking-wide text-gray-400">Loading your battle dashboard...</p>
+            <p className={`text-sm font-semibold tracking-wide ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+              Loading your battle dashboard...
+            </p>
           </div>
         </div>
       </AnimatedPage>
@@ -120,12 +126,12 @@ export default function Dashboard() {
         <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto overflow-x-hidden">
 
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
+          <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6 ${isLight ? 'border-gray-200' : 'border-white/5'}`}>
             <div>
-              <h1 className="font-outfit text-3xl font-extrabold text-white">
+              <h1 className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
                 Dashboard Overview
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className={`text-sm mt-1 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 Manage your active quizzes and view participant logs.
               </p>
             </div>
@@ -145,14 +151,28 @@ export default function Dashboard() {
             {/* Total Quizzes Card -> Navigates to My Quizzes */}
             <div 
               onClick={() => navigate('/quiz/my')}
-              className="glass-panel rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border border-white/5 hover:border-primary/40 hover:scale-[1.02] transition-all cursor-pointer shadow-sm hover:shadow-md"
+              className={`rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border transition-all cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] ${
+                isLight 
+                  ? 'bg-white border-gray-200 text-gray-900 hover:border-primary/50' 
+                  : 'glass-panel border-white/5 text-white hover:border-primary/40'
+              }`}
             >
               <div className="space-y-3">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:text-primary transition-colors">Total Quizzes</span>
-                <div className="font-outfit text-3xl font-extrabold text-white">{totalQuizzes}</div>
-                <p className="text-[10px] text-gray-500 font-medium">Custom battle sets built</p>
+                <span className={`text-xs font-bold uppercase tracking-wider group-hover:text-primary transition-colors ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Total Quizzes
+                </span>
+                <div className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {totalQuizzes}
+                </div>
+                <p className={`text-[10px] font-medium ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                  Custom battle sets built
+                </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/30 transition-all">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
+                isLight 
+                  ? 'bg-primary/10 border-primary/20 text-primary' 
+                  : 'bg-white/5 border-white/10 group-hover:bg-primary/10 group-hover:border-primary/30'
+              }`}>
                 <FileText className="h-5 w-5 text-primary" />
               </div>
             </div>
@@ -160,14 +180,28 @@ export default function Dashboard() {
             {/* Sessions Hosted Card -> Opens Sessions Hosted History Modal */}
             <div 
               onClick={() => setActiveModal('sessions')}
-              className="glass-panel rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border border-white/5 hover:border-secondary/40 hover:scale-[1.02] transition-all cursor-pointer shadow-sm hover:shadow-md"
+              className={`rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border transition-all cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] ${
+                isLight 
+                  ? 'bg-white border-gray-200 text-gray-900 hover:border-secondary/50' 
+                  : 'glass-panel border-white/5 text-white hover:border-secondary/40'
+              }`}
             >
               <div className="space-y-3">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:text-secondary transition-colors">Sessions Hosted</span>
-                <div className="font-outfit text-3xl font-extrabold text-white">{totalGamesHosted}</div>
-                <p className="text-[10px] text-gray-500 font-medium">Real-time games executed</p>
+                <span className={`text-xs font-bold uppercase tracking-wider group-hover:text-secondary transition-colors ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Sessions Hosted
+                </span>
+                <div className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {totalGamesHosted}
+                </div>
+                <p className={`text-[10px] font-medium ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                  Real-time games executed
+                </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-secondary/10 group-hover:border-secondary/30 transition-all">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
+                isLight 
+                  ? 'bg-secondary/10 border-secondary/20 text-secondary' 
+                  : 'bg-white/5 border-white/10 group-hover:bg-secondary/10 group-hover:border-secondary/30'
+              }`}>
                 <Play className="h-5 w-5 text-secondary" />
               </div>
             </div>
@@ -175,14 +209,28 @@ export default function Dashboard() {
             {/* Total Students Card -> Opens Total Students Roster Modal */}
             <div 
               onClick={() => setActiveModal('students')}
-              className="glass-panel rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border border-white/5 hover:border-accent/40 hover:scale-[1.02] transition-all cursor-pointer shadow-sm hover:shadow-md"
+              className={`rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border transition-all cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] ${
+                isLight 
+                  ? 'bg-white border-gray-200 text-gray-900 hover:border-accent/50' 
+                  : 'glass-panel border-white/5 text-white hover:border-accent/40'
+              }`}
             >
               <div className="space-y-3">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:text-accent transition-colors">Total Students</span>
-                <div className="font-outfit text-3xl font-extrabold text-white">{totalStudents}</div>
-                <p className="text-[10px] text-gray-500 font-medium">Active players connected</p>
+                <span className={`text-xs font-bold uppercase tracking-wider group-hover:text-accent transition-colors ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Total Students
+                </span>
+                <div className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {totalStudents}
+                </div>
+                <p className={`text-[10px] font-medium ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                  Active players connected
+                </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-accent/10 group-hover:border-accent/30 transition-all">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
+                isLight 
+                  ? 'bg-accent/10 border-accent/20 text-accent' 
+                  : 'bg-white/5 border-white/10 group-hover:bg-accent/10 group-hover:border-accent/30'
+              }`}>
                 <Users className="h-5 w-5 text-accent" />
               </div>
             </div>
@@ -194,7 +242,9 @@ export default function Dashboard() {
             {/* Left/Center: Recent Quizzes */}
             <div className="lg:col-span-2 space-y-6 text-left">
               <div className="flex justify-between items-center">
-                <h3 className="font-outfit text-lg font-bold text-white">Recent Quizzes</h3>
+                <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  Recent Quizzes
+                </h3>
                 <Link to="/quiz/my" className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
                   <span>View All</span>
                   <ArrowRight className="h-3 w-3" />
@@ -202,10 +252,10 @@ export default function Dashboard() {
               </div>
 
               {quizzesData?.quizzes?.length === 0 ? (
-                <div className="glass-panel rounded-2xl p-10 text-center space-y-4">
-                  <HelpCircle className="h-10 w-10 text-gray-600 mx-auto" />
-                  <h4 className="font-semibold text-white">No Quizzes Found</h4>
-                  <p className="text-xs text-gray-400 max-w-[280px] mx-auto">
+                <div className={`rounded-2xl p-10 text-center space-y-4 border ${isLight ? 'bg-white border-gray-200' : 'glass-panel border-white/5'}`}>
+                  <HelpCircle className="h-10 w-10 text-gray-400 mx-auto" />
+                  <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>No Quizzes Found</h4>
+                  <p className={`text-xs max-w-[280px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                     You haven't created any quizzes yet. Create your first multiplayer challenge!
                   </p>
                   <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold">
@@ -215,19 +265,32 @@ export default function Dashboard() {
               ) : (
                 <div className="grid gap-5 sm:grid-cols-2">
                   {quizzesData?.quizzes?.slice(0, 4).map((quiz) => (
-                    <div key={quiz._id} className="glass-panel rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border border-white/5 hover:border-primary/30 transition-all relative">
+                    <div 
+                      key={quiz._id} 
+                      className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border transition-all relative ${
+                        isLight 
+                          ? 'bg-white border-gray-200 hover:border-primary/40 shadow-sm hover:shadow-md' 
+                          : 'glass-panel border-white/5 hover:border-primary/30'
+                      }`}
+                    >
                       <div>
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
                             {quiz.category || 'General'}
                           </span>
-                          <span className="text-[10px] text-gray-500 font-semibold">{quiz.questions?.length || 0} Questions</span>
+                          <span className={`text-[10px] font-semibold ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {quiz.questions?.length || 0} Questions
+                          </span>
                         </div>
-                        <h4 className="font-bold text-white mt-4 text-sm sm:text-base group-hover:text-primary transition-colors line-clamp-1">{quiz.title}</h4>
-                        <p className="text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">{quiz.description || 'No description provided.'}</p>
+                        <h4 className={`font-bold mt-4 text-sm sm:text-base group-hover:text-primary transition-colors line-clamp-1 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                          {quiz.title}
+                        </h4>
+                        <p className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                          {quiz.description || 'No description provided.'}
+                        </p>
                       </div>
 
-                      <div className="flex flex-col gap-2.5 mt-5 pt-4 border-t border-white/5">
+                      <div className={`flex flex-col gap-2.5 mt-5 pt-4 border-t ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
                         <button
                           onClick={() => handleHostGame(quiz._id)}
                           className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-premium-glow"
@@ -244,26 +307,28 @@ export default function Dashboard() {
 
             {/* Right Side: Profile Summary & Stats */}
             <div className="space-y-6 text-left">
-              <h3 className="font-outfit text-lg font-bold text-white">Host Profile</h3>
+              <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                Host Profile
+              </h3>
 
-              <div className="glass-panel rounded-2xl p-6 space-y-5">
+              <div className={`rounded-2xl p-6 space-y-5 border ${isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/5'}`}>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-base text-white">
                     {user?.name?.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-sm">{user?.name}</h4>
+                    <h4 className={`font-bold text-sm ${isLight ? 'text-gray-900' : 'text-white'}`}>{user?.name}</h4>
                     <span className="text-[10px] font-semibold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-full">Quiz Moderator</span>
                   </div>
                 </div>
 
-                <div className="space-y-3.5 border-t border-white/5 pt-5 text-xs text-gray-400">
+                <div className={`space-y-3.5 border-t pt-5 text-xs ${isLight ? 'border-gray-100 text-gray-600' : 'border-white/5 text-gray-400'}`}>
                   <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
+                    <Mail className="h-4 w-4 text-gray-400" />
                     <span className="truncate">{user?.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <Calendar className="h-4 w-4 text-gray-400" />
                     <span>Member since {new Date(user?.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}</span>
                   </div>
                 </div>
@@ -277,21 +342,31 @@ export default function Dashboard() {
 
         {/* SESSIONS HOSTED MODAL */}
         {activeModal === 'sessions' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-            <div className="bg-[#121216] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-              <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-white/5">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className={`rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
+              isLight ? 'bg-white border-gray-200 text-gray-900 shadow-2xl' : 'bg-[#121216] border-white/10 text-white'
+            }`}>
+              <div className={`flex justify-between items-center px-6 py-4 border-b ${
+                isLight ? 'border-gray-200 bg-gray-50/80' : 'border-white/10 bg-white/5'
+              }`}>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
                     <Play className="h-5 w-5 fill-current" />
                   </div>
                   <div>
-                    <h3 className="font-outfit font-extrabold text-white text-lg">Hosted Sessions History</h3>
-                    <p className="text-xs text-gray-400">Total games executed: {totalGamesHosted}</p>
+                    <h3 className={`font-outfit font-extrabold text-lg ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                      Hosted Sessions History
+                    </h3>
+                    <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Total games executed: {totalGamesHosted}
+                    </p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setActiveModal(null)}
-                  className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                  className={`p-2 rounded-lg transition-colors ${
+                    isLight ? 'text-gray-500 hover:text-gray-900 hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -300,21 +375,31 @@ export default function Dashboard() {
               <div className="p-6 overflow-y-auto space-y-4">
                 {hostedSessions.length === 0 ? (
                   <div className="text-center py-10 space-y-3">
-                    <Clock className="h-10 w-10 text-gray-600 mx-auto" />
-                    <p className="text-sm font-semibold text-gray-300">No hosted sessions found yet.</p>
-                    <p className="text-xs text-gray-500">Launch a battle lobby to start hosting quiz sessions!</p>
+                    <Clock className={`h-10 w-10 mx-auto ${isLight ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-sm font-semibold ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                      No hosted sessions found yet.
+                    </p>
+                    <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Launch a battle lobby to start hosting quiz sessions!
+                    </p>
                   </div>
                 ) : (
                   hostedSessions.map((session, idx) => (
                     <div 
                       key={session._id || session.id || idx}
-                      className="glass-panel p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-white/5 hover:border-secondary/30 transition-all"
+                      className={`p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border transition-all ${
+                        isLight 
+                          ? 'bg-gray-50/80 border-gray-200 hover:border-secondary/50 text-gray-900' 
+                          : 'glass-panel border-white/5 hover:border-secondary/30 text-white'
+                      }`}
                     >
                       <div className="space-y-1">
-                        <h4 className="font-bold text-white text-base">{session.quizTitle || session.quiz?.title || 'Quiz Session'}</h4>
-                        <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <h4 className={`font-bold text-base ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                          {session.quizTitle || session.quiz?.title || 'Quiz Session'}
+                        </h4>
+                        <div className={`flex items-center gap-3 text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                           <span className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5 text-gray-500" />
+                            <Clock className="h-3.5 w-3.5 text-gray-400" />
                             {new Date(session.createdAt || Date.now()).toLocaleDateString()}
                           </span>
                           <span className="flex items-center gap-1 text-secondary font-semibold">
@@ -329,7 +414,7 @@ export default function Dashboard() {
                           setActiveModal(null);
                           navigate(`/results/${session._id || session.id}`);
                         }}
-                        className="btn-premium bg-secondary text-white hover:bg-secondary/80 px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-1.5 whitespace-nowrap self-end sm:self-center shadow-md"
+                        className="btn-premium bg-secondary text-white hover:bg-secondary/80 px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-1.5 whitespace-nowrap self-end sm:self-center shadow-md cursor-pointer"
                       >
                         <BarChart3 className="h-4 w-4" />
                         <span>View Analytics</span>
@@ -344,21 +429,31 @@ export default function Dashboard() {
 
         {/* TOTAL STUDENTS MODAL */}
         {activeModal === 'students' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-            <div className="bg-[#121216] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-              <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-white/5">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className={`rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
+              isLight ? 'bg-white border-gray-200 text-gray-900 shadow-2xl' : 'bg-[#121216] border-white/10 text-white'
+            }`}>
+              <div className={`flex justify-between items-center px-6 py-4 border-b ${
+                isLight ? 'border-gray-200 bg-gray-50/80' : 'border-white/10 bg-white/5'
+              }`}>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-accent/10 rounded-xl text-accent">
                     <Users className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-outfit font-extrabold text-white text-lg">Student Engagement Roster</h3>
-                    <p className="text-xs text-gray-400">Unique connected students: {studentList.length}</p>
+                    <h3 className={`font-outfit font-extrabold text-lg ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                      Student Engagement Roster
+                    </h3>
+                    <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Unique connected students: {studentList.length}
+                    </p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setActiveModal(null)}
-                  className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                  className={`p-2 rounded-lg transition-colors ${
+                    isLight ? 'text-gray-500 hover:text-gray-900 hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -367,37 +462,47 @@ export default function Dashboard() {
               <div className="p-6 overflow-y-auto space-y-3">
                 {studentList.length === 0 ? (
                   <div className="text-center py-10 space-y-3">
-                    <UserCheck className="h-10 w-10 text-gray-600 mx-auto" />
-                    <p className="text-sm font-semibold text-gray-300">No student records found yet.</p>
-                    <p className="text-xs text-gray-500">Host a quiz session and let students join via game pin!</p>
+                    <UserCheck className={`h-10 w-10 mx-auto ${isLight ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-sm font-semibold ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                      No student records found yet.
+                    </p>
+                    <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Host a quiz session and let students join via game pin!
+                    </p>
                   </div>
                 ) : (
                   studentList.map((st, idx) => (
                     <div 
                       key={idx}
-                      className="glass-panel p-3.5 rounded-xl flex items-center justify-between gap-3 border border-white/5 hover:border-accent/30 transition-all"
+                      className={`p-3.5 rounded-xl flex items-center justify-between gap-3 border transition-all ${
+                        isLight 
+                          ? 'bg-gray-50/80 border-gray-200 hover:border-accent/50 text-gray-900' 
+                          : 'glass-panel border-white/5 hover:border-accent/30 text-white'
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs ${
-                          idx === 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40' :
-                          idx === 1 ? 'bg-gray-300/20 text-gray-300 border border-gray-300/40' :
-                          idx === 2 ? 'bg-amber-700/20 text-amber-500 border border-amber-700/40' :
-                          'bg-white/5 text-gray-400 border border-white/10'
+                          idx === 0 ? 'bg-yellow-500/20 text-yellow-600 border border-yellow-500/40' :
+                          idx === 1 ? (isLight ? 'bg-gray-200 text-gray-700 border border-gray-300' : 'bg-gray-300/20 text-gray-300 border border-gray-300/40') :
+                          idx === 2 ? 'bg-amber-700/20 text-amber-600 border border-amber-700/40' :
+                          (isLight ? 'bg-gray-100 text-gray-600 border border-gray-200' : 'bg-white/5 text-gray-400 border border-white/10')
                         }`}>
-                          {idx === 0 ? <Trophy className="h-4 w-4 text-yellow-400" /> : `#${idx + 1}`}
+                          {idx === 0 ? <Trophy className="h-4 w-4 text-yellow-500" /> : `#${idx + 1}`}
                         </div>
                         <div>
-                          <h4 className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <h4 className={`font-bold text-sm flex items-center gap-1.5 ${isLight ? 'text-gray-900' : 'text-white'}`}>
                             <span>{st.name}</span>
-                            {idx === 0 && <span className="text-[9px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-extrabold uppercase">Top Student</span>}
+                            {idx === 0 && <span className="text-[9px] bg-yellow-500/20 text-yellow-600 px-2 py-0.5 rounded-full font-extrabold uppercase">Top Student</span>}
                           </h4>
-                          <span className="text-[10px] text-gray-400">Participated in {st.sessionsCount} session{st.sessionsCount > 1 ? 's' : ''}</span>
+                          <span className={`text-[10px] ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                            Participated in {st.sessionsCount} session{st.sessionsCount > 1 ? 's' : ''}
+                          </span>
                         </div>
                       </div>
 
                       <div className="text-right">
                         <div className="font-black text-accent text-sm">{st.totalScore} pts</div>
-                        <span className="text-[9px] text-gray-500">Cumulative Score</span>
+                        <span className={`text-[9px] ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>Cumulative Score</span>
                       </div>
                     </div>
                   ))
