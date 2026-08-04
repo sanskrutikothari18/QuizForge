@@ -1,18 +1,14 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail');
-const { getEmailConfig } = sendEmail;
 
 const generateToken = (userId) => {
     return jwt.sign(
         { id: userId },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE }
+        process.env.JWT_SECRET || 'quizarena_secret_key_2024',
+        { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
 };
-
-const hashToken = (token) => crypto.createHash('sha256').update(String(token)).digest('hex');
 
 const register = async (req, res) => {
     try {
@@ -25,9 +21,9 @@ const register = async (req, res) => {
             });
         }
 
-        const normalizedEmail = String(email).trim().toLowerCase();
-        const trimmedName = String(name).trim();
-        const trimmedAnswer = String(securityAnswer).trim().toLowerCase();
+        const normalizedEmail = email.trim().toLowerCase();
+        const trimmedName = name.trim();
+        const trimmedAnswer = securityAnswer.trim().toLowerCase();
 
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
@@ -37,9 +33,9 @@ const register = async (req, res) => {
             });
         }
 
-        const user = await User.create({
-            name: trimmedName,
-            email: normalizedEmail,
+        const user = await User.create({ 
+            name: trimmedName, 
+            email: normalizedEmail, 
             password,
             securityQuestion,
             securityAnswer: trimmedAnswer
@@ -50,13 +46,14 @@ const register = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Registered successfully',
-            token,
+            token: token,
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email
             }
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -76,9 +73,9 @@ const login = async (req, res) => {
             });
         }
 
-        const normalizedEmail = String(email).trim().toLowerCase();
-        const user = await User.findOne({ email: normalizedEmail });
+        const normalizedEmail = email.trim().toLowerCase();
 
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -99,13 +96,14 @@ const login = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            token,
+            token: token,
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email
             }
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -134,6 +132,7 @@ const getProfile = async (req, res) => {
                 createdAt: user.createdAt
             }
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -153,21 +152,22 @@ const forgotPassword = async (req, res) => {
             });
         }
 
-        const normalizedEmail = String(email).trim().toLowerCase();
+        const normalizedEmail = email.trim().toLowerCase();
         const user = await User.findOne({ email: normalizedEmail });
 
         if (!user) {
             return res.status(200).json({
                 success: false,
-                message: 'No account found.'
+                message: 'No account found with this email.'
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Security question ready.',
-            securityQuestion: user.securityQuestion
+            securityQuestion: user.securityQuestion,
+            message: 'Security question retrieved successfully'
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -187,16 +187,16 @@ const verifySecurityAnswer = async (req, res) => {
             });
         }
 
-        const normalizedEmail = String(email).trim().toLowerCase();
-        const user = await User.findOne({ email: normalizedEmail });
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
 
         if (!user) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
                 message: 'User not found'
             });
         }
 
+        // Check if locked out
         if (user.securityAnswerLockedUntil && user.securityAnswerLockedUntil > Date.now()) {
             return res.status(403).json({
                 success: false,
@@ -204,36 +204,38 @@ const verifySecurityAnswer = async (req, res) => {
             });
         }
 
-        const trimmedAnswer = String(answer).trim().toLowerCase();
+        const trimmedAnswer = answer.trim().toLowerCase();
         const isMatch = await user.compareSecurityAnswer(trimmedAnswer);
 
         if (!isMatch) {
             user.securityAnswerAttempts = (user.securityAnswerAttempts || 0) + 1;
-
+            
             if (user.securityAnswerAttempts >= 3) {
-                user.securityAnswerLockedUntil = Date.now() + 15 * 60 * 1000;
+                user.securityAnswerLockedUntil = Date.now() + 15 * 60 * 1000; // 15 mins lock
                 await user.save({ validateBeforeSave: false });
                 return res.status(403).json({
                     success: false,
                     message: 'Maximum attempts exceeded. Please try again later.'
                 });
             }
-
+            
             await user.save({ validateBeforeSave: false });
             return res.status(401).json({
                 success: false,
-                message: 'Incorrect answer.',
+                message: `Incorrect answer. ${3 - user.securityAnswerAttempts} attempts remaining.`,
                 remainingAttempts: 3 - user.securityAnswerAttempts
             });
         }
 
+        // Answer is correct, reset attempts
         user.securityAnswerAttempts = 0;
         user.securityAnswerLockedUntil = undefined;
-
+        
+        // Generate a temporary reset token
         const resetToken = crypto.randomBytes(20).toString('hex');
-        user.resetPasswordToken = hashToken(resetToken);
-        user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-
+        user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+        user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins validity
+        
         await user.save({ validateBeforeSave: false });
 
         res.status(200).json({
@@ -241,6 +243,7 @@ const verifySecurityAnswer = async (req, res) => {
             message: 'Answer verified successfully',
             resetToken
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -251,34 +254,34 @@ const verifySecurityAnswer = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
-        const { email, resetToken, newPassword, confirmPassword } = req.body;
+        const { email, resetToken, newPassword, confirmPassword, password } = req.body;
+        const targetPassword = newPassword || password;
 
-        if (!email || !resetToken || !newPassword || !confirmPassword) {
+        if (!email || !resetToken || !targetPassword) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide email, reset token, new password, and confirm password'
+                message: 'Please provide email, reset token, and new password'
             });
         }
 
-        if (newPassword !== confirmPassword) {
+        if (confirmPassword && targetPassword !== confirmPassword) {
             return res.status(400).json({
                 success: false,
                 message: 'Passwords do not match'
             });
         }
 
-        if (newPassword.length < 6) {
+        if (targetPassword.length < 6) {
             return res.status(400).json({
                 success: false,
-                message: 'Password must be at least 6 characters'
+                message: 'Password must be at least 6 characters long'
             });
         }
 
-        const normalizedEmail = String(email).trim().toLowerCase();
-        const hashedToken = hashToken(resetToken);
+        const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
         const user = await User.findOne({
-            email: normalizedEmail,
+            email: email.trim().toLowerCase(),
             resetPasswordToken: hashedToken,
             resetPasswordExpire: { $gt: Date.now() }
         });
@@ -290,7 +293,7 @@ const resetPassword = async (req, res) => {
             });
         }
 
-        user.password = newPassword;
+        user.password = targetPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
@@ -298,8 +301,9 @@ const resetPassword = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Password reset successfully.'
+            message: 'Password reset successfully. You can now login with your new password.'
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
