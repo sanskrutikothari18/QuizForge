@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -97,6 +98,7 @@ function AnimatedRoutes() {
           </Routes>
         </AnimatePresence>
       </main>
+      {!isGameplayView && <Footer />}
     </div>
   );
 }
