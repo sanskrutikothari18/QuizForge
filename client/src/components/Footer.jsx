@@ -34,62 +34,6 @@ export default function Footer() {
       {/* Main Footer Container */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         
-        {/* Top Banner / Call to Action Box */}
-        <div 
-          className="mb-12 rounded-3xl p-6 sm:p-8 relative overflow-hidden glass-panel border border-white/10"
-          style={{
-            background: isLight 
-              ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%)'
-              : 'linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(6, 182, 212, 0.12) 100%)',
-          }}
-        >
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="space-y-2 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-primary/20 text-primary border border-primary/30">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Ready for Live Trivia Battles?</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: 'var(--text-heading)' }}>
-                Elevate learning with interactive live quizzes
-              </h3>
-              <p className="text-sm max-w-xl" style={{ color: 'var(--text-muted)' }}>
-                Join thousands of hosts and players around the globe. Host custom multiplayer sessions or join with a quick PIN code.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-              <Link
-                to="/join"
-                className="btn-premium flex items-center gap-2 px-5 py-3 rounded-xl text-white text-sm font-extrabold shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #06B6D4, #0891b2)', border: 'none' }}
-              >
-                <Gamepad2 className="h-4 w-4" />
-                Join Game PIN
-              </Link>
-
-              {token ? (
-                <Link
-                  to="/quiz/create"
-                  className="btn-premium flex items-center gap-2 px-5 py-3 rounded-xl text-white text-sm font-extrabold shadow-premium-glow"
-                  style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  Create a Quiz
-                </Link>
-              ) : (
-                <Link
-                  to="/register"
-                  className="btn-premium flex items-center gap-2 px-5 py-3 rounded-xl text-white text-sm font-extrabold shadow-premium-glow"
-                  style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
-                >
-                  Get Started Free
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Grid Navigation */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-white/10">
           
