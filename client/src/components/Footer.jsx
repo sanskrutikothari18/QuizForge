@@ -26,19 +26,19 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative z-10 w-full border-t border-white/10 overflow-hidden bg-background/80 backdrop-blur-lg transition-colors duration-300">
+    <footer style={{ background: 'var(--footer-bg)', borderTop: '1px solid var(--footer-border)' }} className="relative z-10 w-full overflow-hidden backdrop-blur-xl transition-colors duration-300">
       {/* Decorative Glow Background Spheres */}
       <div className="absolute top-0 left-1/4 h-72 w-72 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 h-72 w-72 translate-y-1/2 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
 
       {/* Main Footer Container */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-8">
-        
-        {/* Grid Navigation */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-white/10">
-          
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-6 sm:pt-12 sm:pb-8">
+
+        {/* Grid Navigation: 2 Columns on mobile (Brand full width + 2 side-by-side link cols), 3 Columns on Desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12 pb-8 sm:pb-12" style={{ borderBottom: '1px solid var(--footer-border)' }}>
+
           {/* Column 1: Brand Logo & Social Links */}
-          <div className="space-y-4">
+          <div className="col-span-2 md:col-span-1 space-y-4">
             <Link to="/" className="inline-flex items-center gap-2.5 transition-transform active:scale-95">
               <Logo className="h-9 w-9 sm:h-10 sm:w-10" />
               <span className="font-outfit text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-heading)' }}>
@@ -46,18 +46,22 @@ export default function Footer() {
               </span>
             </Link>
 
+            <p className="text-xs sm:text-sm font-medium leading-relaxed max-w-sm" style={{ color: 'var(--text-muted)' }}>
+              Empower learning with interactive quizzes, real-time multiplayer challenges, and detailed performance analytics.
+            </p>
+
             {/* Social Links */}
-            <div className="pt-2">
-              <span className="text-xs font-bold block mb-2" style={{ color: 'var(--text-muted)' }}>
+            <div className="pt-1">
+              <span className="text-xs font-bold block mb-2 tracking-wide uppercase" style={{ color: 'var(--text-muted)' }}>
                 Follow & Connect
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <a
                   href="https://github.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
-                  className="p-2 rounded-xl border border-white/10 transition-all hover:border-primary hover:bg-primary/10 hover:text-primary"
+                  className="p-2.5 rounded-xl border border-[var(--glass-panel-border)] bg-[var(--card-bg)] transition-all hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105"
                   style={{ color: 'var(--text-main)' }}
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -69,7 +73,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Twitter"
-                  className="p-2 rounded-xl border border-white/10 transition-all hover:border-secondary hover:bg-secondary/10 hover:text-secondary"
+                  className="p-2.5 rounded-xl border border-[var(--glass-panel-border)] bg-[var(--card-bg)] transition-all hover:border-secondary hover:bg-secondary/10 hover:text-secondary hover:scale-105"
                   style={{ color: 'var(--text-main)' }}
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -81,7 +85,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
-                  className="p-2 rounded-xl border border-white/10 transition-all hover:border-primary hover:bg-primary/10 hover:text-primary"
+                  className="p-2.5 rounded-xl border border-[var(--glass-panel-border)] bg-[var(--card-bg)] transition-all hover:border-primary hover:bg-primary/10 hover:text-primary hover:scale-105"
                   style={{ color: 'var(--text-main)' }}
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -91,7 +95,7 @@ export default function Footer() {
                 <a
                   href="mailto:support@fourisequizhub.com"
                   aria-label="Email"
-                  className="p-2 rounded-xl border border-white/10 transition-all hover:border-accent hover:bg-accent/10 hover:text-accent"
+                  className="p-2.5 rounded-xl border border-[var(--glass-panel-border)] bg-[var(--card-bg)] transition-all hover:border-accent hover:bg-accent/10 hover:text-accent hover:scale-105"
                   style={{ color: 'var(--text-main)' }}
                 >
                   <Mail className="h-4 w-4" />
@@ -101,80 +105,80 @@ export default function Footer() {
           </div>
 
           {/* Column 2: Navigation Links */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-extrabold uppercase tracking-wider text-primary">
-              Platform Navigation
+          <div className="col-span-1 space-y-3">
+            <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">
+              Navigation
             </h4>
-            <ul className="space-y-2.5 text-sm font-medium">
+            <ul className="space-y-2 text-xs sm:text-sm font-semibold">
               <li>
-                <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
+                <Link to="/" className="hover:text-primary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
                   Home
                 </Link>
               </li>
               <li>
-                <button onClick={() => handleHashLink('#features')} className="hover:text-primary transition-colors flex items-center gap-1.5 text-left" style={{ color: 'var(--text-main)' }}>
-                  Features & Capabilities
+                <button onClick={() => handleHashLink('#features')} className="hover:text-primary transition-colors inline-flex items-center gap-1.5 py-0.5 text-left" style={{ color: 'var(--text-main)' }}>
+                  Features
                 </button>
               </li>
               <li>
-                <button onClick={() => handleHashLink('#how-it-works')} className="hover:text-primary transition-colors flex items-center gap-1.5 text-left" style={{ color: 'var(--text-main)' }}>
+                <button onClick={() => handleHashLink('#how-it-works')} className="hover:text-primary transition-colors inline-flex items-center gap-1.5 py-0.5 text-left" style={{ color: 'var(--text-main)' }}>
                   How It Works
                 </button>
               </li>
               <li>
-                <button onClick={() => handleHashLink('#testimonials')} className="hover:text-primary transition-colors flex items-center gap-1.5 text-left" style={{ color: 'var(--text-main)' }}>
-                  Reviews & Feedback
+                <button onClick={() => handleHashLink('#testimonials')} className="hover:text-primary transition-colors inline-flex items-center gap-1.5 py-0.5 text-left" style={{ color: 'var(--text-main)' }}>
+                  Reviews
                 </button>
               </li>
               <li>
-                <Link to="/join" className="hover:text-primary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                  Enter PIN to Join
+                <Link to="/join" className="hover:text-primary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                  Enter PIN
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Quick Tools & Features */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-extrabold uppercase tracking-wider text-secondary">
-              Quick Shortcuts
+          {/* Column 3: Quick Shortcuts */}
+          <div className="col-span-1 space-y-3">
+            <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-secondary">
+              Quick Links
             </h4>
-            <ul className="space-y-2.5 text-sm font-medium">
+            <ul className="space-y-2 text-xs sm:text-sm font-semibold">
               {token ? (
                 <>
                   <li>
-                    <Link to="/dashboard" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                      <LayoutDashboard className="h-4 w-4 text-primary" />
+                    <Link to="/dashboard" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                      <LayoutDashboard className="h-3.5 w-3.5 text-primary shrink-0" />
                       Dashboard
                     </Link>
                   </li>
                   <li>
-                    <Link to="/quiz/my" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                      <BookOpen className="h-4 w-4 text-secondary" />
-                      My Quiz Collection
+                    <Link to="/quiz/my" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                      <BookOpen className="h-3.5 w-3.5 text-secondary shrink-0" />
+                      My Quizzes
                     </Link>
                   </li>
                   <li>
-                    <Link to="/quiz/create" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                      <PlusCircle className="h-4 w-4 text-accent" />
-                      Create New Quiz
+                    <Link to="/quiz/create" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                      <PlusCircle className="h-3.5 w-3.5 text-accent shrink-0" />
+                      Create Quiz
                     </Link>
                   </li>
                 </>
               ) : (
                 <>
                   <li>
-                    <Link to="/login" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                      Login to Account
+                    <Link to="/login" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                      Login
                     </Link>
                   </li>
                   <li>
-                    <Link to="/register" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
-                      Sign Up for Free
+                    <Link to="/register" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
+                      Sign Up
                     </Link>
                   </li>
                   <li>
-                    <Link to="/forgot-password" className="hover:text-secondary transition-colors flex items-center gap-1.5" style={{ color: 'var(--text-main)' }}>
+                    <Link to="/forgot-password" className="hover:text-secondary transition-colors inline-flex items-center gap-1.5 py-0.5" style={{ color: 'var(--text-main)' }}>
                       Reset Password
                     </Link>
                   </li>
@@ -186,17 +190,17 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar / Copyright */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-          <div className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.</span>
-          </div>
+        <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <span className="text-center sm:text-left">
+            © {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.
+          </span>
 
-          <div className="flex items-center gap-4">
-            <span className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</span>
-            <span>•</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Terms of Service</span>
-            <span>•</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Security</span>
+          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 flex-nowrap">
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Privacy Policy</span>
+            <span className="opacity-40">•</span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Terms of Service</span>
+            <span className="opacity-40">•</span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Security</span>
           </div>
         </div>
 

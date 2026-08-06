@@ -20,6 +20,8 @@
   --glass-panel-border-hover: rgba(124, 58, 237, 0.25);
   --glass-panel-shadow-hover: 0 12px 40px 0 rgba(124, 58, 237, 0.15);
   --ambient-grid-color: rgba(255, 255, 255, 0.02);
+  --footer-bg: #0f0f1a;
+  --footer-border: rgba(124, 58, 237, 0.20);
 
   /* Theme Defaults */
   --theme-primary: #7C3AED;
@@ -49,6 +51,8 @@
   --glass-panel-border-hover: rgba(124, 58, 237, 0.30);
   --glass-panel-shadow-hover: 0 16px 48px 0 rgba(124, 58, 237, 0.12);
   --ambient-grid-color: rgba(139, 92, 246, 0.05);
+  --footer-bg: #eef2ff;
+  --footer-border: rgba(139, 92, 246, 0.20);
 }
 
 @layer base {
