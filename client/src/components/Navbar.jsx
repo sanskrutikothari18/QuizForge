@@ -1,17 +1,45 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, Sun, Moon, Menu, X, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const [scrolled, setScrolled] = useState(false);
+
+  // Monitor scroll position for active section highlighting & navbar blur depth
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+      const sections = ['hero', 'features', 'pricing', 'how-it-works', 'faq'];
+      const scrollPos = window.scrollY + 100;
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -23,11 +51,37 @@ export default function Navbar() {
 
   const closeMobile = () => setMobileMenuOpen(false);
 
+  const navLinks = [
+    { label: 'Home', hash: '#hero' },
+    { label: 'Features', hash: '#features' },
+    { label: 'Pricing', hash: '#pricing' },
+    { label: 'How It Works', hash: '#how-it-works' },
+    { label: 'FAQs', hash: '#faq' },
+  ];
+
+  const handleNavClick = (hash) => {
+    closeMobile();
+    if (location.pathname !== '/') {
+      navigate('/' + hash);
+    } else {
+      const el = document.getElementById(hash.replace('#', ''));
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/60 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
+        scrolled
+          ? 'bg-background/80 backdrop-blur-xl border-white/10 shadow-2xl'
+          : 'bg-background/60 backdrop-blur-md border-white/5'
+      }`}
+    >
       <div className="w-full flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* Brand Logo */}
+        {/* Brand Logo - Leftmost */}
         <Link to="/" className="flex items-center gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
           <Logo className="h-9 w-9 sm:h-10 sm:w-10" />
           <span className="font-outfit text-lg sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-heading)' }}>
@@ -35,27 +89,43 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-6">
           {token ? (
             <>
-              <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
+              <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-primary" style={{ color: 'var(--text-main)' }}>
                 <LayoutDashboard className="h-4 w-4 text-primary" />
                 Dashboard
               </Link>
-              <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
+              <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-secondary" style={{ color: 'var(--text-main)' }}>
                 <BookOpen className="h-4 w-4 text-secondary" />
                 My Quizzes
               </Link>
-              <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
+              <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-accent" style={{ color: 'var(--text-main)' }}>
                 <PlusCircle className="h-4 w-4 text-accent" />
                 Create Quiz
               </Link>
             </>
           ) : (
-            <Link to="/#features" className="flex items-center gap-1.5 text-sm font-bold transition-colors" style={{ color: 'var(--text-main)' }}>
-              Features
-            </Link>
+            navLinks.map((link) => {
+              const secId = link.hash.replace('#', '');
+              const isActive = activeSection === secId;
+
+              return (
+                <button
+                  key={link.label}
+                  onClick={() => handleNavClick(link.hash)}
+                  className={`text-sm font-extrabold transition-all cursor-pointer relative py-1 ${
+                    isActive ? 'text-primary' : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-primary to-secondary" />
+                  )}
+                </button>
+              );
+            })
           )}
         </nav>
 
@@ -96,7 +166,7 @@ export default function Navbar() {
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="btn-premium flex items-center gap-2 px-4 py-2 text-sm rounded-xl text-white"
+                className="btn-premium flex items-center gap-2 px-4 py-2 text-sm rounded-xl text-white cursor-pointer"
                 style={{ fontWeight: 900, backgroundColor: '#dc2626', border: '2px solid #dc2626' }}
               >
                 <LogOut className="h-4 w-4" />
@@ -104,20 +174,22 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-3">
+              {/* Outline Login Button */}
               <Link
                 to="/login"
-                className="btn-premium flex items-center gap-2 text-white px-4 py-2 text-sm font-extrabold tracking-wide shadow-md"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none' }}
+                className="px-4 py-2 rounded-xl border border-white/20 hover:border-white/40 text-white text-sm font-extrabold transition-all hover:bg-white/10"
               >
-                <LogIn className="h-4 w-4" />
                 Login
               </Link>
+              
+              {/* Primary Gradient Get Started Button */}
               <Link
                 to="/register"
-                className="btn-premium flex items-center gap-2 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-2 text-sm font-extrabold tracking-wide shadow-premium-glow"
+                className="btn-premium btn-primary-gradient px-5 py-2 text-sm font-extrabold text-white rounded-xl shadow-premium-glow flex items-center gap-1.5 hover:scale-105 transition-all"
               >
-                Sign Up
+                <span>Get Started</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           )}
@@ -141,12 +213,11 @@ export default function Navbar() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden border-t border-white/5 px-4 py-4 space-y-2"
+          className="md:hidden border-t border-white/5 px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200"
           style={{ background: 'var(--header-bg)', backdropFilter: 'blur(16px)' }}
         >
           {token ? (
             <>
-              {/* User info row */}
               <div className="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
@@ -193,30 +264,31 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                to="/#features"
-                onClick={closeMobile}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors hover:bg-white/5"
-                style={{ color: 'var(--text-main)' }}
-              >
-                Features
-              </Link>
-              <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
+              {navLinks.map((link) => (
+                <button
+                  key={link.label}
+                  onClick={() => handleNavClick(link.hash)}
+                  className="w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold text-gray-200 hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  {link.label}
+                </button>
+              ))}
+
+              <div className="flex flex-col gap-2.5 pt-3 border-t border-white/5">
                 <Link
                   to="/login"
                   onClick={closeMobile}
-                  className="btn-premium flex items-center justify-center gap-2 text-white px-4 py-3 text-sm font-extrabold"
-                  style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', border: 'none' }}
+                  className="w-full text-center py-3 rounded-xl border border-white/20 text-white text-sm font-extrabold"
                 >
-                  <LogIn className="h-4 w-4" />
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={closeMobile}
-                  className="btn-premium flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-3 text-sm font-extrabold shadow-premium-glow"
+                  className="btn-premium btn-primary-gradient w-full text-center py-3 text-sm font-extrabold text-white rounded-xl shadow-premium-glow flex items-center justify-center gap-2"
                 >
-                  Sign Up
+                  <span>Get Started</span>
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </>
