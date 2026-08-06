@@ -139,7 +139,8 @@ export default function Footer() {
               <span className="text-xs font-bold block mb-2 tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
                 Follow &amp; Connect
               </span>
-              <div className="flex flex-row items-center gap-2">
+              {/* Force icons into a single horizontal row — no wrapping */}
+              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '8px' }}>
                 {[
                   { href: 'https://github.com', label: 'GitHub', hoverClass: 'hover:text-primary', icon: <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" /></svg> },
                   { href: 'https://twitter.com', label: 'Twitter', hoverClass: 'hover:text-secondary', icon: <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
@@ -153,7 +154,7 @@ export default function Footer() {
                     rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={label}
                     className={`p-2.5 rounded-xl transition-all hover:scale-110 ${hoverClass}`}
-                    style={{ color: 'var(--text-muted)', background: 'var(--card-bg)', border: '1px solid var(--footer-border)' }}
+                    style={{ color: 'var(--text-muted)', background: 'var(--card-bg)', border: '1px solid var(--footer-border)', flexShrink: 0 }}
                   >
                     {icon}
                   </a>
@@ -167,15 +168,15 @@ export default function Footer() {
             className="grid grid-cols-2 gap-6 py-6"
             style={{ borderTop: '1px solid var(--footer-border)', borderBottom: '1px solid var(--footer-border)' }}
           >
-            {/* Navigation */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary">Navigation</h4>
-              <ul className="space-y-2 text-xs font-semibold">
-                <li><Link to="/" className="hover:text-primary transition-colors block py-0.5" style={{ color: 'var(--text-main)' }}>Home</Link></li>
-                <li><button onClick={() => handleHashLink('#features')} className="hover:text-primary transition-colors block py-0.5 text-left w-full" style={{ color: 'var(--text-main)' }}>Features</button></li>
-                <li><button onClick={() => handleHashLink('#how-it-works')} className="hover:text-primary transition-colors block py-0.5 text-left w-full" style={{ color: 'var(--text-main)' }}>How It Works</button></li>
-                <li><button onClick={() => handleHashLink('#testimonials')} className="hover:text-primary transition-colors block py-0.5 text-left w-full" style={{ color: 'var(--text-main)' }}>Reviews</button></li>
-                <li><Link to="/join" className="hover:text-primary transition-colors block py-0.5" style={{ color: 'var(--text-main)' }}>Enter PIN</Link></li>
+            {/* Navigation — uniform spacing via line-height, no py gap variation */}
+            <div>
+              <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary mb-3">Navigation</h4>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} className="text-xs font-semibold">
+                <li><Link to="/" className="hover:text-primary transition-colors leading-none" style={{ color: 'var(--text-main)' }}>Home</Link></li>
+                <li><button onClick={() => handleHashLink('#features')} className="hover:text-primary transition-colors leading-none text-left" style={{ color: 'var(--text-main)' }}>Features</button></li>
+                <li><button onClick={() => handleHashLink('#how-it-works')} className="hover:text-primary transition-colors leading-none text-left" style={{ color: 'var(--text-main)' }}>How It Works</button></li>
+                <li><button onClick={() => handleHashLink('#testimonials')} className="hover:text-primary transition-colors leading-none text-left" style={{ color: 'var(--text-main)' }}>Reviews</button></li>
+                <li><Link to="/join" className="hover:text-primary transition-colors leading-none" style={{ color: 'var(--text-main)' }}>Enter PIN</Link></li>
               </ul>
             </div>
 
@@ -201,17 +202,22 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Bottom Bar (shared) ── */}
-        <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
-          <span className="text-center sm:text-left">
+        {/* ── Bottom Bar (shared) — always left-aligned column on mobile, row on desktop ── */}
+        <div className="pt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <span className="text-left">
             © {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.
           </span>
-          <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 flex-nowrap">
-            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Privacy Policy</span>
-            <span className="opacity-30">•</span>
-            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Terms of Service</span>
-            <span className="opacity-30">•</span>
-            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">Security</span>
+          {/* Dots appear BEFORE each policy item, all left-aligned */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }} className="sm:flex-row sm:items-center sm:gap-3">
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+              <span className="opacity-40 mr-1.5">•</span>Privacy Policy
+            </span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+              <span className="opacity-40 mr-1.5">•</span>Terms of Service
+            </span>
+            <span className="hover:text-primary cursor-pointer transition-colors whitespace-nowrap">
+              <span className="opacity-40 mr-1.5">•</span>Security
+            </span>
           </div>
         </div>
 
