@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
-  Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText, Sun, Moon, Crown, Medal
+  Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText, Crown, Medal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -432,9 +432,6 @@ export default function ResultsAnalytics() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button onClick={toggleThemeMode} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                  {isDark ? <><Sun className="h-4 w-4"/> Light</> : <><Moon className="h-4 w-4"/> Dark</>}
-                </button>
                 <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
                   <Download className="h-4 w-4" />
                   Export CSV
