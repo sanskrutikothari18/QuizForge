@@ -71,9 +71,15 @@ function AnimatedRoutes() {
     '/final-result'
   ].some(path => location.pathname.startsWith(path));
 
+  // Hide top main Navbar on Create Quiz and Edit Quiz so dedicated fixed header is used
+  const isEditorView = [
+    '/quiz/create',
+    '/quiz/edit'
+  ].some(path => location.pathname.startsWith(path));
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-200">
-      {!isGameplayView && <Navbar />}
+      {!isGameplayView && !isEditorView && <Navbar />}
       <main className="flex-1 flex flex-col">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>

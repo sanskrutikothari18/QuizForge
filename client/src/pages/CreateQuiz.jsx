@@ -14,27 +14,26 @@ import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 
 import BackgroundPicker from '../components/BackgroundPicker';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
 
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
 
-  // Sticky toolbar states
-  const [isSticky, setIsSticky] = useState(false);
-  const toolbarRef = useRef(null);
-  const placeholderRef = useRef(null);
+  // Sticky toolbar scroll tracking
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!placeholderRef.current) return;
-      const rect = placeholderRef.current.getBoundingClientRect();
-      if (rect.top <= 64) {
-        setIsSticky(true);
+      if (window.scrollY > 120) {
+        setIsScrolled(true);
       } else {
-        setIsSticky(false);
+        setIsScrolled(false);
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -255,41 +254,36 @@ export default function CreateQuiz() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-6 sm:p-8">
+      <div className="relative min-h-screen bg-background text-gray-200">
         
         {/* Glow Spheres */}
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left">
-          
-          {/* Header Actions Placeholder */}
-          <div ref={placeholderRef} className="w-full" style={{ height: isSticky ? (toolbarRef.current?.offsetHeight || 88) : 0 }} />
-          
-          {/* Header Actions */}
-          <div 
-            ref={toolbarRef}
-            className={`${
-              isSticky 
-                ? 'fixed top-16 left-6 right-6 sm:left-8 sm:right-8 max-w-5xl mx-auto z-50 bg-background/60 backdrop-blur-xl border-white/10 border-x border-b rounded-b-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.7)]' 
-                : 'relative z-50 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]'
-            } transition-all duration-300`}
-          >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
+        {/* AMAZON / FLIPKART STYLE PERMANENT FIXED HEADER */}
+        <div 
+          className="fixed top-0 left-0 right-0 w-full z-[9999] border-b backdrop-blur-md shadow-xl transition-colors duration-300"
+          style={{
+            backgroundColor: isLight ? '#ffffff' : '#0a0a0f',
+            borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
+          }}
+        >
+          <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
             <div className="flex items-center gap-3">
               <button 
+                type="button"
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
               >
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
-                <h1 className="font-outfit text-3xl font-extrabold text-white">Create Quiz</h1>
-                <p className="text-xs text-gray-400 mt-1">Design customized questions and timers.</p>
+                <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold" style={{ color: 'var(--text-heading)' }}>Create Quiz</h1>
+                <p className="text-xs text-gray-400 mt-0.5">Design customized questions and timers.</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
+            <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
               {/* Hidden File Input for Excel/CSV */}
               <input
                 type="file"
@@ -327,11 +321,11 @@ export default function CreateQuiz() {
                     const gameRes = await createGame(newQuiz._id);
                     if (gameRes.success) {
                       toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
-                        navigate(`/host/lobby/${gameRes.game.pin}`);
-                      } else {
-                        toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
-                        navigate('/dashboard');
-                      }
+                      navigate(`/host/lobby/${gameRes.game.pin}`);
+                    } else {
+                      toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
+                      navigate('/dashboard');
+                    }
                   } else {
                     toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                   }
@@ -344,6 +338,7 @@ export default function CreateQuiz() {
               </button>
 
               <button
+                type="button"
                 onClick={handleSubmit(onSubmit, onInvalid)}
                 className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
@@ -354,6 +349,9 @@ export default function CreateQuiz() {
             </div>
           </div>
         </div>
+
+        {/* MAIN FORM CONTENT WITH TOP PADDING FOR FIXED HEADER */}
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-28 sm:pt-24 pb-12 px-6 sm:px-8">
           
         {/* EDITOR LAYOUT */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
