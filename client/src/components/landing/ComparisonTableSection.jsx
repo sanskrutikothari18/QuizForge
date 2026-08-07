@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, X, Sparkles } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 const comparisonRows = [
   { feature: 'Quiz Limit', free: '5 Quizzes', pro: 'Unlimited', enterprise: 'Unlimited' },
@@ -18,95 +18,94 @@ const comparisonRows = [
 
 export default function ComparisonTableSection() {
   return (
-    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 overflow-hidden">
+    <section className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       
-      {/* Header */}
+      {/* Minimal Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4 }}
+        className="text-center mb-8"
+      >
+        <h2 className="font-outfit text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+          Detailed Plan Comparison
+        </h2>
+        <p className="mt-2 text-xs sm:text-sm text-gray-400 max-w-lg mx-auto">
+          Compare features side-by-side to choose the best plan for your needs.
+        </p>
+      </motion.div>
+
+      {/* Short & Minimal Table Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <span className="rounded-full bg-secondary/10 border border-secondary/20 px-4 py-1.5 text-xs font-bold text-secondary uppercase tracking-wider">
-          Feature Breakdown
-        </span>
-        <h2 className="font-outfit text-3xl sm:text-4xl font-black text-white mt-3 tracking-tight">
-          Detailed <span className="text-gradient-primary">Plan Comparison</span>
-        </h2>
-        <p className="mt-3 text-sm text-gray-400 max-w-xl mx-auto">
-          Compare features side-by-side to choose the best plan for your needs.
-        </p>
-      </motion.div>
-
-      {/* Table Glass Container */}
-      <motion.div
-        initial={{ opacity: 0, y: 25 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl"
+        className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl"
       >
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[580px]">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
-                <th className="p-5 font-outfit text-base font-extrabold text-white">Features</th>
-                <th className="p-5 font-outfit text-base font-extrabold text-white text-center w-1/4">
+                <th className="py-3 px-5 font-outfit font-extrabold text-xs sm:text-sm text-white w-2/5">
+                  Features
+                </th>
+                <th className="py-3 px-4 font-outfit font-extrabold text-xs sm:text-sm text-gray-300 text-center w-1/5">
                   Free
                 </th>
-                <th className="p-5 font-outfit text-base font-extrabold text-primary text-center w-1/4 bg-primary/10">
-                  <div className="flex items-center justify-center gap-1">
-                    <Sparkles className="h-4 w-4 text-secondary" />
-                    <span>Pro</span>
-                  </div>
+                <th className="py-3 px-4 font-outfit font-extrabold text-xs sm:text-sm text-primary text-center w-1/5 bg-primary/10">
+                  Pro
                 </th>
-                <th className="p-5 font-outfit text-base font-extrabold text-secondary text-center w-1/4">
+                <th className="py-3 px-4 font-outfit font-extrabold text-xs sm:text-sm text-secondary text-center w-1/5">
                   Enterprise
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-xs sm:text-sm font-semibold">
+
+            <tbody className="divide-y divide-white/5 text-xs">
               {comparisonRows.map((row, idx) => (
-                <tr key={idx} className="hover:bg-white/5 transition-colors">
-                  <td className="p-4 sm:p-5 font-bold text-gray-200">{row.feature}</td>
-                  
-                  {/* Free Col */}
-                  <td className="p-4 sm:p-5 text-center text-gray-300">
+                <tr key={idx} className="hover:bg-white/[0.03] transition-colors">
+                  <td className="py-2.5 px-5 font-semibold text-gray-200">
+                    {row.feature}
+                  </td>
+
+                  {/* Free Column */}
+                  <td className="py-2.5 px-4 text-center">
                     {typeof row.free === 'boolean' ? (
                       row.free ? (
-                        <Check className="h-5 w-5 text-emerald-400 mx-auto" />
+                        <Check className="h-4 w-4 text-emerald-400 mx-auto" />
                       ) : (
-                        <X className="h-4 w-4 text-gray-600 mx-auto" />
+                        <X className="h-3.5 w-3.5 text-gray-600 mx-auto opacity-50" />
                       )
                     ) : (
-                      row.free
+                      <span className="font-medium text-gray-300">{row.free}</span>
                     )}
                   </td>
 
-                  {/* Pro Col */}
-                  <td className="p-4 sm:p-5 text-center text-white font-extrabold bg-primary/5">
+                  {/* Pro Column */}
+                  <td className="py-2.5 px-4 text-center bg-primary/5 font-extrabold text-white">
                     {typeof row.pro === 'boolean' ? (
                       row.pro ? (
-                        <Check className="h-5 w-5 text-emerald-400 mx-auto" />
+                        <Check className="h-4 w-4 text-emerald-400 mx-auto" />
                       ) : (
-                        <X className="h-4 w-4 text-gray-600 mx-auto" />
+                        <X className="h-3.5 w-3.5 text-gray-600 mx-auto opacity-50" />
                       )
                     ) : (
-                      row.pro
+                      <span className="text-primary">{row.pro}</span>
                     )}
                   </td>
 
-                  {/* Enterprise Col */}
-                  <td className="p-4 sm:p-5 text-center text-gray-200">
+                  {/* Enterprise Column */}
+                  <td className="py-2.5 px-4 text-center">
                     {typeof row.enterprise === 'boolean' ? (
                       row.enterprise ? (
-                        <Check className="h-5 w-5 text-emerald-400 mx-auto" />
+                        <Check className="h-4 w-4 text-emerald-400 mx-auto" />
                       ) : (
-                        <X className="h-4 w-4 text-gray-600 mx-auto" />
+                        <X className="h-3.5 w-3.5 text-gray-600 mx-auto opacity-50" />
                       )
                     ) : (
-                      row.enterprise
+                      <span className="font-extrabold text-secondary">{row.enterprise}</span>
                     )}
                   </td>
                 </tr>
