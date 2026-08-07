@@ -5,20 +5,15 @@ import { Check, X } from 'lucide-react';
 const comparisonRows = [
   { feature: 'Quiz Limit', free: '5 Quizzes', pro: 'Unlimited', enterprise: 'Unlimited' },
   { feature: 'Participant Limit', free: '20 Players', pro: 'Unlimited', enterprise: 'Custom Unlimited' },
-  { feature: 'Real-Time Analytics', free: 'Basic', pro: 'Advanced PDF/CSV', enterprise: 'Custom BI Export' },
-  { feature: 'Export Reports (PDF / CSV)', free: false, pro: true, enterprise: true },
-  { feature: 'Question Bank Storage', free: false, pro: true, enterprise: true },
-  { feature: 'Priority Support', free: false, pro: 'Priority Email', enterprise: '24/7 Dedicated Manager' },
-  { feature: 'API & Webhook Access', free: false, pro: false, enterprise: true },
-  { feature: 'Custom Branding & Logo', free: false, pro: true, enterprise: true },
-  { feature: 'Dark & Light Mode', free: true, pro: true, enterprise: true },
-  { feature: 'Custom Domain Integration', free: false, pro: false, enterprise: true },
-  { feature: 'Institution Admin Dashboard', free: false, pro: false, enterprise: true },
+  { feature: 'Analytics & Export Reports', free: 'Basic', pro: 'Advanced PDF/CSV', enterprise: 'Custom BI Export' },
+  { feature: 'Question Bank & Custom Branding', free: false, pro: true, enterprise: true },
+  { feature: 'Support Level', free: false, pro: 'Priority Email', enterprise: '24/7 Dedicated Manager' },
+  { feature: 'API & Institution Admin Dashboard', free: false, pro: false, enterprise: true },
 ];
 
 export default function PricingComparison() {
   return (
-    <section className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <section className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
       
       {/* Minimal Header */}
       <motion.div
@@ -26,17 +21,17 @@ export default function PricingComparison() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
-        <h2 className="font-outfit text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           Detailed Plan Comparison
         </h2>
-        <p className="mt-2 text-xs sm:text-sm text-gray-400 max-w-lg mx-auto">
+        <p className="mt-1.5 text-xs sm:text-sm text-gray-400 max-w-md mx-auto">
           Compare features side-by-side to choose the best plan for your needs.
         </p>
       </motion.div>
 
-      {/* Short & Minimal Table Container */}
+      {/* Compact Table Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -45,7 +40,7 @@ export default function PricingComparison() {
         className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl"
       >
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[580px]">
+          <table className="w-full text-left border-collapse min-w-[540px]">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
                 <th className="py-3 px-5 font-outfit font-extrabold text-xs sm:text-sm text-white w-2/5">
@@ -66,12 +61,12 @@ export default function PricingComparison() {
             <tbody className="divide-y divide-white/5 text-xs">
               {comparisonRows.map((row, idx) => (
                 <tr key={idx} className="hover:bg-white/[0.03] transition-colors">
-                  <td className="py-2.5 px-5 font-semibold text-gray-200">
+                  <td className="py-3 px-5 font-semibold text-gray-200">
                     {row.feature}
                   </td>
 
                   {/* Free Column */}
-                  <td className="py-2.5 px-4 text-center">
+                  <td className="py-3 px-4 text-center">
                     {typeof row.free === 'boolean' ? (
                       row.free ? (
                         <Check className="h-4 w-4 text-emerald-400 mx-auto" />
@@ -84,7 +79,7 @@ export default function PricingComparison() {
                   </td>
 
                   {/* Pro Column */}
-                  <td className="py-2.5 px-4 text-center bg-primary/5 font-extrabold text-white">
+                  <td className="py-3 px-4 text-center bg-primary/5 font-extrabold text-white">
                     {typeof row.pro === 'boolean' ? (
                       row.pro ? (
                         <Check className="h-4 w-4 text-emerald-400 mx-auto" />
@@ -97,7 +92,7 @@ export default function PricingComparison() {
                   </td>
 
                   {/* Enterprise Column */}
-                  <td className="py-2.5 px-4 text-center">
+                  <td className="py-3 px-4 text-center">
                     {typeof row.enterprise === 'boolean' ? (
                       row.enterprise ? (
                         <Check className="h-4 w-4 text-emerald-400 mx-auto" />
