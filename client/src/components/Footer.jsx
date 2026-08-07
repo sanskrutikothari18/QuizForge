@@ -108,11 +108,6 @@ export default function Footer() {
         {/* Bottom copyright row */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-gray-400">
           <p>© {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.</p>
-          <div className="flex items-center gap-1 text-gray-400">
-            <span>Crafted with</span>
-            <Heart className="h-3.5 w-3.5 text-accent fill-accent" />
-            <span>for educators & trivia champions</span>
-          </div>
         </div>
 
       </div>

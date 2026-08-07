@@ -156,11 +156,7 @@ export default function Pricing() {
                 <div className="mt-8">
                   <Link
                     to="/login"
-                    className={`w-full py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 group ${
-                      isHighlighted
-                        ? 'btn-premium btn-primary-gradient shadow-premium-glow text-white'
-                        : 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
-                    }`}
+                    className="btn-premium btn-primary-gradient shadow-premium-glow text-white w-full py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 group hover:scale-105"
                   >
                     <span>{plan.buttonText || 'Choose Plan'}</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

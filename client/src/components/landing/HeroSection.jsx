@@ -73,6 +73,31 @@ export default function HeroSection() {
           </a>
         </motion.div>
 
+        {/* Requested Stats Bar Below Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-14 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+        >
+          <div className="flex flex-col items-center">
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-white">250+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Total Quizzes Hosted</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-primary">1M+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Active Battle Players</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-secondary">12,50+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Classrooms Connected</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-accent">94.2%</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Response Accuracy</span>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );

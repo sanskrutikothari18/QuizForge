@@ -105,7 +105,7 @@ export default function PricingSection() {
           <div className="pt-8">
             <Link
               to="/register"
-              className="btn-premium border border-white/20 hover:border-white/40 text-white w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold transition-all hover:bg-white/10"
+              className="btn-premium btn-primary-gradient w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold text-white shadow-premium-glow hover:scale-105 transition-all"
             >
               <span>Start Free</span>
               <ArrowRight className="h-4 w-4" />

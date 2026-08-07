@@ -58,13 +58,13 @@ export default function Hero() {
             <span>Start Free</span>
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
-          <Link
-            to="/join"
+          <a
+            href="#how-it-works"
             className="btn-premium btn-secondary-gradient px-8 py-4 flex items-center justify-center gap-2.5 text-base font-extrabold shadow-secondary-glow w-full sm:w-auto rounded-2xl"
           >
-            <Play className="h-5 w-5 fill-current" />
-            <span>Join Game with Code</span>
-          </Link>
+            <Play className="h-4 w-4 fill-current text-secondary" />
+            <span>See How It Work</span>
+          </a>
         </motion.div>
 
         {/* Key Metrics / Trust Bar */}
@@ -75,20 +75,20 @@ export default function Hero() {
           className="mt-14 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
         >
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-2xl sm:text-3xl font-black text-white">50K+</span>
-            <span className="text-xs text-gray-400 font-semibold mt-1">Active Quizzes</span>
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-white">250+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Total Quizzes Hosted</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-2xl sm:text-3xl font-black text-primary">100K+</span>
-            <span className="text-xs text-gray-400 font-semibold mt-1">Live Players</span>
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-primary">1M+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Active Battle Players</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-2xl sm:text-3xl font-black text-secondary">99.9%</span>
-            <span className="text-xs text-gray-400 font-semibold mt-1">Socket Uptime</span>
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-secondary">12,50+</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Classrooms Connected</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-2xl sm:text-3xl font-black text-accent">4.9 ★</span>
-            <span className="text-xs text-gray-400 font-semibold mt-1">User Rating</span>
+            <span className="font-outfit text-2xl sm:text-3xl font-black text-accent">94.2%</span>
+            <span className="text-xs text-gray-400 font-semibold mt-1">Response Accuracy</span>
           </div>
         </motion.div>
 
