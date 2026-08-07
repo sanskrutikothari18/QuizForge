@@ -13,7 +13,7 @@ const comparisonRows = [
 
 export default function ComparisonTableSection() {
   return (
-    <section className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+    <section className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       
       {/* Minimal Header */}
       <motion.div
@@ -21,7 +21,7 @@ export default function ComparisonTableSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="text-center mb-6"
+        className="text-center mb-4"
       >
         <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           Detailed Plan Comparison

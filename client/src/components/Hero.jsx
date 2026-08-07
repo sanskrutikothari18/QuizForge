@@ -5,7 +5,7 @@ import { Sparkles, ArrowRight, Play } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 lg:px-8 overflow-hidden">
+    <section className="relative mx-auto max-w-7xl px-4 pt-8 pb-8 sm:px-6 sm:pt-12 sm:pb-12 lg:px-8 overflow-hidden">
       <div className="text-center relative z-10">
 
         {/* Live Promo Pill */}

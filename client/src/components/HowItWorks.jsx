@@ -75,7 +75,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 scroll-mt-20 overflow-hidden">
+    <section id="how-it-works" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20 overflow-hidden">
       
       {/* Section Header */}
       <motion.div
@@ -83,7 +83,7 @@ export default function HowItWorks() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="text-center mb-16 sm:mb-20"
+        className="text-center mb-8 sm:mb-10"
       >
         <span className="text-xs font-extrabold uppercase tracking-widest text-secondary bg-secondary/10 px-3.5 py-1.5 rounded-full border border-secondary/20 shadow-sm">
           Timeline Columns

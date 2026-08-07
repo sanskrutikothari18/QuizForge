@@ -5,7 +5,7 @@ import { Play, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function HeroSection() {
   return (
-    <section id="hero" className="relative flex items-center justify-center pt-12 pb-16 sm:pt-20 sm:pb-24 overflow-hidden">
+    <section id="hero" className="relative flex items-center justify-center pt-8 pb-8 sm:pt-12 sm:pb-12 overflow-hidden">
       {/* Background glow & particles */}
       <div className="absolute top-[-15%] left-[20%] h-[500px] w-[500px] rounded-full bg-primary/20 blur-[130px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[15%] h-[600px] w-[600px] rounded-full bg-secondary/15 blur-[140px] pointer-events-none" />

@@ -37,7 +37,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 scroll-mt-20">
+    <section id="faq" className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20">
       
       {/* Glow */}
       <div className="absolute top-1/3 right-10 h-72 w-72 rounded-full bg-secondary/10 blur-[120px] pointer-events-none" />
