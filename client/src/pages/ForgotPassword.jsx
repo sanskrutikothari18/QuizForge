@@ -38,36 +38,51 @@ export default function ForgotPassword() {
 
   // 2-minute Lockout Countdown Timer Effect
   useEffect(() => {
-    let timer;
-    if (lockedUntil && lockedUntil > Date.now()) {
-      const updateTimer = () => {
-        const diff = Math.ceil((lockedUntil - Date.now()) / 1000);
-        if (diff > 0) {
-          setLockoutTimeLeft(diff);
-          setIsLocked(true);
-        } else {
-          setLockoutTimeLeft(0);
+    let interval = null;
+
+    if (isLocked || (lockedUntil && lockedUntil > Date.now()) || remainingAttempts === 0) {
+      const now = Date.now();
+      const targetTime = (lockedUntil && lockedUntil > now) 
+        ? lockedUntil 
+        : now + 120000;
+
+      if (!lockedUntil || lockedUntil <= now) {
+        setLockedUntil(targetTime);
+      }
+
+      const updateCountdown = () => {
+        const currentTime = Date.now();
+        const diffMs = targetTime - currentTime;
+        const seconds = Math.max(0, Math.ceil(diffMs / 1000));
+
+        setLockoutTimeLeft(seconds);
+        setIsLocked(seconds > 0);
+
+        if (seconds <= 0) {
           setIsLocked(false);
           setLockedUntil(null);
+          setLockoutTimeLeft(0);
           setAttempts(0);
           setRemainingAttempts(maxAttempts);
-          clearInterval(timer);
+          if (interval) clearInterval(interval);
         }
       };
 
-      updateTimer();
-      timer = setInterval(updateTimer, 1000);
+      updateCountdown();
+      interval = setInterval(updateCountdown, 1000);
     } else {
-      setIsLocked(false);
       setLockoutTimeLeft(0);
     }
 
-    return () => clearInterval(timer);
-  }, [lockedUntil, maxAttempts]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isLocked, lockedUntil, remainingAttempts, maxAttempts]);
 
   const formatLockoutTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const s = Math.max(0, seconds || 0);
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
@@ -104,8 +119,8 @@ export default function ForgotPassword() {
         const newAttempts = response.attempts ?? 0;
         const newMax = response.maxAttempts ?? 5;
         const newRemaining = response.remainingAttempts ?? Math.max(0, newMax - newAttempts);
-        const lockedStatus = Boolean(response.isLocked);
-        const lockedTime = response.lockedUntil ? Number(response.lockedUntil) : null;
+        const lockedStatus = Boolean(response.isLocked) || newRemaining === 0;
+        const lockedTime = response.lockedUntil ? Number(response.lockedUntil) : (lockedStatus ? Date.now() + 120000 : null);
 
         setAttempts(newAttempts);
         setMaxAttempts(newMax);
@@ -133,7 +148,7 @@ export default function ForgotPassword() {
 
   // STEP 2: Handle Security Answer Submit
   const onAnswerSubmit = async (data) => {
-    if (isLocked || lockoutTimeLeft > 0) {
+    if (isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0) {
       toast.error('Account is locked. Please wait for countdown timer to complete.');
       return;
     }
@@ -148,6 +163,7 @@ export default function ForgotPassword() {
         setRemainingAttempts(5);
         setIsLocked(false);
         setLockedUntil(null);
+        setLockoutTimeLeft(0);
         toast.success(response.message || 'Security answer verified successfully!');
       }
     } catch (error) {
@@ -166,6 +182,11 @@ export default function ForgotPassword() {
           const att = errData.attempts ?? (maxAttempts - rem);
           setAttempts(att);
           setRemainingAttempts(rem);
+
+          if (rem === 0) {
+            setIsLocked(true);
+            setLockedUntil(Date.now() + 120000);
+          }
           toast.error(errData.message || `Incorrect security answer. ${rem} attempts remaining.`);
         } else {
           toast.error(errData.message || 'Incorrect security answer.');
@@ -197,6 +218,7 @@ export default function ForgotPassword() {
         setRemainingAttempts(5);
         setIsLocked(false);
         setLockedUntil(null);
+        setLockoutTimeLeft(0);
         toast.success('Password reset successfully!');
         setTimeout(() => {
           navigate('/login');
@@ -385,44 +407,44 @@ export default function ForgotPassword() {
                         {securityQuestion || 'What is your security answer?'}
                       </div>
                       
-                      {/* Live Attempts Counter Badge */}
-                      <div className={`px-3 py-2 rounded-xl border text-xs font-bold font-mono shrink-0 flex items-center justify-center gap-1.5 transition-all ${
-                        isLocked || lockoutTimeLeft > 0 
-                          ? 'bg-red-500/20 border-red-500/40 text-red-500' 
+                      {/* Live Attempts Counter Badge - RED when 0 attempts remaining */}
+                      <div className={`px-3 py-2 rounded-xl border text-xs font-extrabold font-mono shrink-0 flex items-center justify-center gap-1.5 transition-all ${
+                        isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0
+                          ? 'bg-red-500/20 border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' 
                           : remainingAttempts === 1 
                             ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 animate-pulse' 
                             : isLight 
                               ? 'bg-primary/10 border-primary/20 text-primary' 
                               : 'bg-primary/20 border-primary/30 text-purple-300'
                       }`}>
-                        {isLocked || lockoutTimeLeft > 0 ? (
+                        {isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0 ? (
                           <>
-                            <Lock className="h-3.5 w-3.5 text-red-400" />
-                            <span>Attempts: 5/5</span>
+                            <Lock className="h-3.5 w-3.5 text-red-500" />
+                            <span>Attempts: 5/5 (0 left)</span>
                           </>
                         ) : (
                           <>
                             <ShieldCheck className="h-3.5 w-3.5" />
-                            <span>Attempts: {attempts}/{maxAttempts}</span>
+                            <span>Attempts: {attempts}/{maxAttempts} ({remainingAttempts} left)</span>
                           </>
                         )}
                       </div>
                     </div>
 
-                    {/* Temporary Lockout Box + 2 min Timer */}
-                    {(isLocked || lockoutTimeLeft > 0) && (
-                      <div className="p-4 rounded-2xl border border-red-500/40 bg-red-500/10 text-red-400 flex flex-col items-center justify-center text-center space-y-2">
-                        <div className="flex items-center gap-2 font-bold text-red-400 text-sm">
-                          <Lock className="h-5 w-5 animate-pulse" />
-                          <span>Maximum attempts reached</span>
+                    {/* Temporary Lockout Box + Visible 2 min Timer */}
+                    {(isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0) && (
+                      <div className="p-4 rounded-2xl border-2 border-red-500 bg-red-500/15 text-red-400 flex flex-col items-center justify-center text-center space-y-3 shadow-[0_0_20px_rgba(239,68,68,0.25)]">
+                        <div className="flex items-center gap-2 font-black text-red-500 text-sm uppercase tracking-wider">
+                          <Lock className="h-5 w-5 animate-bounce text-red-500" />
+                          <span>Maximum Attempts Reached (0 Remaining)</span>
                         </div>
-                        <p className="text-xs text-red-300/80 leading-relaxed max-w-[320px]">
-                          Account temporarily locked due to 5 consecutive failed attempts. Verification is disabled.
+                        <p className="text-xs text-red-200/90 leading-relaxed font-medium max-w-[320px]">
+                          Your account is temporarily locked due to 5 consecutive failed attempts. Verification is disabled.
                         </p>
-                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-red-950/60 border border-red-500/40 text-white font-mono text-sm font-bold mt-1">
-                          <Timer className="h-4 w-4 text-red-400 animate-spin" />
-                          <span>Try again in:</span>
-                          <span className="text-red-400 text-base font-extrabold">{formatLockoutTime(lockoutTimeLeft)}</span>
+                        <div className="inline-flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-red-950/90 border border-red-500/60 text-white font-mono shadow-inner">
+                          <Timer className="h-5 w-5 text-red-400 animate-spin" />
+                          <span className="text-xs text-red-300 uppercase tracking-widest font-semibold">Try again in:</span>
+                          <span className="text-red-400 text-xl font-black tracking-wider">{formatLockoutTime(lockoutTimeLeft)}</span>
                         </div>
                       </div>
                     )}
@@ -449,46 +471,55 @@ export default function ForgotPassword() {
                         </div>
                         <input
                           type="text"
-                          placeholder={isLocked || lockoutTimeLeft > 0 ? "Verification temporarily locked" : "Type your answer"}
-                          disabled={isLocked || lockoutTimeLeft > 0 || isLoading}
+                          placeholder={isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0 ? "Verification temporarily locked" : "Type your answer"}
+                          disabled={isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0 || isLoading}
                           {...answerForm.register('answer', {
-                            required: isLocked || lockoutTimeLeft > 0 ? false : 'Security answer is required',
+                            required: isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0 ? false : 'Security answer is required',
                           })}
                           className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
-                            isLocked || lockoutTimeLeft > 0 
-                              ? 'bg-red-500/5 border-red-500/20 text-gray-500 cursor-not-allowed'
+                            isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0
+                              ? 'bg-red-500/10 border-red-500/40 text-red-400 placeholder-red-400/50 cursor-not-allowed'
                               : isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
                           } ${
-                            answerForm.formState.errors.answer 
+                            answerForm.formState.errors.answer && !isLocked && remainingAttempts > 0
                               ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
                               : 'focus:border-primary focus:ring-primary/30'
                           }`}
                         />
                       </div>
 
-                      {answerForm.formState.errors.answer && !isLocked && lockoutTimeLeft === 0 && (
+                      {answerForm.formState.errors.answer && !isLocked && lockoutTimeLeft === 0 && remainingAttempts > 0 && (
                         <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
                           <AlertCircle className="h-3.5 w-3.5" />
                           <span>{answerForm.formState.errors.answer.message}</span>
                         </div>
                       )}
 
-                      {/* Attempts remaining subtext */}
-                      {!isLocked && lockoutTimeLeft === 0 && remainingAttempts < 5 && remainingAttempts > 0 && (
-                        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-amber-400 text-left font-medium">
+                      {/* Attempts remaining subtext (RED for 0 attempts remaining) */}
+                      {(isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0) ? (
+                        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-red-500 text-left font-bold">
+                          <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
+                          <span>0 attempts remaining. Account locked for 2 minutes.</span>
+                        </div>
+                      ) : remainingAttempts < 5 && remainingAttempts > 0 ? (
+                        <div className={`flex items-center gap-1.5 mt-1.5 text-xs text-left font-medium ${remainingAttempts === 1 ? 'text-amber-400 font-bold' : 'text-amber-400/90'}`}>
                           <AlertCircle className="h-3.5 w-3.5" />
                           <span>Incorrect answer. {remainingAttempts} attempt{remainingAttempts === 1 ? '' : 's'} remaining.</span>
                         </div>
-                      )}
+                      ) : null}
                     </div>
 
                     <button
                       type="submit"
-                      disabled={isLoading || isLocked || lockoutTimeLeft > 0}
-                      className={`w-full btn-premium btn-secondary-gradient py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
-                        isLoading || isLocked || lockoutTimeLeft > 0 ? 'opacity-50 cursor-not-allowed' : ''
+                      disabled={isLoading || isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0}
+                      className={`w-full py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold rounded-xl transition-all cursor-pointer ${
+                        isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0
+                          ? 'bg-red-950/80 border border-red-500/50 text-red-300 cursor-not-allowed opacity-90'
+                          : isLoading
+                            ? 'btn-premium btn-secondary-gradient opacity-50 cursor-not-allowed'
+                            : 'btn-premium btn-secondary-gradient shadow-secondary-glow'
                       }`}
                     >
                       {isLoading ? (
@@ -496,10 +527,10 @@ export default function ForgotPassword() {
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                           <span>Verifying answer...</span>
                         </div>
-                      ) : isLocked || lockoutTimeLeft > 0 ? (
-                        <div className="flex items-center gap-2">
-                          <Lock className="h-4 w-4" />
-                          <span>Locked ({formatLockoutTime(lockoutTimeLeft)})</span>
+                      ) : isLocked || lockoutTimeLeft > 0 || remainingAttempts === 0 ? (
+                        <div className="flex items-center gap-2 font-mono">
+                          <Lock className="h-4 w-4 text-red-400" />
+                          <span>Verification Locked ({formatLockoutTime(lockoutTimeLeft)})</span>
                         </div>
                       ) : (
                         <>
