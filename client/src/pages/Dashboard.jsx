@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Award, PlusCircle, Mail,
   Calendar, FileText, ArrowRight, Play, Users, HelpCircle,
@@ -17,11 +17,20 @@ import { useTheme } from '../context/ThemeContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
   const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
+
+  // Display Welcome Popup Toast when arriving directly from Sign In or Registration
+  useEffect(() => {
+    if (location.state?.welcomeMsg) {
+      toast.success(location.state.welcomeMsg, { id: 'welcome-toast', duration: 4000 });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // Clear any lingering guest credentials so Host testing doesn't get bugged
   useEffect(() => {
@@ -99,24 +108,16 @@ export default function Dashboard() {
     });
   };
 
-  const isLoading = isProfileLoading || isQuizzesLoading || isResultsLoading;
+  // Immediate cached user fallback so Dashboard renders instantly without black/blank loading screen
+  const cachedUser = React.useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user'));
+    } catch {
+      return null;
+    }
+  }, []);
 
-  if (isLoading) {
-    return (
-      <AnimatedPage>
-        <div className="flex-1 flex items-center justify-center min-h-[70vh] bg-background">
-          <div className="text-center space-y-4">
-            <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className={`text-sm font-semibold tracking-wide ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-              Loading your battle dashboard...
-            </p>
-          </div>
-        </div>
-      </AnimatedPage>
-    );
-  }
-
-  const user = profileData?.user;
+  const user = profileData?.user || cachedUser;
 
   return (
     <AnimatedPage>

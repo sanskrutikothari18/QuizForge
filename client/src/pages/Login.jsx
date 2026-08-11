@@ -47,12 +47,11 @@ export default function Login() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        toast.success(`Welcome back, ${response.user.name}!`);
-        
-        // Wait briefly for toast to show, then redirect to Dashboard
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 800);
+        // Direct navigation to dashboard with welcome message state
+        navigate('/dashboard', {
+          state: { welcomeMsg: `Welcome back, ${response.user.name || 'Host'}!` },
+          replace: true
+        });
       } else {
         toast.error(response.message || 'Login failed. Please check credentials.');
       }
