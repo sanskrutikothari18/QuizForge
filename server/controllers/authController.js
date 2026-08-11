@@ -259,7 +259,7 @@ const verifySecurityAnswer = async (req, res) => {
             
             await user.save({ validateBeforeSave: false });
             const remaining = maxAttempts - user.securityAnswerAttempts;
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 isLocked: false,
                 attempts: user.securityAnswerAttempts,

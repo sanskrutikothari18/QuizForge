@@ -23,6 +23,7 @@ export default function Login() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('expired')) {
       toast.error('Session expired or database reconnected. Please sign in again.');
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [navigate]);
 
