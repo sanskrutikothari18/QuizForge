@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, KeyRound, Lock, Check, Timer, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { forgotPassword, verifySecurityAnswer, resetPassword } from '../services/authService';
@@ -19,7 +19,15 @@ export default function ForgotPassword() {
   const [userEmail, setUserEmail] = useState(initialEmail);
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [resetToken, setResetToken] = useState('');
-  const [remainingAttempts, setRemainingAttempts] = useState(null);
+  
+  // Security attempts and lockout state
+  const [attempts, setAttempts] = useState(0);
+  const [maxAttempts, setMaxAttempts] = useState(5);
+  const [remainingAttempts, setRemainingAttempts] = useState(5);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockedUntil, setLockedUntil] = useState(null);
+  const [lockoutTimeLeft, setLockoutTimeLeft] = useState(0);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isResetComplete, setIsResetComplete] = useState(false);
 
@@ -27,6 +35,41 @@ export default function ForgotPassword() {
   const emailForm = useForm({ defaultValues: { email: initialEmail } });
   const answerForm = useForm({ defaultValues: { answer: '' } });
   const passwordForm = useForm({ defaultValues: { newPassword: '', confirmPassword: '' } });
+
+  // 2-minute Lockout Countdown Timer Effect
+  useEffect(() => {
+    let timer;
+    if (lockedUntil && lockedUntil > Date.now()) {
+      const updateTimer = () => {
+        const diff = Math.ceil((lockedUntil - Date.now()) / 1000);
+        if (diff > 0) {
+          setLockoutTimeLeft(diff);
+          setIsLocked(true);
+        } else {
+          setLockoutTimeLeft(0);
+          setIsLocked(false);
+          setLockedUntil(null);
+          setAttempts(0);
+          setRemainingAttempts(maxAttempts);
+          clearInterval(timer);
+        }
+      };
+
+      updateTimer();
+      timer = setInterval(updateTimer, 1000);
+    } else {
+      setIsLocked(false);
+      setLockoutTimeLeft(0);
+    }
+
+    return () => clearInterval(timer);
+  }, [lockedUntil, maxAttempts]);
+
+  const formatLockoutTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Password strength helper
   const watchNewPassword = passwordForm.watch('newPassword');
@@ -57,14 +100,32 @@ export default function ForgotPassword() {
       if (response.success && response.securityQuestion) {
         setUserEmail(emailVal);
         setSecurityQuestion(response.securityQuestion);
+        
+        const newAttempts = response.attempts ?? 0;
+        const newMax = response.maxAttempts ?? 5;
+        const newRemaining = response.remainingAttempts ?? Math.max(0, newMax - newAttempts);
+        const lockedStatus = Boolean(response.isLocked);
+        const lockedTime = response.lockedUntil ? Number(response.lockedUntil) : null;
+
+        setAttempts(newAttempts);
+        setMaxAttempts(newMax);
+        setRemainingAttempts(newRemaining);
+        setIsLocked(lockedStatus);
+        setLockedUntil(lockedTime);
+
         setStep(2);
-        toast.success('Security question retrieved!');
+        
+        if (lockedStatus || (lockedTime && lockedTime > Date.now())) {
+          toast.error('Account is temporarily locked due to maximum failed attempts.');
+        } else {
+          toast.success('Security question retrieved successfully!');
+        }
       } else {
         toast.error(response.message || 'No account found with this email.');
       }
     } catch (error) {
       console.error('[FORGOT PASSWORD ERROR]', error);
-      toast.error(error.response?.data?.message || 'Could not find account');
+      toast.error(error.response?.data?.message || 'Server error occurred. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -72,20 +133,48 @@ export default function ForgotPassword() {
 
   // STEP 2: Handle Security Answer Submit
   const onAnswerSubmit = async (data) => {
+    if (isLocked || lockoutTimeLeft > 0) {
+      toast.error('Account is locked. Please wait for countdown timer to complete.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await verifySecurityAnswer({ email: userEmail, answer: data.answer });
       if (response.success && response.resetToken) {
         setResetToken(response.resetToken);
         setStep(3);
-        toast.success('Answer verified!');
+        setAttempts(0);
+        setRemainingAttempts(5);
+        setIsLocked(false);
+        setLockedUntil(null);
+        toast.success(response.message || 'Security answer verified successfully!');
       }
     } catch (error) {
       console.error('[VERIFY ANSWER ERROR]', error);
-      if (error.response?.data?.remainingAttempts !== undefined) {
-        setRemainingAttempts(error.response.data.remainingAttempts);
+      const errData = error.response?.data;
+      if (errData) {
+        if (errData.isLocked || errData.remainingAttempts === 0) {
+          setIsLocked(true);
+          const lockedTime = errData.lockedUntil ? Number(errData.lockedUntil) : Date.now() + 120000;
+          setLockedUntil(lockedTime);
+          setAttempts(5);
+          setRemainingAttempts(0);
+          toast.error(errData.message || 'Maximum attempts reached. Account temporarily locked for 2 minutes.');
+        } else if (errData.remainingAttempts !== undefined) {
+          const rem = errData.remainingAttempts;
+          const att = errData.attempts ?? (maxAttempts - rem);
+          setAttempts(att);
+          setRemainingAttempts(rem);
+          toast.error(errData.message || `Incorrect security answer. ${rem} attempts remaining.`);
+        } else {
+          toast.error(errData.message || 'Incorrect security answer.');
+        }
+      } else if (error.request) {
+        toast.error('Server error occurred. Please check your network connection.');
+      } else {
+        toast.error(error.message || 'Server error occurred. Please try again later.');
       }
-      toast.error(error.response?.data?.message || 'Incorrect answer');
     } finally {
       setIsLoading(false);
     }
@@ -104,16 +193,31 @@ export default function ForgotPassword() {
 
       if (response.success) {
         setIsResetComplete(true);
+        setAttempts(0);
+        setRemainingAttempts(5);
+        setIsLocked(false);
+        setLockedUntil(null);
         toast.success('Password reset successfully!');
         setTimeout(() => {
           navigate('/login');
         }, 2000);
       } else {
-        toast.error(response.message || 'Password reset failed.');
+        if (response.isExpired) {
+          toast.error('Session or reset token expired. Please restart the password recovery process.');
+          setStep(1);
+        } else {
+          toast.error(response.message || 'Password reset failed.');
+        }
       }
     } catch (error) {
       console.error('[RESET PASSWORD ERROR]', error);
-      toast.error(error.response?.data?.message || 'Failed to reset password');
+      const errData = error.response?.data;
+      if (errData?.isExpired) {
+        toast.error('Session or reset token expired. Please restart the password recovery process.');
+        setStep(1);
+      } else {
+        toast.error(errData?.message || 'Server error occurred. Failed to reset password.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -273,10 +377,68 @@ export default function ForgotPassword() {
                     onSubmit={answerForm.handleSubmit(onAnswerSubmit)}
                     className="space-y-6"
                   >
-                    <div className={`p-4 rounded-2xl border text-sm font-semibold mb-4 text-center ${isLight ? 'bg-secondary/10 border-secondary/30 text-gray-900' : 'bg-secondary/10 border-secondary/20 text-secondary'}`}>
-                      {securityQuestion || 'What is your security answer?'}
+                    {/* Header bar with security question and live counter */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+                      <div className={`flex-1 p-3.5 rounded-2xl border text-xs sm:text-sm font-semibold text-center sm:text-left ${
+                        isLight ? 'bg-secondary/10 border-secondary/30 text-gray-900' : 'bg-secondary/10 border-secondary/20 text-secondary'
+                      }`}>
+                        {securityQuestion || 'What is your security answer?'}
+                      </div>
+                      
+                      {/* Live Attempts Counter Badge */}
+                      <div className={`px-3 py-2 rounded-xl border text-xs font-bold font-mono shrink-0 flex items-center justify-center gap-1.5 transition-all ${
+                        isLocked || lockoutTimeLeft > 0 
+                          ? 'bg-red-500/20 border-red-500/40 text-red-500' 
+                          : remainingAttempts === 1 
+                            ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 animate-pulse' 
+                            : isLight 
+                              ? 'bg-primary/10 border-primary/20 text-primary' 
+                              : 'bg-primary/20 border-primary/30 text-purple-300'
+                      }`}>
+                        {isLocked || lockoutTimeLeft > 0 ? (
+                          <>
+                            <Lock className="h-3.5 w-3.5 text-red-400" />
+                            <span>Attempts: 5/5</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="h-3.5 w-3.5" />
+                            <span>Attempts: {attempts}/{maxAttempts}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
 
+                    {/* Temporary Lockout Box + 2 min Timer */}
+                    {(isLocked || lockoutTimeLeft > 0) && (
+                      <div className="p-4 rounded-2xl border border-red-500/40 bg-red-500/10 text-red-400 flex flex-col items-center justify-center text-center space-y-2">
+                        <div className="flex items-center gap-2 font-bold text-red-400 text-sm">
+                          <Lock className="h-5 w-5 animate-pulse" />
+                          <span>Maximum attempts reached</span>
+                        </div>
+                        <p className="text-xs text-red-300/80 leading-relaxed max-w-[320px]">
+                          Account temporarily locked due to 5 consecutive failed attempts. Verification is disabled.
+                        </p>
+                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-red-950/60 border border-red-500/40 text-white font-mono text-sm font-bold mt-1">
+                          <Timer className="h-4 w-4 text-red-400 animate-spin" />
+                          <span>Try again in:</span>
+                          <span className="text-red-400 text-base font-extrabold">{formatLockoutTime(lockoutTimeLeft)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Warning Banner at Last Attempt */}
+                    {!isLocked && lockoutTimeLeft === 0 && remainingAttempts === 1 && (
+                      <div className="p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs font-semibold flex items-start gap-2 text-left">
+                        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+                        <div>
+                          <span className="font-bold text-amber-400 block mb-0.5">Warning: Final attempt!</span>
+                          <span>One more incorrect answer will lock your verification for 2 minutes.</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Answer Input */}
                     <div className="space-y-2">
                       <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                         Your Answer
@@ -287,12 +449,17 @@ export default function ForgotPassword() {
                         </div>
                         <input
                           type="text"
-                          placeholder="Type your answer"
+                          placeholder={isLocked || lockoutTimeLeft > 0 ? "Verification temporarily locked" : "Type your answer"}
+                          disabled={isLocked || lockoutTimeLeft > 0 || isLoading}
                           {...answerForm.register('answer', {
-                            required: 'Security answer is required',
+                            required: isLocked || lockoutTimeLeft > 0 ? false : 'Security answer is required',
                           })}
                           className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
-                            isLight ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                            isLocked || lockoutTimeLeft > 0 
+                              ? 'bg-red-500/5 border-red-500/20 text-gray-500 cursor-not-allowed'
+                              : isLight 
+                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
+                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
                           } ${
                             answerForm.formState.errors.answer 
                               ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
@@ -300,31 +467,39 @@ export default function ForgotPassword() {
                           }`}
                         />
                       </div>
-                      {answerForm.formState.errors.answer && (
+
+                      {answerForm.formState.errors.answer && !isLocked && lockoutTimeLeft === 0 && (
                         <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
                           <AlertCircle className="h-3.5 w-3.5" />
                           <span>{answerForm.formState.errors.answer.message}</span>
                         </div>
                       )}
-                      {remainingAttempts !== null && (
-                        <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+
+                      {/* Attempts remaining subtext */}
+                      {!isLocked && lockoutTimeLeft === 0 && remainingAttempts < 5 && remainingAttempts > 0 && (
+                        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-amber-400 text-left font-medium">
                           <AlertCircle className="h-3.5 w-3.5" />
-                          <span>{remainingAttempts} attempts remaining</span>
+                          <span>Incorrect answer. {remainingAttempts} attempt{remainingAttempts === 1 ? '' : 's'} remaining.</span>
                         </div>
                       )}
                     </div>
 
                     <button
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isLoading || isLocked || lockoutTimeLeft > 0}
                       className={`w-full btn-premium btn-secondary-gradient py-3.5 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow cursor-pointer ${
-                        isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                        isLoading || isLocked || lockoutTimeLeft > 0 ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
                     >
                       {isLoading ? (
                         <div className="flex items-center gap-2">
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                           <span>Verifying answer...</span>
+                        </div>
+                      ) : isLocked || lockoutTimeLeft > 0 ? (
+                        <div className="flex items-center gap-2">
+                          <Lock className="h-4 w-4" />
+                          <span>Locked ({formatLockoutTime(lockoutTimeLeft)})</span>
                         </div>
                       ) : (
                         <>
@@ -479,3 +654,4 @@ export default function ForgotPassword() {
     </AnimatedPage>
   );
 }
+

@@ -162,16 +162,33 @@ const forgotPassword = async (req, res) => {
             });
         }
 
+        // Auto-clear lockout if duration has passed
+        if (user.securityAnswerLockedUntil && user.securityAnswerLockedUntil <= Date.now()) {
+            user.securityAnswerAttempts = 0;
+            user.securityAnswerLockedUntil = undefined;
+            await user.save({ validateBeforeSave: false });
+        }
+
+        const isLocked = Boolean(user.securityAnswerLockedUntil && user.securityAnswerLockedUntil > Date.now());
+        const attempts = user.securityAnswerAttempts || 0;
+        const maxAttempts = 5;
+        const remainingAttempts = Math.max(0, maxAttempts - attempts);
+
         return res.status(200).json({
             success: true,
             securityQuestion: user.securityQuestion,
-            message: 'Security question retrieved successfully'
+            message: 'Security question retrieved successfully',
+            attempts,
+            maxAttempts,
+            remainingAttempts,
+            isLocked,
+            lockedUntil: user.securityAnswerLockedUntil ? new Date(user.securityAnswerLockedUntil).getTime() : null
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message || 'Server error occurred. Please try again later.'
         });
     }
 };
@@ -196,12 +213,27 @@ const verifySecurityAnswer = async (req, res) => {
             });
         }
 
+        const maxAttempts = 5;
+
         // Check if locked out
-        if (user.securityAnswerLockedUntil && user.securityAnswerLockedUntil > Date.now()) {
-            return res.status(403).json({
-                success: false,
-                message: 'Maximum attempts exceeded. Please try again later.'
-            });
+        if (user.securityAnswerLockedUntil) {
+            if (user.securityAnswerLockedUntil > Date.now()) {
+                const lockedUntilMs = new Date(user.securityAnswerLockedUntil).getTime();
+                return res.status(403).json({
+                    success: false,
+                    isLocked: true,
+                    attempts: maxAttempts,
+                    maxAttempts,
+                    remainingAttempts: 0,
+                    lockedUntil: lockedUntilMs,
+                    message: 'Maximum attempts reached. Account temporarily locked for 2 minutes.'
+                });
+            } else {
+                // Lock expired
+                user.securityAnswerAttempts = 0;
+                user.securityAnswerLockedUntil = undefined;
+                await user.save({ validateBeforeSave: false });
+            }
         }
 
         const trimmedAnswer = answer.trim().toLowerCase();
@@ -210,20 +242,30 @@ const verifySecurityAnswer = async (req, res) => {
         if (!isMatch) {
             user.securityAnswerAttempts = (user.securityAnswerAttempts || 0) + 1;
             
-            if (user.securityAnswerAttempts >= 3) {
-                user.securityAnswerLockedUntil = Date.now() + 15 * 60 * 1000; // 15 mins lock
+            if (user.securityAnswerAttempts >= maxAttempts) {
+                user.securityAnswerLockedUntil = Date.now() + 2 * 60 * 1000; // 2 mins lock
                 await user.save({ validateBeforeSave: false });
+                const lockedUntilMs = new Date(user.securityAnswerLockedUntil).getTime();
                 return res.status(403).json({
                     success: false,
-                    message: 'Maximum attempts exceeded. Please try again later.'
+                    isLocked: true,
+                    attempts: maxAttempts,
+                    maxAttempts,
+                    remainingAttempts: 0,
+                    lockedUntil: lockedUntilMs,
+                    message: 'Maximum attempts reached. Account temporarily locked for 2 minutes.'
                 });
             }
             
             await user.save({ validateBeforeSave: false });
+            const remaining = maxAttempts - user.securityAnswerAttempts;
             return res.status(401).json({
                 success: false,
-                message: `Incorrect answer. ${3 - user.securityAnswerAttempts} attempts remaining.`,
-                remainingAttempts: 3 - user.securityAnswerAttempts
+                isLocked: false,
+                attempts: user.securityAnswerAttempts,
+                maxAttempts,
+                remainingAttempts: remaining,
+                message: `Incorrect security answer. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`
             });
         }
 
@@ -240,14 +282,18 @@ const verifySecurityAnswer = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Answer verified successfully',
-            resetToken
+            message: 'Security answer verified successfully!',
+            resetToken,
+            attempts: 0,
+            maxAttempts,
+            remainingAttempts: maxAttempts,
+            isLocked: false
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message || 'Server error occurred. Please try again later.'
         });
     }
 };
@@ -289,13 +335,18 @@ const resetPassword = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired reset token'
+                isExpired: true,
+                message: 'Session or reset token expired. Please restart the password recovery process.'
             });
         }
 
         user.password = targetPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
+
+        // Reset attempts after successful password reset
+        user.securityAnswerAttempts = 0;
+        user.securityAnswerLockedUntil = undefined;
 
         await user.save();
 
@@ -307,7 +358,7 @@ const resetPassword = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message || 'Server error occurred. Please try again later.'
         });
     }
 };
