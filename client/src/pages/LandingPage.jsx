@@ -4,7 +4,6 @@ import HeroSection from '../components/landing/HeroSection';
 import FeaturesSection from '../components/landing/FeaturesSection';
 import HowItWorksSection from '../components/landing/HowItWorksSection';
 import PricingSection from '../components/landing/PricingSection';
-import ComparisonTableSection from '../components/landing/ComparisonTableSection';
 import FAQSection from '../components/landing/FAQSection';
 import CTASection from '../components/landing/CTASection';
 
@@ -23,9 +22,6 @@ export default function LandingPage() {
 
         {/* Flexible Pricing Section */}
         <PricingSection />
-
-        {/* Detailed Plan Comparison */}
-        <ComparisonTableSection />
 
         {/* Frequently Asked Questions */}
         <FAQSection />
