@@ -406,6 +406,160 @@ export default function ResultsAnalytics() {
     }
   };
 
+  // ── Word (.doc / .docx) Export ────────────────────────────────────────────
+  const handleExportWord = () => {
+    if (!result) {
+      toast.error('No result data loaded yet');
+      return;
+    }
+
+    try {
+      const title = result.quizTitle || 'Fourise Quiz Hub Match';
+      const category = result.quizCategory || result.quiz?.category || 'General';
+      const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
+      
+      const wordHtml = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; margin: 35px; color: #1e293b; line-height: 1.5; }
+            .header-title { font-size: 26px; font-weight: bold; color: #4f46e5; margin-bottom: 2px; }
+            .header-subtitle { font-size: 13px; color: #64748b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+            .quiz-title { font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 15px; margin-bottom: 5px; }
+            .meta-info { font-size: 11px; color: #475569; margin-bottom: 20px; }
+            
+            .section-heading { font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
+            
+            .summary-grid { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 20px; }
+            .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+            .card-val { font-size: 18px; font-weight: bold; color: #0f172a; }
+            .card-lbl { font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-top: 4px; }
+
+            table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+            table.data-table th { background: #4f46e5; color: #ffffff; font-weight: bold; text-align: left; padding: 10px 12px; font-size: 12px; border: 1px solid #4338ca; }
+            table.data-table td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #334155; }
+            table.data-table tr:nth-child(even) td { background: #f8fafc; }
+
+            .footer-note { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header-title">Fourise Quiz Hub</div>
+          <div class="header-subtitle">Battle Performance Report • Generated ${new Date().toLocaleString()}</div>
+
+          <div class="quiz-title">${title}</div>
+          <div class="meta-info">
+            <strong>Category:</strong> ${category} &nbsp;|&nbsp;
+            <strong>Winner:</strong> ${winnerName} &nbsp;|&nbsp;
+            <strong>Played Date:</strong> ${playedDate} &nbsp;|&nbsp;
+            <strong>Session ID:</strong> ${id}
+          </div>
+
+          <div class="section-heading">Match Summary</div>
+          <table class="summary-grid">
+            <tr>
+              <td class="summary-card">
+                <div class="card-val">${winnerName}</div>
+                <div class="card-lbl">Winner</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${totalPlayers}</div>
+                <div class="card-lbl">Total Players</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${totalQuestions}</div>
+                <div class="card-lbl">Total Questions</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${avgCorrect} / ${totalQuestions}</div>
+                <div class="card-lbl">Avg Correct</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${accuracy}%</div>
+                <div class="card-lbl">Accuracy</div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="section-heading">Player Standings</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Player Nickname</th>
+                <th style="text-align: center;">Correct</th>
+                <th style="text-align: center;">Wrong</th>
+                <th style="text-align: center;">Not Answered</th>
+                <th style="text-align: right;">Final Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${playerSummaries.length > 0 ? playerSummaries.map(p => `
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">${p.rank <= 3 ? ['1st', '2nd', '3rd'][p.rank - 1] : '#' + p.rank}</td>
+                  <td style="font-weight: bold;">${p.name}</td>
+                  <td style="text-align: center; color: #16a34a; font-weight: bold;">${p.correct}</td>
+                  <td style="text-align: center; color: #dc2626;">${p.wrong}</td>
+                  <td style="text-align: center; color: #d97706;">${p.unanswered}</td>
+                  <td style="text-align: right; font-weight: bold; color: #4f46e5;">${p.totalScore} pts</td>
+                </tr>
+              `).join('') : '<tr><td colspan="6" style="text-align: center;">No player data recorded</td></tr>'}
+            </tbody>
+          </table>
+
+          ${questionHighlights.length > 0 ? `
+            <div class="section-heading">Fastest Correct Solvers</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Question</th>
+                  <th>Fastest Solver</th>
+                  <th style="text-align: right;">Time Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${questionHighlights.map(hl => `
+                  <tr>
+                    <td style="font-weight: bold;">Q${hl.questionNumber}</td>
+                    <td>${hl.fastestPlayer ? hl.fastestPlayer.name : '—'}</td>
+                    <td style="text-align: right; font-weight: bold;">${hl.fastestPlayer ? hl.fastestPlayer.timeTaken + 's' : 'N/A'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+
+          <div class="footer-note">
+            Fourise Quiz Hub • Official Multiplayer Battle Report
+          </div>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.doc`;
+
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      toast.success('Word report downloaded successfully!');
+    } catch (err) {
+      console.error('Word Export error:', err);
+      toast.error('Error generating Word report');
+    }
+  };
+
   if (isLoading) {
     return (
       <AnimatedPage>
@@ -466,11 +620,15 @@ export default function ResultsAnalytics() {
 
               <div className="flex flex-wrap gap-2">
                 <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                  <Download className="h-4 w-4" />
+                  <FileSpreadsheet className="h-4 w-4" />
                   Export CSV
                 </button>
-                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
-                  <FileText className="h-4 w-4" />
+                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-blue-900/40 text-blue-200 hover:bg-blue-900/60 border border-blue-700/50' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
+                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  Export Word
+                </button>
+                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 shadow-md">
+                  <Download className="h-4 w-4" />
                   Export PDF
                 </button>
               </div>
