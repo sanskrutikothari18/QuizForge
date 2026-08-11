@@ -139,7 +139,7 @@ export default function Dashboard() {
             {/* Create Action button */}
             <Link
               to="/quiz/create"
-              className="btn-premium btn-primary-gradient px-5 py-3 flex items-center gap-2 text-xs font-bold shadow-premium-glow whitespace-nowrap"
+              className="btn-premium btn-primary-gradient px-5 py-3 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold shadow-premium-glow whitespace-nowrap w-full sm:w-auto rounded-xl"
             >
               <PlusCircle className="h-4 w-4" />
               <span>Create New Quiz</span>
@@ -148,17 +148,16 @@ export default function Dashboard() {
 
           {/* METRIC CARDS GRID WITH SEPARATE DISTINCT ACTIONS */}
           <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3">
-            {/* Total Quizzes Card -> Navigates to My Quizzes */}
+            {/* Total Quizzes Card */}
             <div 
-              onClick={() => navigate('/quiz/my')}
-              className={`rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border transition-all cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] ${
+              className={`rounded-2xl p-5 text-left flex justify-between items-start relative overflow-hidden group border transition-all shadow-sm ${
                 isLight 
-                  ? 'bg-white border-gray-200 text-gray-900 hover:border-primary/50' 
-                  : 'glass-panel border-white/5 text-white hover:border-primary/40'
+                  ? 'bg-white border-gray-200 text-gray-900' 
+                  : 'glass-panel border-white/5 text-white'
               }`}
             >
               <div className="space-y-3">
-                <span className={`text-xs font-bold uppercase tracking-wider group-hover:text-primary transition-colors ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
                   Total Quizzes
                 </span>
                 <div className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
@@ -171,7 +170,7 @@ export default function Dashboard() {
               <div className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
                 isLight 
                   ? 'bg-primary/10 border-primary/20 text-primary' 
-                  : 'bg-white/5 border-white/10 group-hover:bg-primary/10 group-hover:border-primary/30'
+                  : 'bg-white/5 border-white/10'
               }`}>
                 <FileText className="h-5 w-5 text-primary" />
               </div>

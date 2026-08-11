@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
   Settings, CheckCircle, Clock, Eye, AlertCircle, FileSpreadsheet, Play,
-  Image, Upload, X, ChevronDown, ChevronUp, Palette, Copy
+  Image, Upload, X, ChevronDown, ChevronUp, Palette, Copy,
+  BookOpen, LayoutDashboard, LogOut, User, Sun, Moon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import AnimatedPage from '../components/AnimatedPage';
+import Logo from '../components/Logo';
 import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 
@@ -18,8 +20,17 @@ import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
-  const { themeMode } = useTheme();
+  const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
 
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
@@ -260,15 +271,15 @@ export default function CreateQuiz() {
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* AMAZON / FLIPKART STYLE PERMANENT FIXED HEADER */}
+        {/* ACTION TOOLBAR (PAGE TITLE & SAVE/LAUNCH ACTIONS) */}
         <div 
-          className="fixed top-0 left-0 right-0 w-full z-[9999] border-b backdrop-blur-md shadow-xl transition-colors duration-300"
+          className="sticky top-0 z-30 w-full border-b backdrop-blur-xl shadow-md transition-colors duration-300 px-4 sm:px-6 lg:px-8 py-3"
           style={{
-            backgroundColor: isLight ? '#ffffff' : '#0a0a0f',
+            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
             borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
           }}
         >
-          <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
+          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-3">
               <button 
                 type="button"
@@ -278,80 +289,80 @@ export default function CreateQuiz() {
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
-                <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold" style={{ color: 'var(--text-heading)' }}>Create Quiz</h1>
+                <h1 className="font-outfit text-xl sm:text-2xl font-extrabold" style={{ color: 'var(--text-heading)' }}>Create Quiz</h1>
                 <p className="text-xs text-gray-400 mt-0.5">Design customized questions and timers.</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
-              {/* Hidden File Input for Excel/CSV */}
-              <input
-                type="file"
-                accept=".xlsx,.xls,.csv"
-                id="excel-file-upload"
-                onChange={handleExcelUpload}
-                className="hidden"
-              />
-              <label
-                htmlFor="excel-file-upload"
-                className="btn-premium px-4 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Upload Excel/CSV</span>
-              </label>
-              
-              <button
-                type="button"
-                onClick={handleSubmit(async (data) => {
-                  const payload = {
-                    ...data,
-                    backgroundImage: data.backgroundImage || '',
-                    questions: data.questions.map(q => ({
-                      ...q,
-                      correctAnswer: Number(q.correctAnswer),
-                      timeLimit: Number(q.timeLimit),
-                      backgroundImage: useSameBgForAll ? '' : (q.backgroundImage || '')
-                    }))
-                  };
-                  toast.loading('Initializing lobby...', { id: 'forge-host' });
-                  const response = await createQuiz(payload);
-                  if (response.success) {
-                    const newQuiz = response.quiz;
-                    const gameRes = await createGame(newQuiz._id);
-                    if (gameRes.success) {
-                      toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
-                      navigate(`/host/lobby/${gameRes.game.pin}`);
+              <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+                {/* Hidden File Input for Excel/CSV */}
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  id="excel-file-upload"
+                  onChange={handleExcelUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="excel-file-upload"
+                  className="btn-premium px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span>Upload Excel/CSV</span>
+                </label>
+                
+                <button
+                  type="button"
+                  onClick={handleSubmit(async (data) => {
+                    const payload = {
+                      ...data,
+                      backgroundImage: data.backgroundImage || '',
+                      questions: data.questions.map(q => ({
+                        ...q,
+                        correctAnswer: Number(q.correctAnswer),
+                        timeLimit: Number(q.timeLimit),
+                        backgroundImage: useSameBgForAll ? '' : (q.backgroundImage || '')
+                      }))
+                    };
+                    toast.loading('Initializing lobby...', { id: 'forge-host' });
+                    const response = await createQuiz(payload);
+                    if (response.success) {
+                      const newQuiz = response.quiz;
+                      const gameRes = await createGame(newQuiz._id);
+                      if (gameRes.success) {
+                        toast.success('Lobby active! PIN initialized', { id: 'forge-host' });
+                        navigate(`/host/lobby/${gameRes.game.pin}`);
+                      } else {
+                        toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
+                        navigate('/dashboard');
+                      }
                     } else {
-                      toast.error(gameRes.message || 'Lobby initialization failed', { id: 'forge-host' });
-                      navigate('/dashboard');
+                      toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                     }
-                  } else {
-                    toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
-                  }
-                }, onInvalid)}
-                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
-              >
-                <Play className="h-4 w-4 fill-current" />
-                <span>Launch Quiz</span>
-              </button>
+                  }, onInvalid)}
+                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
+                >
+                  <Play className="h-4 w-4 fill-current" />
+                  <span>Launch Quiz</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={handleSubmit(onSubmit, onInvalid)}
-                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
-              >
-                <Save className="h-4 w-4" />
-                <span>Save Quiz</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit(onSubmit, onInvalid)}
+                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Save Quiz</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* MAIN FORM CONTENT WITH TOP PADDING FOR FIXED HEADER */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-28 sm:pt-24 pb-12 px-6 sm:px-8">
+        {/* MAIN FORM CONTENT */}
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-6 sm:pt-8 pb-12 px-4 sm:px-8">
           
         {/* EDITOR LAYOUT */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
@@ -687,7 +698,6 @@ export default function CreateQuiz() {
             </form>
 
         </div>
-      </div>
 
       {/* Question Background Customizer Modal */}
       {bgModalTarget !== null && (
@@ -754,6 +764,7 @@ export default function CreateQuiz() {
         </div>
       )}
 
+      </div>
     </AnimatedPage>
   );
 }
