@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Sidebar from './components/Sidebar';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -62,6 +63,8 @@ function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
 
+  const token = localStorage.getItem('token');
+
   // Hide Navbar & Footer during gameplay for full immersion
   const isGameplayView = [
     '/live', 
@@ -71,16 +74,19 @@ function AnimatedRoutes() {
     '/final-result'
   ].some(path => location.pathname.startsWith(path));
 
-  // Hide top main Navbar on Create Quiz and Edit Quiz so dedicated fixed header is used
-  const isEditorView = [
-    '/quiz/create',
-    '/quiz/edit'
-  ].some(path => location.pathname.startsWith(path));
+  // Scope Sidebar layout ONLY to Create Quiz and Edit Quiz pages as requested
+  const isCreateOrEditQuiz = location.pathname.startsWith('/quiz/create') || location.pathname.startsWith('/quiz/edit');
+  const useSidebarLayout = Boolean(token && isCreateOrEditQuiz);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-200">
-      {!isGameplayView && !isEditorView && <Navbar />}
-      <main className="flex-1 flex flex-col">
+      {/* Sidebar Layout ONLY on Create Quiz & Edit Quiz pages */}
+      {useSidebarLayout && <Sidebar />}
+
+      {/* Standard Top Navbar for all other non-gameplay pages */}
+      {!useSidebarLayout && !isGameplayView && <Navbar />}
+
+      <main className={`flex-1 flex flex-col ${useSidebarLayout ? 'md:pl-64' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage />} />
@@ -104,7 +110,9 @@ function AnimatedRoutes() {
           </Routes>
         </AnimatePresence>
       </main>
-      {!isGameplayView && <Footer />}
+
+      {/* Footer for Public Visitors */}
+      {!useSidebarLayout && !isGameplayView && <Footer />}
     </div>
   );
 }

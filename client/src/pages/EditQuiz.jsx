@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
   Settings, CheckCircle, Clock, Eye, AlertCircle, Play,
-  Image, X, Palette, Copy, Edit3, Loader2
+  Image, X, Palette, Copy, Edit3, Loader2,
+  BookOpen, LayoutDashboard, LogOut, User, Sun, Moon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import AnimatedPage from '../components/AnimatedPage';
+import Logo from '../components/Logo';
 import BackgroundPicker from '../components/BackgroundPicker';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizById, updateQuiz } from '../services/quizService';
@@ -17,8 +19,17 @@ import { getQuizById, updateQuiz } from '../services/quizService';
 export default function EditQuiz() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { themeMode } = useTheme();
+  const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
 
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
@@ -177,15 +188,15 @@ export default function EditQuiz() {
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* AMAZON / FLIPKART STYLE PERMANENT FIXED HEADER */}
+        {/* ACTION TOOLBAR (PAGE TITLE & SAVE ACTIONS) */}
         <div 
-          className="fixed top-0 left-0 right-0 w-full z-[9999] border-b backdrop-blur-md shadow-xl transition-colors duration-300"
+          className="sticky top-0 z-30 w-full border-b backdrop-blur-xl shadow-md transition-colors duration-300 px-4 sm:px-6 lg:px-8 py-3"
           style={{
-            backgroundColor: isLight ? '#ffffff' : '#0a0a0f',
+            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
             borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
           }}
         >
-          <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 px-6 sm:px-8">
+          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -195,9 +206,9 @@ export default function EditQuiz() {
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
-                <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold flex items-center gap-2" style={{ color: 'var(--text-heading)' }}>
-                  <Edit3 className="h-6 w-6 text-primary" />
-                  Edit Quiz
+                <h1 className="font-outfit text-xl sm:text-2xl font-extrabold flex items-center gap-2" style={{ color: 'var(--text-heading)' }}>
+                  <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  <span>Edit Quiz</span>
                 </h1>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Editing: <span className="text-primary font-semibold">{watch('title') || '...'}</span>
@@ -205,26 +216,26 @@ export default function EditQuiz() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
-              <button
-                type="button"
-                onClick={handleSubmit(onSubmit, onInvalid)}
-                disabled={updateMutation.isPending}
-                className="btn-premium px-5 py-2.5 flex items-center gap-1.5 text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
-              >
-                {updateMutation.isPending
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : <Save className="h-4 w-4" />
-                }
-                <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+                <button
+                  type="button"
+                  onClick={handleSubmit(onSubmit, onInvalid)}
+                  disabled={updateMutation.isPending}
+                  className="btn-premium px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
+                >
+                  {updateMutation.isPending
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <Save className="h-4 w-4" />
+                  }
+                  <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* MAIN FORM CONTENT WITH TOP PADDING FOR FIXED HEADER */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-28 sm:pt-24 pb-12 px-6 sm:px-8">
+        {/* MAIN FORM CONTENT */}
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-6 sm:pt-8 pb-12 px-4 sm:px-8">
 
           {/* EDITOR FORM */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
@@ -515,7 +526,6 @@ export default function EditQuiz() {
 
           </form>
         </div>
-      </div>
 
       {/* Per-Question Background Modal */}
       {bgModalTarget !== null && (
@@ -574,6 +584,7 @@ export default function EditQuiz() {
           </div>
         </div>
       )}
+      </div>
     </AnimatedPage>
   );
 }

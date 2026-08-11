@@ -139,7 +139,7 @@ export default function Dashboard() {
             {/* Create Action button */}
             <Link
               to="/quiz/create"
-              className="btn-premium btn-primary-gradient px-5 py-3 flex items-center gap-2 text-xs font-bold shadow-premium-glow whitespace-nowrap"
+              className="btn-premium btn-primary-gradient px-5 py-3 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold shadow-premium-glow whitespace-nowrap w-full sm:w-auto rounded-xl"
             >
               <PlusCircle className="h-4 w-4" />
               <span>Create New Quiz</span>
