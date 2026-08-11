@@ -39,7 +39,8 @@ export default function ResultsAnalytics() {
   const players = result?.players || [];
   const { themeMode, toggleThemeMode } = useTheme();
   const isDark = themeMode !== 'light';
-  const playerSummaries = players.map((player) => {
+  const sortedPlayers = [...players].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+  const playerSummaries = sortedPlayers.map((player, index) => {
     const submittedAnswers = getSubmittedAnswers(player.answers || []);
     const correct = submittedAnswers.filter((answer) => answer.isCorrect).length;
     const wrong = submittedAnswers.filter((answer) => !answer.isCorrect).length;
@@ -48,6 +49,8 @@ export default function ResultsAnalytics() {
 
     return {
       ...player,
+      rank: player.rank || index + 1,
+      name: player.name || player.username || `Player ${index + 1}`,
       correct,
       wrong,
       unanswered,
@@ -58,7 +61,7 @@ export default function ResultsAnalytics() {
 
   // Calculate Metrics
   const totalPlayers = playerSummaries.length;
-  const winnerName = result?.winner || 'No winner registered';
+  const winnerName = result?.winner || (playerSummaries[0]?.name) || 'No winner registered';
   const totalQuestions = result?.totalQuestions || 0;
   const avgCorrect = totalPlayers
     ? Math.round((playerSummaries.reduce((sum, p) => sum + (p.correct || 0), 0) / totalPlayers) * 10) / 10
@@ -95,10 +98,23 @@ export default function ResultsAnalytics() {
     });
   }
 
+  // Safe autoTable Invocation Helper
+  const runAutoTable = (docObj, tableOptions) => {
+    if (typeof autoTable === 'function') {
+      autoTable(docObj, tableOptions);
+    } else if (autoTable && typeof autoTable.default === 'function') {
+      autoTable.default(docObj, tableOptions);
+    } else if (typeof docObj.autoTable === 'function') {
+      docObj.autoTable(tableOptions);
+    } else {
+      console.warn('autoTable plugin method not found directly, attempting fallback');
+    }
+  };
+
   // Export Standings to CSV file
   const handleExportCSV = () => {
-      if (playerSummaries.length === 0) {
-      toast.error('No player data to export');
+    if (!result) {
+      toast.error('No result data loaded yet');
       return;
     }
 
@@ -117,6 +133,7 @@ export default function ResultsAnalytics() {
       // Metadata Header Block
       lines.push('=== FOURISE QUIZ HUB REPORT ===');
       lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Fourise Quiz Hub Match')}`);
+      lines.push(`Category,${escapeCSV(result.quizCategory || result.quiz?.category || 'General')}`);
       lines.push(`Played At,${escapeCSV(result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString())}`);
       lines.push(`Session ID,${escapeCSV(id)}`);
       lines.push(`Total Questions,${escapeCSV(totalQuestions)}`);
@@ -131,18 +148,22 @@ export default function ResultsAnalytics() {
       lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
-      playerSummaries.forEach((p) => {
-        const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
-        lines.push([
-          p.rank,
-          p.name,
-          p.correct,
-          p.wrong,
-          p.unanswered,
-          playerAccuracy,
-          p.totalScore
-        ].map(escapeCSV).join(','));
-      });
+      if (playerSummaries.length > 0) {
+        playerSummaries.forEach((p) => {
+          const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
+          lines.push([
+            p.rank,
+            p.name,
+            p.correct,
+            p.wrong,
+            p.unanswered,
+            playerAccuracy,
+            p.totalScore
+          ].map(escapeCSV).join(','));
+        });
+      } else {
+        lines.push(['-', 'No player data recorded', '0', '0', '0', '0%', '0'].map(escapeCSV).join(','));
+      }
       
       lines.push(''); // blank line divider
       
@@ -160,28 +181,34 @@ export default function ResultsAnalytics() {
       });
 
       // Prepare UTF-8 CSV blob to support Excel compatibility
-      const csvString = lines.join('\n');
+      const csvString = lines.join('\r\n');
       const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvString], { type: 'text/csv;charset=utf-8;' });
       
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.csv`;
+
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `Fourise_Quiz_Hub_Report_${id}.csv`);
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
       
-      toast.success('Report exported successfully!');
+      toast.success('CSV Report exported successfully!');
     } catch (err) {
+      console.error('CSV Export error:', err);
       toast.error('Error generating CSV export');
     }
   };
 
   // ── PDF Export ────────────────────────────────────────────────────────────
   const handleExportPDF = () => {
-    if (playerSummaries.length === 0) {
-      toast.error('No player data to export');
+    if (!result) {
+      toast.error('No result data loaded yet');
       return;
     }
 
@@ -190,20 +217,20 @@ export default function ResultsAnalytics() {
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 14;
 
-      // ── Brand Header (Simple) ────────────────────────────────────────────
+      // ── Brand Header ────────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
-      doc.setTextColor(30, 30, 30);
+      doc.setTextColor(30, 41, 59);
       doc.text('Fourise Quiz Hub', margin, 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text('Battle Report', margin, 27);
+      doc.setTextColor(100, 116, 139);
+      doc.text('Battle Performance Report', margin, 27);
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(50, 50, 50);
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42);
       doc.text(result.quizTitle || 'Quiz Match', margin, 35);
 
       const dateStr = result.playedAt
@@ -211,20 +238,20 @@ export default function ResultsAnalytics() {
         : new Date().toLocaleString();
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
-      doc.setTextColor(120, 120, 120);
+      doc.setTextColor(100, 116, 139);
       doc.text(dateStr, pageW - margin, 35, { align: 'right' });
 
-      // Add a simple line separator
-      doc.setDrawColor(220, 220, 220);
+      // Add line separator
+      doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.5);
       doc.line(margin, 40, pageW - margin, 40);
 
       let cursorY = 50;
 
-      // ── Summary Cards (Simple) ───────────────────────────────────────────
+      // ── Summary Cards ───────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(40, 40, 40);
+      doc.setTextColor(30, 41, 59);
       doc.text('MATCH SUMMARY', margin, cursorY);
       cursorY += 8;
 
@@ -233,67 +260,69 @@ export default function ResultsAnalytics() {
         ['Total Players', String(totalPlayers)],
         ['Total Questions', String(totalQuestions)],
         ['Avg Correct', `${avgCorrect} / ${totalQuestions}`],
-        ['Lobby Accuracy', `${accuracy}%`],
+        ['Accuracy', `${accuracy}%`],
       ];
 
       const cardW = (pageW - margin * 2 - 12) / summaryItems.length;
       summaryItems.forEach(([label, val], i) => {
         const x = margin + i * (cardW + 3);
         
-        // Simple border
-        doc.setDrawColor(200, 200, 200);
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(x, cursorY, cardW, 18, 1, 1, 'FD');
+        doc.setDrawColor(226, 232, 240);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(x, cursorY, cardW, 18, 1.5, 1.5, 'FD');
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(30, 30, 30);
-        const maxValWidth = cardW - 4;
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+        const maxValWidth = cardW - 3;
         const valLines = doc.splitTextToSize(val, maxValWidth);
-        doc.text(valLines[0], x + cardW / 2, cursorY + 8, { align: 'center' });
+        doc.text(valLines[0] || '', x + cardW / 2, cursorY + 7.5, { align: 'center' });
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(100, 116, 139);
         doc.text(label.toUpperCase(), x + cardW / 2, cursorY + 14, { align: 'center' });
       });
       cursorY += 28;
 
-      // ── Player Rankings Table (Simple) ────────────────────────────────────
+      // ── Player Rankings Table ────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(40, 40, 40);
+      doc.setTextColor(30, 41, 59);
       doc.text('PLAYER RANKINGS', margin, cursorY);
       cursorY += 4;
 
       const rankMedals = ['1st', '2nd', '3rd'];
-      autoTable(doc, {
+      const tableRows = playerSummaries.length > 0
+        ? playerSummaries.map((p) => {
+            const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
+            return [
+              medal,
+              p.name,
+              String(p.correct || 0),
+              String(p.wrong || 0),
+              String(p.unanswered || 0),
+              `${p.totalScore || 0} pts`,
+            ];
+          })
+        : [['-', 'No players recorded', '0', '0', '0', '0 pts']];
+
+      runAutoTable(doc, {
         startY: cursorY,
         head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
-        body: playerSummaries.map((p) => {
-          const notAnswered = p.unanswered;
-          const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
-          return [
-            medal,
-            p.name,
-            String(p.correct || 0),
-            String(p.wrong || 0),
-            String(notAnswered),
-            `${p.totalScore || 0} pts`,
-          ];
-        }),
+        body: tableRows,
         theme: 'grid',
         styles: {
           font: 'helvetica',
           fontSize: 9,
           cellPadding: 4,
           textColor: [50, 50, 50],
-          lineColor: [220, 220, 220],
+          lineColor: [226, 232, 240],
           lineWidth: 0.1,
         },
         headStyles: {
-          fillColor: [240, 240, 240],
-          textColor: [40, 40, 40],
+          fillColor: [241, 245, 249],
+          textColor: [30, 41, 59],
           fontStyle: 'bold',
         },
         columnStyles: {
@@ -303,22 +332,23 @@ export default function ResultsAnalytics() {
           4: { halign: 'center' },
           5: { halign: 'right', fontStyle: 'bold' },
         },
-        alternateRowStyles: { fillColor: [250, 250, 250] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
         rowPageBreak: 'auto',
         margin: { left: margin, right: margin },
       });
 
-      cursorY = doc.lastAutoTable.finalY + 10;
+      const lastY = doc.lastAutoTable ? doc.lastAutoTable.finalY : cursorY + 40;
+      cursorY = lastY + 10;
 
-      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
+      // ── Fastest Solvers ─────────────────────────────────────────
       if (questionHighlights.length > 0) {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.setTextColor(40, 40, 40);
+        doc.setTextColor(30, 41, 59);
         doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
         cursorY += 4;
 
-        autoTable(doc, {
+        runAutoTable(doc, {
           startY: cursorY,
           head: [['Question', 'Fastest Solver', 'Time Taken']],
           body: questionHighlights.map((hl) => [
@@ -332,28 +362,28 @@ export default function ResultsAnalytics() {
             fontSize: 9,
             cellPadding: 4,
             textColor: [50, 50, 50],
-            lineColor: [220, 220, 220],
+            lineColor: [226, 232, 240],
             lineWidth: 0.1,
           },
           headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [40, 40, 40],
+            fillColor: [241, 245, 249],
+            textColor: [30, 41, 59],
             fontStyle: 'bold',
           },
-          alternateRowStyles: { fillColor: [250, 250, 250] },
+          alternateRowStyles: { fillColor: [248, 250, 252] },
           margin: { left: margin, right: margin },
         });
       }
-      // ── Footer (Simple) ──────────────────────────────────────────────────
+
+      // ── Footer ──────────────────────────────────────────────────
       const totalPages = doc.internal.getNumberOfPages();
       for (let pg = 1; pg <= totalPages; pg++) {
         doc.setPage(pg);
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
+        doc.setTextColor(148, 163, 184);
         
-        // Simple line above footer
-        doc.setDrawColor(230, 230, 230);
+        doc.setDrawColor(226, 232, 240);
         doc.setLineWidth(0.5);
         doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
         
@@ -365,10 +395,13 @@ export default function ResultsAnalytics() {
         );
       }
 
-      doc.save(`Fourise_Quiz_Hub_Report_${id}.pdf`);
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
+
+      doc.save(fileName);
       toast.success('PDF report downloaded!');
     } catch (err) {
-      console.error(err);
+      console.error('PDF Export error:', err);
       toast.error('Error generating PDF report');
     }
   };
