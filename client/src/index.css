@@ -57,7 +57,7 @@
 
 @layer base {
   body {
-    @apply bg-background font-inter font-bold antialiased overflow-x-hidden transition-colors duration-300;
+    @apply bg-background font-inter font-bold antialiased overflow-x-clip transition-colors duration-300;
     background-color: var(--background);
     color: var(--text-main);
   }
