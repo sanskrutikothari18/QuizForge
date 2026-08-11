@@ -39,7 +39,8 @@ export default function ResultsAnalytics() {
   const players = result?.players || [];
   const { themeMode, toggleThemeMode } = useTheme();
   const isDark = themeMode !== 'light';
-  const playerSummaries = players.map((player) => {
+  const sortedPlayers = [...players].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+  const playerSummaries = sortedPlayers.map((player, index) => {
     const submittedAnswers = getSubmittedAnswers(player.answers || []);
     const correct = submittedAnswers.filter((answer) => answer.isCorrect).length;
     const wrong = submittedAnswers.filter((answer) => !answer.isCorrect).length;
@@ -48,6 +49,8 @@ export default function ResultsAnalytics() {
 
     return {
       ...player,
+      rank: player.rank || index + 1,
+      name: player.name || player.username || `Player ${index + 1}`,
       correct,
       wrong,
       unanswered,
@@ -58,7 +61,7 @@ export default function ResultsAnalytics() {
 
   // Calculate Metrics
   const totalPlayers = playerSummaries.length;
-  const winnerName = result?.winner || 'No winner registered';
+  const winnerName = result?.winner || (playerSummaries[0]?.name) || 'No winner registered';
   const totalQuestions = result?.totalQuestions || 0;
   const avgCorrect = totalPlayers
     ? Math.round((playerSummaries.reduce((sum, p) => sum + (p.correct || 0), 0) / totalPlayers) * 10) / 10
@@ -95,10 +98,23 @@ export default function ResultsAnalytics() {
     });
   }
 
+  // Safe autoTable Invocation Helper
+  const runAutoTable = (docObj, tableOptions) => {
+    if (typeof autoTable === 'function') {
+      autoTable(docObj, tableOptions);
+    } else if (autoTable && typeof autoTable.default === 'function') {
+      autoTable.default(docObj, tableOptions);
+    } else if (typeof docObj.autoTable === 'function') {
+      docObj.autoTable(tableOptions);
+    } else {
+      console.warn('autoTable plugin method not found directly, attempting fallback');
+    }
+  };
+
   // Export Standings to CSV file
   const handleExportCSV = () => {
-      if (playerSummaries.length === 0) {
-      toast.error('No player data to export');
+    if (!result) {
+      toast.error('No result data loaded yet');
       return;
     }
 
@@ -117,6 +133,7 @@ export default function ResultsAnalytics() {
       // Metadata Header Block
       lines.push('=== FOURISE QUIZ HUB REPORT ===');
       lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Fourise Quiz Hub Match')}`);
+      lines.push(`Category,${escapeCSV(result.quizCategory || result.quiz?.category || 'General')}`);
       lines.push(`Played At,${escapeCSV(result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString())}`);
       lines.push(`Session ID,${escapeCSV(id)}`);
       lines.push(`Total Questions,${escapeCSV(totalQuestions)}`);
@@ -131,18 +148,22 @@ export default function ResultsAnalytics() {
       lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
-      playerSummaries.forEach((p) => {
-        const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
-        lines.push([
-          p.rank,
-          p.name,
-          p.correct,
-          p.wrong,
-          p.unanswered,
-          playerAccuracy,
-          p.totalScore
-        ].map(escapeCSV).join(','));
-      });
+      if (playerSummaries.length > 0) {
+        playerSummaries.forEach((p) => {
+          const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
+          lines.push([
+            p.rank,
+            p.name,
+            p.correct,
+            p.wrong,
+            p.unanswered,
+            playerAccuracy,
+            p.totalScore
+          ].map(escapeCSV).join(','));
+        });
+      } else {
+        lines.push(['-', 'No player data recorded', '0', '0', '0', '0%', '0'].map(escapeCSV).join(','));
+      }
       
       lines.push(''); // blank line divider
       
@@ -160,28 +181,34 @@ export default function ResultsAnalytics() {
       });
 
       // Prepare UTF-8 CSV blob to support Excel compatibility
-      const csvString = lines.join('\n');
+      const csvString = lines.join('\r\n');
       const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvString], { type: 'text/csv;charset=utf-8;' });
       
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.csv`;
+
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `Fourise_Quiz_Hub_Report_${id}.csv`);
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
       
-      toast.success('Report exported successfully!');
+      toast.success('CSV Report exported successfully!');
     } catch (err) {
+      console.error('CSV Export error:', err);
       toast.error('Error generating CSV export');
     }
   };
 
   // ── PDF Export ────────────────────────────────────────────────────────────
   const handleExportPDF = () => {
-    if (playerSummaries.length === 0) {
-      toast.error('No player data to export');
+    if (!result) {
+      toast.error('No result data loaded yet');
       return;
     }
 
@@ -190,20 +217,20 @@ export default function ResultsAnalytics() {
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 14;
 
-      // ── Brand Header (Simple) ────────────────────────────────────────────
+      // ── Brand Header ────────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
-      doc.setTextColor(30, 30, 30);
+      doc.setTextColor(30, 41, 59);
       doc.text('Fourise Quiz Hub', margin, 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text('Battle Report', margin, 27);
+      doc.setTextColor(100, 116, 139);
+      doc.text('Battle Performance Report', margin, 27);
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(50, 50, 50);
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42);
       doc.text(result.quizTitle || 'Quiz Match', margin, 35);
 
       const dateStr = result.playedAt
@@ -211,20 +238,20 @@ export default function ResultsAnalytics() {
         : new Date().toLocaleString();
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
-      doc.setTextColor(120, 120, 120);
+      doc.setTextColor(100, 116, 139);
       doc.text(dateStr, pageW - margin, 35, { align: 'right' });
 
-      // Add a simple line separator
-      doc.setDrawColor(220, 220, 220);
+      // Add line separator
+      doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.5);
       doc.line(margin, 40, pageW - margin, 40);
 
       let cursorY = 50;
 
-      // ── Summary Cards (Simple) ───────────────────────────────────────────
+      // ── Summary Cards ───────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(40, 40, 40);
+      doc.setTextColor(30, 41, 59);
       doc.text('MATCH SUMMARY', margin, cursorY);
       cursorY += 8;
 
@@ -233,67 +260,69 @@ export default function ResultsAnalytics() {
         ['Total Players', String(totalPlayers)],
         ['Total Questions', String(totalQuestions)],
         ['Avg Correct', `${avgCorrect} / ${totalQuestions}`],
-        ['Lobby Accuracy', `${accuracy}%`],
+        ['Accuracy', `${accuracy}%`],
       ];
 
       const cardW = (pageW - margin * 2 - 12) / summaryItems.length;
       summaryItems.forEach(([label, val], i) => {
         const x = margin + i * (cardW + 3);
         
-        // Simple border
-        doc.setDrawColor(200, 200, 200);
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(x, cursorY, cardW, 18, 1, 1, 'FD');
+        doc.setDrawColor(226, 232, 240);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(x, cursorY, cardW, 18, 1.5, 1.5, 'FD');
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(30, 30, 30);
-        const maxValWidth = cardW - 4;
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+        const maxValWidth = cardW - 3;
         const valLines = doc.splitTextToSize(val, maxValWidth);
-        doc.text(valLines[0], x + cardW / 2, cursorY + 8, { align: 'center' });
+        doc.text(valLines[0] || '', x + cardW / 2, cursorY + 7.5, { align: 'center' });
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(100, 116, 139);
         doc.text(label.toUpperCase(), x + cardW / 2, cursorY + 14, { align: 'center' });
       });
       cursorY += 28;
 
-      // ── Player Rankings Table (Simple) ────────────────────────────────────
+      // ── Player Rankings Table ────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(40, 40, 40);
+      doc.setTextColor(30, 41, 59);
       doc.text('PLAYER RANKINGS', margin, cursorY);
       cursorY += 4;
 
       const rankMedals = ['1st', '2nd', '3rd'];
-      autoTable(doc, {
+      const tableRows = playerSummaries.length > 0
+        ? playerSummaries.map((p) => {
+            const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
+            return [
+              medal,
+              p.name,
+              String(p.correct || 0),
+              String(p.wrong || 0),
+              String(p.unanswered || 0),
+              `${p.totalScore || 0} pts`,
+            ];
+          })
+        : [['-', 'No players recorded', '0', '0', '0', '0 pts']];
+
+      runAutoTable(doc, {
         startY: cursorY,
         head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
-        body: playerSummaries.map((p) => {
-          const notAnswered = p.unanswered;
-          const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
-          return [
-            medal,
-            p.name,
-            String(p.correct || 0),
-            String(p.wrong || 0),
-            String(notAnswered),
-            `${p.totalScore || 0} pts`,
-          ];
-        }),
+        body: tableRows,
         theme: 'grid',
         styles: {
           font: 'helvetica',
           fontSize: 9,
           cellPadding: 4,
           textColor: [50, 50, 50],
-          lineColor: [220, 220, 220],
+          lineColor: [226, 232, 240],
           lineWidth: 0.1,
         },
         headStyles: {
-          fillColor: [240, 240, 240],
-          textColor: [40, 40, 40],
+          fillColor: [241, 245, 249],
+          textColor: [30, 41, 59],
           fontStyle: 'bold',
         },
         columnStyles: {
@@ -303,22 +332,23 @@ export default function ResultsAnalytics() {
           4: { halign: 'center' },
           5: { halign: 'right', fontStyle: 'bold' },
         },
-        alternateRowStyles: { fillColor: [250, 250, 250] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
         rowPageBreak: 'auto',
         margin: { left: margin, right: margin },
       });
 
-      cursorY = doc.lastAutoTable.finalY + 10;
+      const lastY = doc.lastAutoTable ? doc.lastAutoTable.finalY : cursorY + 40;
+      cursorY = lastY + 10;
 
-      // ── Fastest Solvers (Simple) ─────────────────────────────────────────
+      // ── Fastest Solvers ─────────────────────────────────────────
       if (questionHighlights.length > 0) {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.setTextColor(40, 40, 40);
+        doc.setTextColor(30, 41, 59);
         doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
         cursorY += 4;
 
-        autoTable(doc, {
+        runAutoTable(doc, {
           startY: cursorY,
           head: [['Question', 'Fastest Solver', 'Time Taken']],
           body: questionHighlights.map((hl) => [
@@ -332,28 +362,28 @@ export default function ResultsAnalytics() {
             fontSize: 9,
             cellPadding: 4,
             textColor: [50, 50, 50],
-            lineColor: [220, 220, 220],
+            lineColor: [226, 232, 240],
             lineWidth: 0.1,
           },
           headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [40, 40, 40],
+            fillColor: [241, 245, 249],
+            textColor: [30, 41, 59],
             fontStyle: 'bold',
           },
-          alternateRowStyles: { fillColor: [250, 250, 250] },
+          alternateRowStyles: { fillColor: [248, 250, 252] },
           margin: { left: margin, right: margin },
         });
       }
-      // ── Footer (Simple) ──────────────────────────────────────────────────
+
+      // ── Footer ──────────────────────────────────────────────────
       const totalPages = doc.internal.getNumberOfPages();
       for (let pg = 1; pg <= totalPages; pg++) {
         doc.setPage(pg);
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
+        doc.setTextColor(148, 163, 184);
         
-        // Simple line above footer
-        doc.setDrawColor(230, 230, 230);
+        doc.setDrawColor(226, 232, 240);
         doc.setLineWidth(0.5);
         doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
         
@@ -365,11 +395,168 @@ export default function ResultsAnalytics() {
         );
       }
 
-      doc.save(`Fourise_Quiz_Hub_Report_${id}.pdf`);
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
+
+      doc.save(fileName);
       toast.success('PDF report downloaded!');
     } catch (err) {
-      console.error(err);
+      console.error('PDF Export error:', err);
       toast.error('Error generating PDF report');
+    }
+  };
+
+  // ── Word (.doc / .docx) Export ────────────────────────────────────────────
+  const handleExportWord = () => {
+    if (!result) {
+      toast.error('No result data loaded yet');
+      return;
+    }
+
+    try {
+      const title = result.quizTitle || 'Fourise Quiz Hub Match';
+      const category = result.quizCategory || result.quiz?.category || 'General';
+      const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
+      
+      const wordHtml = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>${title}</title>
+          <style>
+            body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; margin: 35px; color: #1e293b; line-height: 1.5; }
+            .header-title { font-size: 26px; font-weight: bold; color: #4f46e5; margin-bottom: 2px; }
+            .header-subtitle { font-size: 13px; color: #64748b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+            .quiz-title { font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 15px; margin-bottom: 5px; }
+            .meta-info { font-size: 11px; color: #475569; margin-bottom: 20px; }
+            
+            .section-heading { font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
+            
+            .summary-grid { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 20px; }
+            .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+            .card-val { font-size: 18px; font-weight: bold; color: #0f172a; }
+            .card-lbl { font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-top: 4px; }
+
+            table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+            table.data-table th { background: #4f46e5; color: #ffffff; font-weight: bold; text-align: left; padding: 10px 12px; font-size: 12px; border: 1px solid #4338ca; }
+            table.data-table td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #334155; }
+            table.data-table tr:nth-child(even) td { background: #f8fafc; }
+
+            .footer-note { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header-title">Fourise Quiz Hub</div>
+          <div class="header-subtitle">Battle Performance Report • Generated ${new Date().toLocaleString()}</div>
+
+          <div class="quiz-title">${title}</div>
+          <div class="meta-info">
+            <strong>Category:</strong> ${category} &nbsp;|&nbsp;
+            <strong>Winner:</strong> ${winnerName} &nbsp;|&nbsp;
+            <strong>Played Date:</strong> ${playedDate} &nbsp;|&nbsp;
+            <strong>Session ID:</strong> ${id}
+          </div>
+
+          <div class="section-heading">Match Summary</div>
+          <table class="summary-grid">
+            <tr>
+              <td class="summary-card">
+                <div class="card-val">${winnerName}</div>
+                <div class="card-lbl">Winner</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${totalPlayers}</div>
+                <div class="card-lbl">Total Players</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${totalQuestions}</div>
+                <div class="card-lbl">Total Questions</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${avgCorrect} / ${totalQuestions}</div>
+                <div class="card-lbl">Avg Correct</div>
+              </td>
+              <td class="summary-card">
+                <div class="card-val">${accuracy}%</div>
+                <div class="card-lbl">Accuracy</div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="section-heading">Player Standings</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Player Nickname</th>
+                <th style="text-align: center;">Correct</th>
+                <th style="text-align: center;">Wrong</th>
+                <th style="text-align: center;">Not Answered</th>
+                <th style="text-align: right;">Final Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${playerSummaries.length > 0 ? playerSummaries.map(p => `
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">${p.rank <= 3 ? ['1st', '2nd', '3rd'][p.rank - 1] : '#' + p.rank}</td>
+                  <td style="font-weight: bold;">${p.name}</td>
+                  <td style="text-align: center; color: #16a34a; font-weight: bold;">${p.correct}</td>
+                  <td style="text-align: center; color: #dc2626;">${p.wrong}</td>
+                  <td style="text-align: center; color: #d97706;">${p.unanswered}</td>
+                  <td style="text-align: right; font-weight: bold; color: #4f46e5;">${p.totalScore} pts</td>
+                </tr>
+              `).join('') : '<tr><td colspan="6" style="text-align: center;">No player data recorded</td></tr>'}
+            </tbody>
+          </table>
+
+          ${questionHighlights.length > 0 ? `
+            <div class="section-heading">Fastest Correct Solvers</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Question</th>
+                  <th>Fastest Solver</th>
+                  <th style="text-align: right;">Time Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${questionHighlights.map(hl => `
+                  <tr>
+                    <td style="font-weight: bold;">Q${hl.questionNumber}</td>
+                    <td>${hl.fastestPlayer ? hl.fastestPlayer.name : '—'}</td>
+                    <td style="text-align: right; font-weight: bold;">${hl.fastestPlayer ? hl.fastestPlayer.timeTaken + 's' : 'N/A'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+
+          <div class="footer-note">
+            Fourise Quiz Hub • Official Multiplayer Battle Report
+          </div>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.doc`;
+
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      toast.success('Word report downloaded successfully!');
+    } catch (err) {
+      console.error('Word Export error:', err);
+      toast.error('Error generating Word report');
     }
   };
 
@@ -433,11 +620,15 @@ export default function ResultsAnalytics() {
 
               <div className="flex flex-wrap gap-2">
                 <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                  <Download className="h-4 w-4" />
+                  <FileSpreadsheet className="h-4 w-4" />
                   Export CSV
                 </button>
-                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90">
-                  <FileText className="h-4 w-4" />
+                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-blue-900/40 text-blue-200 hover:bg-blue-900/60 border border-blue-700/50' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
+                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  Export Word
+                </button>
+                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 shadow-md">
+                  <Download className="h-4 w-4" />
                   Export PDF
                 </button>
               </div>

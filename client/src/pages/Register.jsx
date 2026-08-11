@@ -68,15 +68,13 @@ export default function Register() {
       });
 
       if (response.success) {
-        setIsRegistered(true);
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        toast.success('Account created successfully!');
-        
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1500);
+        navigate('/dashboard', {
+          state: { welcomeMsg: `Welcome to QuizForge, ${response.user.name || 'User'}!` },
+          replace: true
+        });
       } else {
         toast.error(response.message || 'Registration failed.');
       }

@@ -30,10 +30,19 @@ API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-                window.location.href = '/login?expired=true';
+            const reqUrl = error.config?.url || '';
+            const isPublicAuthRoute = reqUrl.includes('/auth/login') ||
+                                      reqUrl.includes('/auth/register') ||
+                                      reqUrl.includes('/auth/forgot-password') ||
+                                      reqUrl.includes('/auth/verify-security-answer') ||
+                                      reqUrl.includes('/auth/reset-password');
+
+            if (!isPublicAuthRoute) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+                    window.location.href = '/login?expired=true';
+                }
             }
         }
         return Promise.reject(error);
