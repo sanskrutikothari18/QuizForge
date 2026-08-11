@@ -55,7 +55,6 @@ export default function Navbar() {
     { label: 'Home', hash: '#hero' },
     { label: 'Features', hash: '#features' },
     { label: 'Pricing', hash: '#pricing' },
-    { label: 'How It Works', hash: '#how-it-works' },
     { label: 'FAQs', hash: '#faq' },
   ];
 

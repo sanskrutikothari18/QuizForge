@@ -52,19 +52,19 @@ export default function Hero() {
           className="mx-auto mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 px-4 sm:px-0"
         >
           <Link
-            to="/login"
+            to="/register"
             className="btn-premium btn-primary-gradient px-8 py-4 flex items-center justify-center gap-2.5 group text-base font-extrabold shadow-premium-glow w-full sm:w-auto rounded-2xl"
           >
-            <span>Start Free</span>
+            <span>Create Quiz</span>
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
-          <a
-            href="#how-it-works"
+          <Link
+            to="/join"
             className="btn-premium btn-secondary-gradient px-8 py-4 flex items-center justify-center gap-2.5 text-base font-extrabold shadow-secondary-glow w-full sm:w-auto rounded-2xl"
           >
             <Play className="h-4 w-4 fill-current text-secondary" />
-            <span>See How It Work</span>
-          </a>
+            <span>Join Game</span>
+          </Link>
         </motion.div>
 
         {/* Key Metrics / Trust Bar */}

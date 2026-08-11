@@ -61,16 +61,16 @@ export default function HeroSection() {
             to="/register"
             className="btn-premium btn-primary-gradient px-8 py-4 flex items-center justify-center gap-2.5 text-base font-extrabold text-white shadow-premium-glow hover:scale-105 active:scale-95 transition-all w-full sm:w-auto rounded-2xl"
           >
-            <span>Start Free</span>
+            <span>Create Quiz</span>
             <ArrowRight className="h-5 w-5" />
           </Link>
-          <a
-            href="#how-it-works"
+          <Link
+            to="/join"
             className="btn-premium btn-secondary-gradient px-8 py-4 flex items-center justify-center gap-2.5 text-base font-extrabold text-white shadow-secondary-glow hover:scale-105 active:scale-95 transition-all w-full sm:w-auto rounded-2xl"
           >
             <Play className="h-4 w-4 fill-current text-secondary" />
-            <span>See How It Work</span>
-          </a>
+            <span>Join Game</span>
+          </Link>
         </motion.div>
 
         {/* Requested Stats Bar Below Action Buttons */}
