@@ -599,14 +599,14 @@ export default function AnswerResult() {
                   <button
                     onClick={handleNextStep}
                     disabled={isLoading || isShowingLeaderboard}
-                    className="flex-1 btn-premium btn-glass py-3 flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg hover:shadow-purple-500/25 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer border border-purple-400/30"
                   >
                     {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin text-white" />
                     ) : (
                       <>
-                        <span>{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        <span className="text-white font-extrabold">{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-white" />
                       </>
                     )}
                   </button>

@@ -299,8 +299,8 @@ export default function JoinGame() {
                   >
                     <Avatar emoji={avatar} className="w-10 h-10 object-contain drop-shadow-md" />
                     {selectedAvatar === avatar && (
-                      <div className="absolute -top-2 -right-2 bg-white rounded-full p-0.5 shadow-md">
-                        <svg className="w-4 h-4 text-[#46178F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full p-1 shadow-lg ring-2 ring-white dark:ring-gray-900 flex items-center justify-center">
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>

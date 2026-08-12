@@ -78,7 +78,7 @@ export default function Navbar() {
         borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
       }}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
         
         {/* Brand Logo - Leftmost */}
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
