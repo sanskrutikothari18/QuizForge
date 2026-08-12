@@ -20,73 +20,126 @@ export default function Footer() {
 
   return (
     <footer style={{ background: 'var(--footer-bg)', borderTop: '1px solid var(--footer-border)' }} className="relative z-10 w-full backdrop-blur-xl transition-colors duration-300">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-
-        {/* Minimal Compact Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pb-3 border-b border-white/10 text-left">
-
-          {/* Column 1: Brand */}
-          <div className="space-y-1">
-            <Link to="/" className="inline-flex items-center gap-2 transition-transform active:scale-95">
-              <Logo className="h-6 w-6 sm:h-7 sm:w-7" />
-              <span className="font-outfit text-base font-black tracking-tight" style={{ color: 'var(--text-heading)' }}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        
+        {/* 4 Column Layout Matching Reference Image */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-8 border-b border-white/10 text-left">
+          
+          {/* Column 1: Brand Logo & Description */}
+          <div className="space-y-3 text-left">
+            <Link to="/" className="inline-flex items-center justify-start gap-2.5 transition-transform active:scale-95">
+              <Logo className="h-7 w-7" />
+              <span className="font-outfit text-lg font-bold tracking-tight text-primary">
                 Fourise <span className="text-secondary">Quiz Hub</span>
               </span>
             </Link>
-
-            <p className="text-[11px] leading-tight font-medium" style={{ color: 'var(--text-muted)' }}>
-              Interactive quizzes, real-time multiplayer challenges & performance analytics.
+            <p className="text-xs leading-relaxed text-gray-400 max-w-xs text-left">
+              Fourise Quiz Hub is an interactive digital quiz platform offering AI quiz generation, real-time multiplayer challenges, and comprehensive analytics.
             </p>
           </div>
 
-          {/* Column 2: Navigation */}
-          <div className="space-y-1">
-            <h4 className="font-outfit text-xs font-extrabold uppercase tracking-wider text-white">
-              Navigation
+          {/* Column 2: Get in Touch */}
+          <div className="space-y-3 text-left">
+            <h4 className="font-outfit text-sm font-bold text-primary tracking-wide text-left">
+              Get in Touch
             </h4>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold text-gray-400">
-              <button onClick={() => handleNavClick('#features')} className="hover:text-primary transition-colors cursor-pointer">
-                Features
-              </button>
-              <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer">
-                How It Works
-              </button>
-              <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer">
-                Pricing Plans
-              </button>
-              <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer">
-                Help & FAQs
-              </button>
-            </div>
+            <ul className="space-y-2.5 text-xs text-gray-300 text-left">
+              <li className="flex items-start justify-start gap-2.5 text-left">
+                <span className="text-primary mt-0.5 shrink-0">📍</span>
+                <span>8819 Ohio St. South Gate, CA 90280</span>
+              </li>
+              <li className="flex items-center justify-start gap-2.5 text-left">
+                <Mail className="h-4 w-4 text-primary shrink-0" />
+                <a href="mailto:support@fourisequizhub.com" className="hover:text-primary transition-colors">
+                  support@fourisequizhub.com
+                </a>
+              </li>
+              <li className="flex items-center justify-start gap-2.5 text-left">
+                <span className="text-primary shrink-0">📞</span>
+                <a href="tel:+13866883295" className="hover:text-primary transition-colors">
+                  +1 386-688-3295
+                </a>
+              </li>
+            </ul>
           </div>
 
-          {/* Column 3: Quick Links & Contact */}
-          <div className="space-y-1">
-            <h4 className="font-outfit text-xs font-extrabold uppercase tracking-wider text-white">
+          {/* Column 3: Features & Services */}
+          <div className="space-y-3 text-left">
+            <h4 className="font-outfit text-sm font-bold text-primary tracking-wide text-left">
+              Features
+            </h4>
+            <ul className="space-y-2 text-xs text-gray-400 text-left">
+              <li>
+                <button onClick={() => handleNavClick('#features')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  AI Quiz Generator
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#features')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  Live Multiplayer
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  Real-time Analytics
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  Pro Subscriptions
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  SEO & Search Integration
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Quick Links / Company */}
+          <div className="space-y-3 text-left">
+            <h4 className="font-outfit text-sm font-bold text-primary tracking-wide text-left">
               Quick Links
             </h4>
-            <div className="flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[11px] font-semibold text-gray-400">
-              <Link to="/join" className="hover:text-secondary transition-colors">
-                Join Game with Code
-              </Link>
-              <Link to="/login" className="hover:text-secondary transition-colors">
-                Create Quiz
-              </Link>
-              <Link to="/dashboard" className="hover:text-secondary transition-colors">
-                Dashboard
-              </Link>
-              <a href="mailto:support@fourisequizhub.com" className="hover:text-accent transition-colors flex items-center gap-1">
-                <Mail className="h-3 w-3" />
-                <span>support@fourisequizhub.com</span>
-              </a>
-            </div>
+            <ul className="space-y-2 text-xs text-gray-400 text-left">
+              <li>
+                <Link to="/join" className="hover:text-primary transition-colors text-left">
+                  Join Game Code
+                </Link>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  How It Works
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  Pricing Plans
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left">
+                  Help & FAQs
+                </button>
+              </li>
+              <li>
+                <Link to="/login" className="hover:text-primary transition-colors text-left">
+                  Login / Register
+                </Link>
+              </li>
+            </ul>
           </div>
 
         </div>
 
         {/* Bottom copyright row */}
-        <div className="pt-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-medium text-gray-400">
-          <p>© {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.</p>
+        <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-500 text-left">
+          <p className="text-left">© {new Date().getFullYear()} Fourise Quiz Hub. All rights reserved.</p>
+          <div className="flex gap-4 justify-start text-left">
+            <span className="hover:text-gray-400 cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-gray-400 cursor-pointer">Terms of Service</span>
+          </div>
         </div>
 
       </div>
