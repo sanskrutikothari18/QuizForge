@@ -15,19 +15,19 @@ function CellValue({ value, variant }) {
     return value ? (
       <Check className="h-4 w-4 text-emerald-500 mx-auto" />
     ) : (
-      <X className="h-3.5 w-3.5 text-gray-400 mx-auto" />
+      <X className="h-3.5 w-3.5 text-[var(--text-muted)] mx-auto" />
     );
   }
 
   if (variant === 'pro') {
-    return <span className="text-sky-500 font-bold">{value}</span>;
+    return <span className="text-[var(--theme-primary)] font-bold">{value}</span>;
   }
 
   if (variant === 'enterprise') {
-    return <span className="text-indigo-500 font-bold">{value}</span>;
+    return <span className="text-[var(--theme-secondary)] font-bold">{value}</span>;
   }
 
-  return <span className="text-gray-600">{value}</span>;
+  return <span className="text-[var(--text-main)]">{value}</span>;
 }
 
 export default function PlanComparisonTable() {

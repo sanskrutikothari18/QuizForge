@@ -291,12 +291,12 @@ export default function PricingSection() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-white/10 bg-black/40 backdrop-blur-xl">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-white/10 bg-[var(--card-bg)] backdrop-blur-xl">
                 <div>
-                  <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-white">
+                  <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[var(--text-heading)]">
                     Detailed Plan Comparison
                   </h2>
-                  <p className="mt-1 text-xs sm:text-sm text-gray-400">
+                  <p className="mt-1 text-xs sm:text-sm text-[var(--text-muted)]">
                     Compare features side-by-side to choose the best plan for your needs.
                   </p>
                 </div>
@@ -304,7 +304,7 @@ export default function PricingSection() {
                   onClick={() => setShowPlanDetails(false)}
                   className="p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
                 >
-                  <X className="h-5 w-5 text-gray-400 hover:text-white" />
+                  <X className="h-5 w-5 text-[var(--text-muted)] hover:text-[var(--text-heading)]" />
                 </button>
               </div>
 
@@ -316,8 +316,8 @@ export default function PricingSection() {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-6 border-t border-white/10 bg-white/5">
-                <p className="text-center text-xs text-gray-400">
+              <div className="p-6 border-t border-white/10 bg-[var(--glass-panel-bg)]">
+                <p className="text-center text-xs text-[var(--text-muted)]">
                   Need help choosing? <Link to="/contact" className="text-primary hover:underline">Contact our sales team</Link>
                 </p>
               </div>

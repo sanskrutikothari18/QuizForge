@@ -14,10 +14,10 @@ export default function PricingComparison() {
         transition={{ duration: 0.4 }}
         className="text-center mb-4"
       >
-        <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[var(--text-heading)] tracking-tight">
           Detailed Plan Comparison
         </h2>
-        <p className="mt-1.5 text-xs sm:text-sm text-gray-400 max-w-md mx-auto">
+        <p className="mt-1.5 text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
           Compare features side-by-side to choose the best plan for your needs.
         </p>
       </motion.div>

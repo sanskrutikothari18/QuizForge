@@ -1285,13 +1285,13 @@ html, body {
   width: 100%;
   border-collapse: collapse;
   min-width: 480px;
-  background: #ffffff;
-  color: #1e1840;
+  background: var(--card-bg);
+  color: var(--text-heading);
 }
 
 .plan-table thead tr {
-  border-bottom: 2px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--glass-panel-border);
+  background: var(--card-bg);
 }
 
 .plan-table th {
@@ -1303,20 +1303,20 @@ html, body {
 }
 
 .plan-table th.plan-free {
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .plan-table th.plan-pro {
-  color: #0ea5e9;
+  color: var(--theme-primary);
 }
 
 .plan-table th.plan-enterprise {
-  color: #6366f1;
+  color: var(--theme-secondary);
 }
 
 .plan-table tbody tr {
   transition: background-color 0.2s ease;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--glass-panel-border);
 }
 
 .plan-table tbody tr:last-child {
@@ -1324,7 +1324,7 @@ html, body {
 }
 
 .plan-table tbody tr:hover {
-  background: #f9fafb;
+  background: var(--glass-panel-bg-hover);
 }
 
 .plan-table td {
@@ -1335,7 +1335,7 @@ html, body {
 
 .plan-table td.feature-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-main);
 }
 
 .plan-table td.text-center {
@@ -1344,12 +1344,12 @@ html, body {
 
 .plan-table td.pro-col {
   font-weight: 700;
-  color: #0ea5e9;
+  color: var(--theme-primary);
 }
 
 .plan-table td.enterprise-col {
   font-weight: 700;
-  color: #6366f1;
+  color: var(--theme-secondary);
 }
 
 /* ══════════════════════════════════════════════════════════
