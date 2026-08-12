@@ -1088,14 +1088,6 @@ html, body {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  /* Footer stack properly */
-  footer .flex {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-  }
 }
 
 /* Extra small screens (320px+) */
