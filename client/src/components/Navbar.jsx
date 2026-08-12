@@ -15,6 +15,29 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const headerRef = React.useRef(null);
+
+  // Measure dynamic header height and update CSS custom property --main-header-height
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = headerRef.current.offsetHeight;
+        document.documentElement.style.setProperty('--main-header-height', `${height}px`);
+      }
+    };
+
+    updateHeaderHeight();
+    const observer = new ResizeObserver(updateHeaderHeight);
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+    window.addEventListener('resize', updateHeaderHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, [mobileMenuOpen, token, location.pathname]);
 
   // Monitor scroll position for active section highlighting & navbar blur depth
   useEffect(() => {
@@ -72,7 +95,8 @@ export default function Navbar() {
 
   return (
     <header 
-      className="sticky top-0 z-50 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300"
+      ref={headerRef}
+      className="fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300"
       style={{
         backgroundColor: isLight ? 'rgba(255, 255, 255, 0.96)' : 'rgba(10, 10, 15, 0.96)',
         borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
@@ -82,8 +106,8 @@ export default function Navbar() {
         
         {/* Brand Logo - Leftmost */}
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-          <Logo className="h-8 w-8 sm:h-10 sm:w-10" />
-          <span className="font-outfit text-base sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-heading)' }}>
+          <Logo className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
+          <span className="font-outfit text-base sm:text-xl font-bold tracking-tight shrink-0 whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
             Fourise <span className="text-secondary">Quiz Hub</span>
           </span>
         </Link>
@@ -92,17 +116,38 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           {token ? (
             <>
-              <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-primary" style={{ color: 'var(--text-main)' }}>
+              <Link 
+                to="/dashboard" 
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
+                  location.pathname === '/dashboard' 
+                    ? 'text-primary bg-primary/10 border border-primary/25 shadow-sm' 
+                    : isLight ? 'text-gray-700 hover:text-primary hover:bg-purple-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
                 <LayoutDashboard className="h-4 w-4 text-primary" />
-                Dashboard
+                <span>Dashboard</span>
               </Link>
-              <Link to="/quiz/my" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-secondary" style={{ color: 'var(--text-main)' }}>
+              <Link 
+                to="/quiz/my" 
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
+                  location.pathname === '/quiz/my' 
+                    ? 'text-secondary bg-secondary/10 border border-secondary/25 shadow-sm' 
+                    : isLight ? 'text-gray-700 hover:text-secondary hover:bg-cyan-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
                 <BookOpen className="h-4 w-4 text-secondary" />
-                My Quizzes
+                <span>My Quizzes</span>
               </Link>
-              <Link to="/quiz/create" className="flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-accent" style={{ color: 'var(--text-main)' }}>
+              <Link 
+                to="/quiz/create" 
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
+                  location.pathname === '/quiz/create' 
+                    ? 'text-accent bg-accent/10 border border-accent/25 shadow-sm' 
+                    : isLight ? 'text-gray-700 hover:text-accent hover:bg-pink-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
                 <PlusCircle className="h-4 w-4 text-accent" />
-                Create Quiz
+                <span>Create Quiz</span>
               </Link>
             </>
           ) : (

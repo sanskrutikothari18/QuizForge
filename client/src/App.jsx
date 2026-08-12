@@ -6,7 +6,6 @@ import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Sidebar from './components/Sidebar';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -63,8 +62,6 @@ function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
 
-  const token = localStorage.getItem('token');
-
   // Hide Navbar & Footer during gameplay for full immersion
   const isGameplayView = [
     '/live', 
@@ -74,19 +71,12 @@ function AnimatedRoutes() {
     '/final-result'
   ].some(path => location.pathname.startsWith(path));
 
-  // Scope Sidebar layout ONLY to Create Quiz and Edit Quiz pages as requested
-  const isCreateOrEditQuiz = location.pathname.startsWith('/quiz/create') || location.pathname.startsWith('/quiz/edit');
-  const useSidebarLayout = Boolean(token && isCreateOrEditQuiz);
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-200">
-      {/* Sidebar Layout ONLY on Create Quiz & Edit Quiz pages */}
-      {useSidebarLayout && <Sidebar />}
+      {/* Standard Top Navbar for all non-gameplay pages */}
+      {!isGameplayView && <Navbar />}
 
-      {/* Standard Top Navbar for all other non-gameplay pages */}
-      {!useSidebarLayout && !isGameplayView && <Navbar />}
-
-      <main className={`flex-1 flex flex-col ${useSidebarLayout ? 'md:pl-64' : ''}`}>
+      <main className={`flex-1 flex flex-col ${!isGameplayView ? 'pt-[var(--main-header-height,64px)]' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage />} />
@@ -111,8 +101,8 @@ function AnimatedRoutes() {
         </AnimatePresence>
       </main>
 
-      {/* Footer for Public Visitors */}
-      {!useSidebarLayout && !isGameplayView && <Footer />}
+      {/* Footer for non-gameplay pages */}
+      {!isGameplayView && <Footer />}
     </div>
   );
 }

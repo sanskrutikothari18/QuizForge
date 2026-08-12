@@ -30,7 +30,9 @@
   --theme-bg: #000000;
   --theme-card-bg: rgba(255, 255, 255, 0.05);
   --theme-text: #e2e8f0;
-  --theme-font: 'Inter', sans-serif;
+  /* Header Height Tokens */
+  --main-header-height: 64px;
+  --page-header-height: 68px;
 }
 
 .light {
@@ -86,6 +88,27 @@
   border-color: var(--glass-panel-border-hover);
   box-shadow: var(--glass-panel-shadow-hover);
   transform: translateY(-4px);
+}
+
+/* Reusable Secondary Section Header Utility */
+.secondary-section-header {
+  @apply flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-5 gap-4;
+}
+
+.secondary-section-header .section-title-group {
+  @apply text-left flex flex-col justify-center;
+}
+
+.secondary-section-header .section-title {
+  @apply font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2.5;
+}
+
+.secondary-section-header .section-subtitle {
+  @apply text-xs text-gray-400 mt-1 font-normal leading-relaxed;
+}
+
+.secondary-section-header .section-action-group {
+  @apply flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl shrink-0 self-start sm:self-center;
 }
 
 /* Gradient Text */

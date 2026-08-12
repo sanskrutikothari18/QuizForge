@@ -3,7 +3,7 @@ import React from 'react';
 export default function Logo({ className = 'h-10 w-10', ...props }) {
   return (
     <svg
-      className={className}
+      className={`shrink-0 ${className}`}
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

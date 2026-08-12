@@ -36,6 +36,27 @@ export default function CreateQuiz() {
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
 
+  const pageHeaderRef = useRef(null);
+
+  // Measure dynamic page header height and update CSS property --page-header-height
+  useEffect(() => {
+    const updatePageHeaderHeight = () => {
+      if (pageHeaderRef.current) {
+        document.documentElement.style.setProperty('--page-header-height', `${pageHeaderRef.current.offsetHeight}px`);
+      }
+    };
+    updatePageHeaderHeight();
+    const observer = new ResizeObserver(updatePageHeaderHeight);
+    if (pageHeaderRef.current) {
+      observer.observe(pageHeaderRef.current);
+    }
+    window.addEventListener('resize', updatePageHeaderHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updatePageHeaderHeight);
+    };
+  }, []);
+
   // Sticky toolbar scroll tracking
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -273,18 +294,19 @@ export default function CreateQuiz() {
 
         {/* ACTION TOOLBAR (PAGE TITLE & SAVE/LAUNCH ACTIONS) */}
         <div 
-          className="sticky top-0 z-30 w-full border-b backdrop-blur-xl shadow-md transition-colors duration-300 px-4 sm:px-6 lg:px-8 py-3"
+          ref={pageHeaderRef}
+          className="fixed top-[var(--main-header-height,64px)] left-0 right-0 z-40 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300 py-3 sm:py-3.5"
           style={{
             backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
             borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
           }}
         >
-          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="mx-auto max-w-5xl px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4">
             <div className="flex items-center gap-3">
               <button 
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
               >
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
@@ -294,7 +316,7 @@ export default function CreateQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0">
                 {/* Hidden File Input for Excel/CSV */}
                 <input
                   type="file"
@@ -305,10 +327,10 @@ export default function CreateQuiz() {
                 />
                 <label
                   htmlFor="excel-file-upload"
-                  className="btn-premium px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
                 >
-                  <FileSpreadsheet className="h-4 w-4" />
+                  <FileSpreadsheet className="h-4 w-4 shrink-0" />
                   <span>Upload Excel/CSV</span>
                 </label>
                 
@@ -341,20 +363,20 @@ export default function CreateQuiz() {
                       toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                     }
                   }, onInvalid)}
-                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
                 >
-                  <Play className="h-4 w-4 fill-current" />
+                  <Play className="h-4 w-4 fill-current shrink-0" />
                   <span>Launch Quiz</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit, onInvalid)}
-                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
-                  <Save className="h-4 w-4" />
+                  <Save className="h-4 w-4 shrink-0" />
                   <span>Save Quiz</span>
                 </button>
               </div>
@@ -362,7 +384,7 @@ export default function CreateQuiz() {
           </div>
 
         {/* MAIN FORM CONTENT */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-6 sm:pt-8 pb-12 px-4 sm:px-8">
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-[calc(var(--page-header-height,68px)+1.5rem)] pb-12 px-4 sm:px-8">
           
         {/* EDITOR LAYOUT */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
@@ -429,17 +451,17 @@ export default function CreateQuiz() {
 
               {/* ── ADVANCED QUIZ BACKGROUND CUSTOMIZATION ── */}
               <div className="glass-panel rounded-3xl overflow-hidden relative border border-white/5 p-6 sm:p-8 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-4 gap-4">
-                  <div className="text-left">
-                    <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                      <Image className="h-4.5 w-4.5 text-primary" />
-                      Quiz Background Settings
+                <div className="secondary-section-header">
+                  <div className="section-title-group">
+                    <h3 className="section-title">
+                      <Image className="h-4.5 w-4.5 text-primary shrink-0" />
+                      <span>Quiz Background Settings</span>
                     </h3>
-                    <p className="text-xs text-gray-400 mt-1">Configure global and question-specific visual styling.</p>
+                    <p className="section-subtitle">Configure global and question-specific visual styling.</p>
                   </div>
                   
                   {/* Mode Toggle Switch */}
-                  <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
+                  <div className="section-action-group">
                     <span className="text-xs font-bold text-gray-300 text-left">Same background for all questions</span>
                     <button
                       type="button"

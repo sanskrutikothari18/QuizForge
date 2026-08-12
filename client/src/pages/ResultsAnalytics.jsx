@@ -9,6 +9,10 @@ import {
   Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText, Crown, Medal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { 
+  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, 
+  WidthType, AlignmentType, HeadingLevel, ShadingType 
+} from 'docx';
 import AnimatedPage from '../components/AnimatedPage';
 import { getResultBySession } from '../services/resultService';
 
@@ -406,144 +410,275 @@ export default function ResultsAnalytics() {
     }
   };
 
-  // ── Word (.doc / .docx) Export ────────────────────────────────────────────
-  const handleExportWord = () => {
+  // ── Native Word (.docx) Export ────────────────────────────────────────────
+  const handleExportWord = async () => {
     if (!result) {
       toast.error('No result data loaded yet');
       return;
     }
 
     try {
+      toast.loading('Generating Word document...', { id: 'export-word' });
+
       const title = result.quizTitle || 'Fourise Quiz Hub Match';
       const category = result.quizCategory || result.quiz?.category || 'General';
       const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
-      
-      const wordHtml = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-          <meta charset='utf-8'>
-          <title>${title}</title>
-          <style>
-            body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; margin: 35px; color: #1e293b; line-height: 1.5; }
-            .header-title { font-size: 26px; font-weight: bold; color: #4f46e5; margin-bottom: 2px; }
-            .header-subtitle { font-size: 13px; color: #64748b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-            .quiz-title { font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 15px; margin-bottom: 5px; }
-            .meta-info { font-size: 11px; color: #475569; margin-bottom: 20px; }
-            
-            .section-heading { font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
-            
-            .summary-grid { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 20px; }
-            .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
-            .card-val { font-size: 18px; font-weight: bold; color: #0f172a; }
-            .card-lbl { font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-top: 4px; }
 
-            table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
-            table.data-table th { background: #4f46e5; color: #ffffff; font-weight: bold; text-align: left; padding: 10px 12px; font-size: 12px; border: 1px solid #4338ca; }
-            table.data-table td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #334155; }
-            table.data-table tr:nth-child(even) td { background: #f8fafc; }
+      const wordDoc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            // Title Header
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [
+                new TextRun({
+                  text: 'Fourise Quiz Hub',
+                  bold: true,
+                  size: 32,
+                  color: '4F46E5',
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Battle Performance Report • Generated ${new Date().toLocaleString()}`,
+                  size: 18,
+                  color: '64748B',
+                }),
+              ],
+            }),
+            new Paragraph({ text: '' }),
 
-            .footer-note { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="header-title">Fourise Quiz Hub</div>
-          <div class="header-subtitle">Battle Performance Report • Generated ${new Date().toLocaleString()}</div>
+            // Quiz Info
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: title,
+                  bold: true,
+                  size: 24,
+                  color: '0F172A',
+                }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Category: `, bold: true, size: 20 }),
+                new TextRun({ text: `${category}   |   `, size: 20 }),
+                new TextRun({ text: `Winner: `, bold: true, size: 20 }),
+                new TextRun({ text: `${winnerName}   |   `, size: 20 }),
+                new TextRun({ text: `Played Date: `, bold: true, size: 20 }),
+                new TextRun({ text: `${playedDate}`, size: 20 }),
+              ],
+            }),
+            new Paragraph({ text: '' }),
 
-          <div class="quiz-title">${title}</div>
-          <div class="meta-info">
-            <strong>Category:</strong> ${category} &nbsp;|&nbsp;
-            <strong>Winner:</strong> ${winnerName} &nbsp;|&nbsp;
-            <strong>Played Date:</strong> ${playedDate} &nbsp;|&nbsp;
-            <strong>Session ID:</strong> ${id}
-          </div>
+            // Section 1: Summary Table
+            new Paragraph({
+              heading: HeadingLevel.HEADING_2,
+              children: [
+                new TextRun({
+                  text: 'MATCH SUMMARY',
+                  bold: true,
+                  size: 22,
+                  color: '334155',
+                }),
+              ],
+            }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: winnerName, bold: true, size: 20 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'WINNER', size: 14, color: '64748B' })] }),
+                      ],
+                      shading: { fill: 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(totalPlayers), bold: true, size: 20 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'TOTAL PLAYERS', size: 14, color: '64748B' })] }),
+                      ],
+                      shading: { fill: 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(totalQuestions), bold: true, size: 20 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'TOTAL QUESTIONS', size: 14, color: '64748B' })] }),
+                      ],
+                      shading: { fill: 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${avgCorrect} / ${totalQuestions}`, bold: true, size: 20 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'AVG CORRECT', size: 14, color: '64748B' })] }),
+                      ],
+                      shading: { fill: 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${accuracy}%`, bold: true, size: 20 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'ACCURACY', size: 14, color: '64748B' })] }),
+                      ],
+                      shading: { fill: 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new Paragraph({ text: '' }),
 
-          <div class="section-heading">Match Summary</div>
-          <table class="summary-grid">
-            <tr>
-              <td class="summary-card">
-                <div class="card-val">${winnerName}</div>
-                <div class="card-lbl">Winner</div>
-              </td>
-              <td class="summary-card">
-                <div class="card-val">${totalPlayers}</div>
-                <div class="card-lbl">Total Players</div>
-              </td>
-              <td class="summary-card">
-                <div class="card-val">${totalQuestions}</div>
-                <div class="card-lbl">Total Questions</div>
-              </td>
-              <td class="summary-card">
-                <div class="card-val">${avgCorrect} / ${totalQuestions}</div>
-                <div class="card-lbl">Avg Correct</div>
-              </td>
-              <td class="summary-card">
-                <div class="card-val">${accuracy}%</div>
-                <div class="card-lbl">Accuracy</div>
-              </td>
-            </tr>
-          </table>
+            // Section 2: Player Standings Table
+            new Paragraph({
+              heading: HeadingLevel.HEADING_2,
+              children: [
+                new TextRun({
+                  text: 'PLAYER STANDINGS',
+                  bold: true,
+                  size: 22,
+                  color: '334155',
+                }),
+              ],
+            }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: ['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score'].map((headerText, i) => 
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          alignment: i === 1 ? AlignmentType.LEFT : i === 5 ? AlignmentType.RIGHT : AlignmentType.CENTER,
+                          children: [new TextRun({ text: headerText, bold: true, color: 'FFFFFF', size: 18 })],
+                        }),
+                      ],
+                      shading: { fill: '4F46E5', type: ShadingType.CLEAR, color: 'auto' },
+                    })
+                  ),
+                }),
+                ...(playerSummaries.length > 0
+                  ? playerSummaries.map((p, idx) => 
+                      new TableRow({
+                        children: [
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: p.rank <= 3 ? ['1st', '2nd', '3rd'][p.rank - 1] : `#${p.rank}`, bold: true, size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: p.name, bold: true, size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(p.correct), bold: true, color: '16A34A', size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(p.wrong), color: 'DC2626', size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(p.unanswered), color: 'D97706', size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: `${p.totalScore} pts`, bold: true, color: '4F46E5', size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                        ],
+                      })
+                    )
+                  : [
+                      new TableRow({
+                        children: [
+                          new TableCell({
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'No player data recorded', size: 18 })] })],
+                            columnSpan: 6,
+                          }),
+                        ],
+                      }),
+                    ]
+                ),
+              ],
+            }),
+            new Paragraph({ text: '' }),
 
-          <div class="section-heading">Player Standings</div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 50px; text-align: center;">Rank</th>
-                <th>Player Nickname</th>
-                <th style="text-align: center;">Correct</th>
-                <th style="text-align: center;">Wrong</th>
-                <th style="text-align: center;">Not Answered</th>
-                <th style="text-align: right;">Final Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${playerSummaries.length > 0 ? playerSummaries.map(p => `
-                <tr>
-                  <td style="text-align: center; font-weight: bold;">${p.rank <= 3 ? ['1st', '2nd', '3rd'][p.rank - 1] : '#' + p.rank}</td>
-                  <td style="font-weight: bold;">${p.name}</td>
-                  <td style="text-align: center; color: #16a34a; font-weight: bold;">${p.correct}</td>
-                  <td style="text-align: center; color: #dc2626;">${p.wrong}</td>
-                  <td style="text-align: center; color: #d97706;">${p.unanswered}</td>
-                  <td style="text-align: right; font-weight: bold; color: #4f46e5;">${p.totalScore} pts</td>
-                </tr>
-              `).join('') : '<tr><td colspan="6" style="text-align: center;">No player data recorded</td></tr>'}
-            </tbody>
-          </table>
+            // Section 3: Question Highlights Table
+            ...(questionHighlights.length > 0 ? [
+              new Paragraph({
+                heading: HeadingLevel.HEADING_2,
+                children: [
+                  new TextRun({
+                    text: 'FASTEST CORRECT SOLVERS',
+                    bold: true,
+                    size: 22,
+                    color: '334155',
+                  }),
+                ],
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: ['Question', 'Fastest Solver', 'Time Taken'].map((headerText, i) => 
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            alignment: i === 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
+                            children: [new TextRun({ text: headerText, bold: true, color: 'FFFFFF', size: 18 })],
+                          }),
+                        ],
+                        shading: { fill: '4F46E5', type: ShadingType.CLEAR, color: 'auto' },
+                      })
+                    ),
+                  }),
+                  ...questionHighlights.map((hl, idx) => 
+                    new TableRow({
+                      children: [
+                        new TableCell({
+                          children: [new Paragraph({ children: [new TextRun({ text: `Q${hl.questionNumber}`, bold: true, size: 18 })] })],
+                          shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                        }),
+                        new TableCell({
+                          children: [new Paragraph({ children: [new TextRun({ text: hl.fastestPlayer ? hl.fastestPlayer.name : '—', size: 18 })] })],
+                          shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                        }),
+                        new TableCell({
+                          children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A', bold: true, size: 18 })] })],
+                          shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                        }),
+                      ],
+                    })
+                  ),
+                ],
+              }),
+            ] : []),
 
-          ${questionHighlights.length > 0 ? `
-            <div class="section-heading">Fastest Correct Solvers</div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width: 80px;">Question</th>
-                  <th>Fastest Solver</th>
-                  <th style="text-align: right;">Time Taken</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${questionHighlights.map(hl => `
-                  <tr>
-                    <td style="font-weight: bold;">Q${hl.questionNumber}</td>
-                    <td>${hl.fastestPlayer ? hl.fastestPlayer.name : '—'}</td>
-                    <td style="text-align: right; font-weight: bold;">${hl.fastestPlayer ? hl.fastestPlayer.timeTaken + 's' : 'N/A'}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          ` : ''}
+            // Footer
+            new Paragraph({ text: '' }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({
+                  text: 'Fourise Quiz Hub • Official Multiplayer Battle Report',
+                  size: 16,
+                  color: '94A3B8',
+                }),
+              ],
+            }),
+          ],
+        }],
+      });
 
-          <div class="footer-note">
-            Fourise Quiz Hub • Official Multiplayer Battle Report
-          </div>
-        </body>
-        </html>
-      `;
-
-      const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+      const buffer = await Packer.toBlob(wordDoc);
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.doc`;
+      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.docx`;
 
       const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(buffer);
       link.setAttribute('href', url);
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
@@ -553,10 +688,10 @@ export default function ResultsAnalytics() {
         URL.revokeObjectURL(url);
       }, 100);
 
-      toast.success('Word report downloaded successfully!');
+      toast.success('Native Word (.docx) document downloaded!', { id: 'export-word' });
     } catch (err) {
       console.error('Word Export error:', err);
-      toast.error('Error generating Word report');
+      toast.error('Error generating Word document', { id: 'export-word' });
     }
   };
 
