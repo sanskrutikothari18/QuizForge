@@ -376,7 +376,7 @@ export default function FinalResult() {
               </motion.div>
 
               {/* PODIUM CONTAINER */}
-              <div className="flex items-end justify-center w-full max-w-3xl h-[300px] sm:h-[380px] md:h-[450px] mt-2 sm:mt-4 md:mt-8 mb-4 sm:mb-8 gap-1 md:gap-4 relative">
+              <div className="flex items-end justify-center w-full max-w-3xl h-[380px] sm:h-[480px] md:h-[580px] mt-2 sm:mt-4 md:mt-8 mb-4 sm:mb-8 gap-1 sm:gap-3 md:gap-4 relative">
                 
                 {/* 2ND PLACE PODIUM (Left) */}
                 {second && (
@@ -402,7 +402,7 @@ export default function FinalResult() {
                       initial={{ height: 0 }}
                       animate={{ height: '100%' }}
                       transition={{ type: 'spring', stiffness: 55, damping: 14, delay: revealDelays.p2Rise }}
-                      className="w-full h-[80px] sm:h-[100px] md:h-[120px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
+                      className="w-full h-[150px] sm:h-[190px] md:h-[250px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
                     >
                       {/* Silver Medal */}
                       <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
@@ -469,7 +469,7 @@ export default function FinalResult() {
                       initial={{ height: 0 }}
                       animate={{ height: '100%' }}
                       transition={{ type: 'spring', stiffness: 45, damping: 12, delay: revealDelays.p1Rise }}
-                      className="w-full h-[120px] sm:h-[150px] md:h-[180px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
+                      className="w-full h-[220px] sm:h-[280px] md:h-[350px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
                       style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
                     >
                       {/* Gold Medal */}
@@ -513,7 +513,7 @@ export default function FinalResult() {
                       initial={{ height: 0 }}
                       animate={{ height: '100%' }}
                       transition={{ type: 'spring', stiffness: 60, damping: 15, delay: revealDelays.p3Rise }}
-                      className="w-full h-[60px] sm:h-[75px] md:h-[90px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
+                      className="w-full h-[105px] sm:h-[140px] md:h-[180px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
                     >
                       {/* Bronze Medal */}
                       <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
