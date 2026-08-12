@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles, Zap, Shield, ArrowRight, X } from 'lucide-react';
+import PlanComparisonTable from '../PlanComparisonTable';
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -310,116 +311,7 @@ export default function PricingSection() {
               {/* Comparison Table */}
               <div className="p-6">
                 <div className="overflow-x-auto scrollbar-thin">
-                  <table className="w-full text-left border-collapse min-w-[480px]">
-                    <thead>
-                      <tr className="border-b bg-white/5" style={{ borderColor: 'var(--glass-panel-border)' }}>
-                        <th className="py-3 px-4 sm:px-5 font-outfit font-extrabold text-xs sm:text-sm w-2/5" style={{ color: 'var(--text-heading)' }}>
-                          Features
-                        </th>
-                        <th className="py-3 px-3 sm:px-4 font-outfit font-extrabold text-xs sm:text-sm text-center w-1/5" style={{ color: 'var(--text-muted)' }}>
-                          Free
-                        </th>
-                        <th className="py-3 px-3 sm:px-4 font-outfit font-extrabold text-xs sm:text-sm text-primary text-center w-1/5 bg-primary/10">
-                          Pro
-                        </th>
-                        <th className="py-3 px-3 sm:px-4 font-outfit font-extrabold text-xs sm:text-sm text-secondary text-center w-1/5">
-                          Enterprise
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-white/5 text-xs">
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          Quiz Limit
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-medium" style={{ color: 'var(--text-muted)' }}>5 Quizzes</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <span className="text-primary">Unlimited</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-extrabold text-secondary">Unlimited</span>
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          Participant Limit
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-medium" style={{ color: 'var(--text-muted)' }}>20 Players</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <span className="text-primary">Unlimited</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-extrabold text-secondary">Custom Unlimited</span>
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          Analytics & Export Reports
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Basic</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <span className="text-primary">Advanced PDF/CSV</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-extrabold text-secondary">Custom BI Export</span>
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          Question Bank & Custom Branding
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <X className="h-3.5 w-3.5 text-gray-500 mx-auto opacity-50" />
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <Check className="h-4 w-4 text-emerald-400 mx-auto" />
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <Check className="h-4 w-4 text-emerald-400 mx-auto" />
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          Support Level
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <X className="h-3.5 w-3.5 text-gray-500 mx-auto opacity-50" />
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <span className="text-primary">Priority Email</span>
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <span className="font-extrabold text-secondary">24/7 Dedicated Manager</span>
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-4 sm:px-5 font-semibold" style={{ color: 'var(--text-main)' }}>
-                          API & Institution Admin Dashboard
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <X className="h-3.5 w-3.5 text-gray-500 mx-auto opacity-50" />
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center bg-primary/5 font-extrabold">
-                          <X className="h-3.5 w-3.5 text-gray-500 mx-auto opacity-50" />
-                        </td>
-                        <td className="py-3 px-3 sm:px-4 text-center">
-                          <Check className="h-4 w-4 text-emerald-400 mx-auto" />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <PlanComparisonTable />
                 </div>
               </div>
 

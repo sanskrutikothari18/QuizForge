@@ -1286,6 +1286,81 @@ html, body {
 }
 
 /* ══════════════════════════════════════════════════════════
+   PLAN COMPARISON TABLE
+   ══════════════════════════════════════════════════════════ */
+
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+  background: #ffffff;
+  color: #1e1840;
+}
+
+.plan-table thead tr {
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.plan-table th {
+  padding: 0.875rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.plan-table th.plan-free {
+  color: #6b7280;
+}
+
+.plan-table th.plan-pro {
+  color: #0ea5e9;
+}
+
+.plan-table th.plan-enterprise {
+  color: #6366f1;
+}
+
+.plan-table tbody tr {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.plan-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.plan-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.plan-table td {
+  padding: 0.875rem 1rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+.plan-table td.feature-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.plan-table td.text-center {
+  text-align: center;
+}
+
+.plan-table td.pro-col {
+  font-weight: 700;
+  color: #0ea5e9;
+}
+
+.plan-table td.enterprise-col {
+  font-weight: 700;
+  color: #6366f1;
+}
+
+/* ══════════════════════════════════════════════════════════
    VIEWPORT META INSURANCE (handled via tailwind overflow-x-hidden on body)
    ══════════════════════════════════════════════════════════ */
 
