@@ -715,11 +715,7 @@ export default function FinalResult() {
                             </div>
                           </div>
 
-                          {!hasAnswered && (
-                            <div className="rounded-lg border px-3 py-2 text-xs border-orange-500/20 bg-orange-500/10 text-orange-300">
-                              <span className="font-semibold">Status:</span> {statusLabel}
-                            </div>
-                          )}
+
 
                           {/* Your Answer and Correct Answer */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-300">

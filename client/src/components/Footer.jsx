@@ -21,10 +21,10 @@ export default function Footer() {
   return (
     <footer style={{ background: 'var(--footer-bg)', borderTop: '1px solid var(--footer-border)' }} className="relative z-10 w-full backdrop-blur-xl transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        
+
         {/* 4 Column Layout Matching Reference Image */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-8 border-b border-white/10 text-left">
-          
+
           {/* Column 1: Brand Logo & Description */}
           <div className="space-y-3 text-left">
             <Link to="/" className="inline-flex items-center justify-start gap-2.5 transition-transform active:scale-95">
@@ -46,7 +46,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs text-gray-300 text-left">
               <li className="flex items-start justify-start gap-2.5 text-left">
                 <span className="text-primary mt-0.5 shrink-0">📍</span>
-                <span>8819 Ohio St. South Gate, CA 90280</span>
+                <span>Pune</span>
               </li>
               <li className="flex items-center justify-start gap-2.5 text-left">
                 <Mail className="h-4 w-4 text-primary shrink-0" />
