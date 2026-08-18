@@ -57,7 +57,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 w-full max-w-sm sm:max-w-none mx-auto"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 w-full max-w-md sm:max-w-none mx-auto"
         >
           <Link
             to="/register"
@@ -68,11 +68,23 @@ export default function HeroSection() {
           </Link>
           <Link
             to="/join"
-            className="btn-premium btn-secondary-gradient px-8 py-4 flex items-center justify-center gap-2.5 text-base font-extrabold text-white shadow-secondary-glow hover:scale-105 active:scale-95 transition-all w-full sm:w-auto rounded-2xl"
+            className="btn-premium btn-secondary-gradient px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2.5 text-sm sm:text-base font-extrabold text-white shadow-secondary-glow hover:scale-105 active:scale-95 transition-all w-full sm:w-auto rounded-xl sm:rounded-2xl"
           >
             <Play className="h-4 w-4 fill-current text-secondary" />
             <span>Join Game</span>
           </Link>
+          <button
+            onClick={() => {
+              const el = document.getElementById('interactive-demo');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2.5 text-sm sm:text-base font-extrabold text-white bg-white/10 hover:bg-white/15 border border-white/20 hover:border-primary/50 transition-all cursor-pointer w-full sm:w-auto rounded-xl sm:rounded-2xl shadow-sm hover:scale-105 active:scale-95"
+          >
+            <Sparkles className="h-4.5 w-4.5 text-yellow-400 animate-pulse" />
+            <span>Try Demo</span>
+          </button>
         </motion.div>
 
         {/* Stats Bar */}

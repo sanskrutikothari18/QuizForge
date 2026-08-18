@@ -1,6 +1,7 @@
 import React from 'react';
 import AnimatedPage from '../components/AnimatedPage';
 import HeroSection from '../components/landing/HeroSection';
+import LiveDemoSection from '../components/landing/LiveDemoSection';
 import FeaturesSection from '../components/landing/FeaturesSection';
 import HowItWorksSection from '../components/landing/HowItWorksSection';
 import PricingSection from '../components/landing/PricingSection';
@@ -14,11 +15,14 @@ export default function LandingPage() {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Features Grid (6 Core Features) */}
-        <FeaturesSection />
+        {/* Interactive Mini Quiz Product Demo */}
+        <LiveDemoSection />
 
-        {/* How It Works (5-Step Process) */}
+        {/* How It Works (4-Step Process) */}
         <HowItWorksSection />
+
+        {/* Features Grid */}
+        <FeaturesSection />
 
         {/* Flexible Pricing Section */}
         <PricingSection />

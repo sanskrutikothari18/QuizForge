@@ -76,6 +76,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Home', hash: '#hero' },
+    { label: 'Play Demo', hash: '#interactive-demo', highlight: true },
     { label: 'Features', hash: '#features' },
     { label: 'Pricing', hash: '#pricing' },
     { label: 'FAQs', hash: '#faq' },
@@ -154,6 +155,19 @@ export default function Navbar() {
             navLinks.map((link) => {
               const secId = link.hash.replace('#', '');
               const isActive = activeSection === secId;
+
+              if (link.highlight) {
+                return (
+                  <button
+                    key={link.label}
+                    onClick={() => handleNavClick(link.hash)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-xs font-black text-primary hover:bg-primary/25 transition-all cursor-pointer shadow-sm hover:scale-105"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
+                    <span>{link.label}</span>
+                  </button>
+                );
+              }
 
               return (
                 <button
@@ -399,10 +413,17 @@ export default function Navbar() {
                 <button
                   key={link.label}
                   onClick={() => handleNavClick(link.hash)}
-                  className="w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer"
-                  style={{ color: 'var(--text-main)' }}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-between ${
+                    link.highlight ? 'bg-primary/10 border border-primary/25 text-primary' : ''
+                  }`}
+                  style={link.highlight ? {} : { color: 'var(--text-main)' }}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {link.highlight && (
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/30">
+                      30s Quiz
+                    </span>
+                  )}
                 </button>
               ))}
 

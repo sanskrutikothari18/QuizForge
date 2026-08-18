@@ -1,50 +1,47 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { PlusCircle, QrCode, Users, Gamepad2, Trophy, ArrowRight } from 'lucide-react';
+import { PlusCircle, Gamepad2, Trophy, Zap, ArrowRight } from 'lucide-react';
 
 const steps = [
   {
     step: '01',
-    title: 'Create Quiz',
+    title: 'Join or Create a Quiz',
     icon: <PlusCircle className="h-6 w-6 text-primary" />,
-    desc: 'Build custom questions with multiple choice options, images, and time limits in minutes.',
-    badge: 'Host Action',
+    desc: 'Host your own customized battle room or join instantly with a 6-digit Game PIN.',
+    badge: 'Step 1',
+    color: 'from-primary/20 to-primary/5',
   },
   {
     step: '02',
-    title: 'Share Game PIN',
-    icon: <QrCode className="h-6 w-6 text-secondary" />,
-    desc: 'Launch your lobby to generate a unique 6-digit Game PIN or display a scan-to-join QR code.',
-    badge: 'Instant Share',
+    title: 'Answer Questions',
+    icon: <Gamepad2 className="h-6 w-6 text-secondary" />,
+    desc: 'Respond in real-time on any device before the countdown timer runs out.',
+    badge: 'Step 2',
+    color: 'from-secondary/20 to-secondary/5',
   },
   {
     step: '03',
-    title: 'Students Join',
-    icon: <Users className="h-6 w-6 text-accent" />,
-    desc: 'Players enter the PIN on any device without creating an account or downloading an app.',
-    badge: 'Zero Friction',
+    title: 'Earn Points',
+    icon: <Zap className="h-6 w-6 text-amber-400" />,
+    desc: 'Rack up higher points for accuracy, answer speed, and answer streaks.',
+    badge: 'Step 3',
+    color: 'from-amber-500/20 to-amber-500/5',
   },
   {
     step: '04',
-    title: 'Play Live',
-    icon: <Gamepad2 className="h-6 w-6 text-yellow-400" />,
-    desc: 'Questions appear simultaneously on screen. Answer fast to claim maximum points.',
-    badge: 'Live Action',
-  },
-  {
-    step: '05',
-    title: 'View Results',
+    title: 'Compete on Leaderboard',
     icon: <Trophy className="h-6 w-6 text-emerald-400" />,
-    desc: 'Celebrate podium winners on the live leaderboard and download full performance analytics.',
-    badge: 'Final Insights',
+    desc: 'Watch real-time rank changes and celebrate podium champions on the live screen.',
+    badge: 'Step 4',
+    color: 'from-emerald-500/20 to-emerald-500/5',
   },
 ];
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20">
+    <section id="how-it-works" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 scroll-mt-20">
       
-      {/* Background glow */}
+      {/* Background radial glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[700px] rounded-full bg-primary/10 blur-[140px] pointer-events-none" />
 
       {/* Header */}
@@ -53,25 +50,21 @@ export default function HowItWorksSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-16"
+        className="text-center mb-12 sm:mb-16"
       >
         <span className="rounded-full bg-secondary/10 border border-secondary/20 px-4 py-1.5 text-xs font-bold text-secondary uppercase tracking-wider">
-          Simple 5-Step Process
+          4-Step Process
         </span>
         <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white mt-4 tracking-tight">
-          How <span className="text-gradient-primary">QuizForge</span> Works
+          How <span className="text-gradient-primary">Quiz Hub</span> Works
         </h2>
-        <p className="mt-4 text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
-          From quiz creation to podium glory — jump into battle in less than 60 seconds.
+        <p className="mt-3 text-xs sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
+          From lobby countdown to live podium glory — join multiplayer quiz battles in seconds.
         </p>
       </motion.div>
 
-      {/* 5-Step Horizontal Timeline Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
-
-        {/* Connecting Line across steps on desktop */}
-        <div className="hidden md:block absolute top-[44px] left-[10%] right-[10%] h-[2px] bg-gradient-to-r from-primary via-secondary to-emerald-400 z-0 opacity-30" />
-
+      {/* 4-Step Horizontal Timeline Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
         {steps.map((item, idx) => (
           <motion.div
             key={idx}
@@ -79,11 +72,11 @@ export default function HowItWorksSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.1 }}
-            className="glass-panel glass-panel-hover rounded-2xl p-5 border border-white/10 flex flex-col justify-between relative z-10 group text-left"
+            className="glass-panel glass-panel-hover rounded-2xl p-6 border border-white/10 flex flex-col justify-between relative group text-left h-full"
           >
             <div>
-              {/* Step number badge & Icon */}
-              <div className="flex items-center justify-between mb-4">
+              {/* Step Badge & Number */}
+              <div className="flex items-center justify-between mb-5">
                 <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {item.icon}
                 </div>
@@ -92,11 +85,11 @@ export default function HowItWorksSection() {
                 </span>
               </div>
 
-              <span className="text-[10px] font-extrabold uppercase text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-[10px] font-extrabold uppercase text-primary bg-primary/10 px-2.5 py-0.5 rounded-full inline-block mb-3 border border-primary/20">
                 {item.badge}
               </span>
 
-              <h3 className="font-outfit text-base font-extrabold text-white mb-2">
+              <h3 className="font-outfit text-lg font-extrabold text-white mb-2 leading-snug">
                 {item.title}
               </h3>
 
@@ -105,15 +98,14 @@ export default function HowItWorksSection() {
               </p>
             </div>
 
-            {/* Mobile arrow indicator */}
+            {/* Subtle arrow indicator for steps 1-3 on desktop */}
             {idx < steps.length - 1 && (
-              <div className="md:hidden flex justify-center pt-3 text-primary">
-                <ArrowRight className="h-4 w-4 rotate-90" />
+              <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-20 text-white/20 group-hover:text-primary transition-colors">
+                <ArrowRight className="h-5 w-5" />
               </div>
             )}
           </motion.div>
         ))}
-
       </div>
 
     </section>
