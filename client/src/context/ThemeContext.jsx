@@ -19,18 +19,25 @@ export const ThemeProvider = ({ children }) => {
     return savedMode === 'light' ? 'light' : 'dark';
   });
 
-  // Whenever palette changes, update CSS variables on :root
+  // Whenever palette or mode changes, update CSS variables on :root
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--theme-primary', activeTheme.colors.primary);
     root.style.setProperty('--theme-secondary', activeTheme.colors.secondary);
     root.style.setProperty('--theme-accent', activeTheme.colors.accent);
-    root.style.setProperty('--theme-bg', activeTheme.colors.background);
-    root.style.setProperty('--theme-card-bg', activeTheme.colors.cardBg);
-    root.style.setProperty('--theme-text', activeTheme.colors.text);
     root.style.setProperty('--theme-font', activeTheme.typography.fontFamily);
+    
+    if (themeMode === 'light') {
+      root.style.removeProperty('--theme-bg');
+      root.style.removeProperty('--theme-card-bg');
+      root.style.removeProperty('--theme-text');
+    } else {
+      root.style.setProperty('--theme-bg', activeTheme.colors.background);
+      root.style.setProperty('--theme-card-bg', activeTheme.colors.cardBg);
+      root.style.setProperty('--theme-text', activeTheme.colors.text);
+    }
     localStorage.setItem('quizforge_theme', activeTheme.id);
-  }, [activeTheme]);
+  }, [activeTheme, themeMode]);
 
   useEffect(() => {
     const root = document.documentElement;

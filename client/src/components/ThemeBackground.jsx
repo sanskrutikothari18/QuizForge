@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 
 const ThemeBackground = ({ children }) => {
-  const { activeTheme } = useTheme();
+  const { activeTheme, themeMode } = useTheme();
+  const isLight = themeMode === 'light';
 
   const getParticles = () => {
     const type = activeTheme?.effects?.particleType;
@@ -106,20 +107,30 @@ const ThemeBackground = ({ children }) => {
       {/* Background base */}
       <div 
         className="absolute inset-0 z-0 opacity-100 transition-all duration-1000" 
-        style={{ background: activeTheme?.colors?.background || 'var(--theme-bg)' }}
+        style={{ 
+          background: isLight 
+            ? 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)' 
+            : (activeTheme?.colors?.background || 'var(--theme-bg)') 
+        }}
       />
       
       {/* Subtle Glowing Orbs */}
       <div 
-        className="absolute top-[10%] left-[15%] w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none filter blur-[100px] opacity-40 animate-pulse"
+        className={`absolute top-[10%] left-[15%] w-[400px] h-[400px] rounded-full pointer-events-none filter blur-[100px] animate-pulse ${
+          isLight ? 'mix-blend-multiply opacity-20' : 'mix-blend-screen opacity-40'
+        }`}
         style={{ background: activeTheme?.colors?.primary }}
       />
       <div 
-        className="absolute bottom-[10%] right-[15%] w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none filter blur-[120px] opacity-30 animate-pulse"
+        className={`absolute bottom-[10%] right-[15%] w-[500px] h-[500px] rounded-full pointer-events-none filter blur-[120px] animate-pulse ${
+          isLight ? 'mix-blend-multiply opacity-15' : 'mix-blend-screen opacity-30'
+        }`}
         style={{ background: activeTheme?.colors?.accent, animationDuration: '8s' }}
       />
       <div 
-        className="absolute top-[40%] right-[40%] w-[300px] h-[300px] rounded-full mix-blend-screen pointer-events-none filter blur-[90px] opacity-20 animate-pulse"
+        className={`absolute top-[40%] right-[40%] w-[300px] h-[300px] rounded-full pointer-events-none filter blur-[90px] animate-pulse ${
+          isLight ? 'mix-blend-multiply opacity-15' : 'mix-blend-screen opacity-20'
+        }`}
         style={{ background: activeTheme?.colors?.secondary, animationDuration: '12s' }}
       />
 
