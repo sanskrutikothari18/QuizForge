@@ -75,7 +75,16 @@ export default function FinalResult() {
       answers: p.answers || []
     })),
     winner: socketData.winner
-  } : null);
+  } : (pin === 'demo' || pin === 'test' ? {
+    pin,
+    quiz: { title: 'Champions League Quiz', category: 'General Knowledge' },
+    players: [
+      { name: 'Alex Johnson', avatar: '🦊', totalScore: 980, answers: [{ isCorrect: true, timeTaken: 1200 }] },
+      { name: 'Jordan Smith', avatar: '🦁', totalScore: 850, answers: [{ isCorrect: true, timeTaken: 1500 }] },
+      { name: 'Sam Taylor', avatar: '🐼', totalScore: 720, answers: [{ isCorrect: true, timeTaken: 1800 }] },
+      { name: 'Chris Lee', avatar: '🐨', totalScore: 610, answers: [{ isCorrect: true, timeTaken: 2000 }] }
+    ]
+  } : null));
 
   const sessionId = game?.id;
 
@@ -112,81 +121,6 @@ export default function FinalResult() {
       setIsHost(!localPlayerName && !!hostToken);
     }
   }, [game, localPlayerName]);
-
-  useEffect(() => {
-    // Confetti logic
-    let interval;
-    
-    // 3rd place confetti (right side)
-    const t3 = setTimeout(() => {
-      confetti({ particleCount: 50, spread: 70, origin: { x: 0.8, y: 0.6 }, colors: ['#CD7F32', '#ffffff', '#783bd1'] });
-    }, 1000); // 3rd place avatar appears around 0.7s
-
-    // 2nd place confetti (left side)
-    const t2 = setTimeout(() => {
-      confetti({ particleCount: 50, spread: 70, origin: { x: 0.2, y: 0.6 }, colors: ['#C0C0C0', '#ffffff', '#6b2cbd'] });
-    }, 1800); // 2nd place avatar appears around 1.5s
-
-    // 1st place dramatic burst and continuous loop
-    const t1 = setTimeout(() => {
-      const duration = 15 * 1000;
-      const animationEnd = Date.now() + duration;
-      const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
-      // Massive center burst
-      confetti({
-        particleCount: 250,
-        spread: 120,
-        startVelocity: 60,
-        origin: { y: 0.7 },
-        zIndex: 50,
-        colors: ['#FFC83D', '#46178F', '#864CBF', '#ffffff']
-      });
-
-      // Continuous loop
-      interval = setInterval(() => {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-
-        // Standard center sprinkles
-        confetti({
-          particleCount: 4,
-          angle: randomInRange(55, 125),
-          spread: randomInRange(50, 70),
-          origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
-          colors: ['#FFC83D', '#ffffff', '#864CBF'],
-          zIndex: 50,
-          disableForReducedMotion: true
-        });
-
-        // Dynamic Kahoot-style side fountains
-        confetti({
-          particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.8 },
-          colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
-          zIndex: 50
-        });
-        confetti({
-          particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.8 },
-          colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
-          zIndex: 50
-        });
-      }, 250);
-    }, 3600); // 1st place avatar appears around 3.6s
-
-    return () => {
-      clearTimeout(t3);
-      clearTimeout(t2);
-      clearTimeout(t1);
-      if (interval) clearInterval(interval);
-      disconnectSocket();
-    };
-  }, []);
 
   const players = game?.players || [];
   
@@ -233,6 +167,106 @@ export default function FinalResult() {
   const winner = rankedPlayers[0];
   const second = rankedPlayers[1];
   const third = rankedPlayers[2];
+
+  // Dynamic reveal timing calculation based on total player count
+  const totalPlayerCount = rankedPlayers.length;
+  const revealDelays = totalPlayerCount >= 3 ? {
+    p3Rise: 0.5,
+    p3Reveal: 1.3,
+    p2Rise: 1.7,
+    p2Reveal: 2.5,
+    p1Rise: 3.0,
+    p1Reveal: 3.9,
+    p1Crown: 4.2
+  } : totalPlayerCount === 2 ? {
+    p2Rise: 0.5,
+    p2Reveal: 1.3,
+    p1Rise: 1.8,
+    p1Reveal: 2.7,
+    p1Crown: 2.9
+  } : {
+    p1Rise: 0.5,
+    p1Reveal: 1.3,
+    p1Crown: 1.5
+  };
+
+  useEffect(() => {
+    // Confetti logic aligned with podium reveal sequence
+    let interval;
+    const totalCount = rankedPlayers.length;
+
+    const delays = totalCount >= 3 ? {
+      t3: 1400,
+      t2: 2700,
+      t1: 4200
+    } : totalCount === 2 ? {
+      t2: 1400,
+      t1: 2700
+    } : {
+      t1: 1500
+    };
+
+    let t3Timeout, t2Timeout, t1Timeout;
+
+    if (delays.t3) {
+      t3Timeout = setTimeout(() => {
+        confetti({ particleCount: 45, spread: 65, origin: { x: 0.8, y: 0.65 }, colors: ['#CD7F32', '#ffffff', '#783bd1'] });
+      }, delays.t3);
+    }
+
+    if (delays.t2) {
+      t2Timeout = setTimeout(() => {
+        confetti({ particleCount: 55, spread: 65, origin: { x: 0.2, y: 0.65 }, colors: ['#C0C0C0', '#ffffff', '#6b2cbd'] });
+      }, delays.t2);
+    }
+
+    if (delays.t1) {
+      t1Timeout = setTimeout(() => {
+        // Grand winner burst
+        confetti({
+          particleCount: 250,
+          spread: 120,
+          startVelocity: 60,
+          origin: { y: 0.65 },
+          zIndex: 50,
+          colors: ['#FFC83D', '#46178F', '#864CBF', '#06B6D4', '#ffffff']
+        });
+
+        // Continuous celebrate loop
+        const duration = 12 * 1000;
+        const animationEnd = Date.now() + duration;
+        interval = setInterval(() => {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.8 },
+            colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
+            zIndex: 50
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.8 },
+            colors: ['#FFC83D', '#ffffff', '#864CBF', '#06B6D4', '#F43F5E'],
+            zIndex: 50
+          });
+        }, 300);
+      }, delays.t1);
+    }
+
+    return () => {
+      if (t3Timeout) clearTimeout(t3Timeout);
+      if (t2Timeout) clearTimeout(t2Timeout);
+      if (t1Timeout) clearTimeout(t1Timeout);
+      if (interval) clearInterval(interval);
+      disconnectSocket();
+    };
+  }, [rankedPlayers.length]);
 
   // Calculate player statistics
   const playerStats = currentPlayer ? {
@@ -297,8 +331,6 @@ export default function FinalResult() {
           />
         </div>
 
-
-
         {/* Radial vignette overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c051e]/40 to-[#0a0216] pointer-events-none z-0"></div>
         
@@ -344,170 +376,165 @@ export default function FinalResult() {
               </motion.div>
 
               {/* PODIUM CONTAINER */}
-          <div className="flex items-end justify-center w-full max-w-3xl h-[300px] sm:h-[380px] md:h-[450px] mt-2 sm:mt-4 md:mt-8 mb-4 sm:mb-8 gap-1 md:gap-4 relative">
-            
-            {/* 2ND PLACE */}
-            <div className="flex flex-col items-center flex-1 z-10 w-1/3">
-              {second ? (
-                <>
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1, x: [-8, 8, -8], y: [0, -6, 0], rotate: [-4, 4, -4] }}
-                    transition={{ 
-                      scale: { type: 'spring', delay: 1.5 }, 
-                      x: { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
-                      y: { repeat: Infinity, duration: 1.1, ease: "easeInOut" },
-                      rotate: { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
-                    }}
-                    className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
-                  >
-                    {second.avatar ? <Avatar emoji={second.avatar} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" /> : <User className="w-12 h-12 text-white/50" />}
-                  </motion.div>
-                  <div className="text-center mb-1 sm:mb-2 px-1 z-10">
-                    <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{second.name}</div>
-                    <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
-                  </div>
-                </>
-              ) : (
-                <div className="h-[70px] sm:h-[96px] md:h-[128px] mb-3"></div>
-              )}
+              <div className="flex items-end justify-center w-full max-w-3xl h-[400px] sm:h-[500px] md:h-[580px] mt-2 sm:mt-4 md:mt-8 mb-4 sm:mb-8 gap-1 sm:gap-3 md:gap-4 relative">
                 
-              <motion.div 
-                initial={{ height: 0 }}
-                animate={{ height: '100%' }}
-                transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 1.2 }}
-                className="w-full h-[80px] sm:h-[100px] md:h-[120px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
-              >
-                {/* Silver Medal */}
-                <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
-                  <div className="w-3 sm:w-4 h-4 sm:h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
-                    <div className="w-1/3 h-full bg-white/30"></div>
-                    <div className="w-1/3 h-full bg-transparent"></div>
-                    <div className="w-1/3 h-full bg-white/30"></div>
-                  </div>
-                  <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
-                    <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
-                      <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">2</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+                {/* 2ND PLACE PODIUM (Left) */}
+                {second && (
+                  <div className="flex flex-col items-center flex-1 z-10 w-1/3">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20, scale: 0.7 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ type: 'spring', bounce: 0.4, delay: revealDelays.p2Reveal }}
+                      className="flex flex-col items-center mb-1 sm:mb-2 text-center"
+                    >
+                      <motion.div 
+                        animate={{ y: [0, -6, 0], rotate: [-4, 4, -4] }}
+                        transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                        className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl select-none"
+                      >
+                        {second.avatar ? <Avatar emoji={second.avatar} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" /> : <User className="w-12 h-12 text-white/50" />}
+                      </motion.div>
+                      <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{second.name}</div>
+                      <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
+                    </motion.div>
 
-            {/* 1ST PLACE */}
-            {winner ? (
-              <div className="flex flex-col items-center flex-1 z-20 w-1/3 -mx-1 sm:-mx-2 md:-mx-4">
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1.1, y: [0, -14, 0, -8, 0], rotate: [0, -4, 4, -2, 2, 0] }}
-                  transition={{ 
-                    scale: { type: 'spring', delay: 3.6 },
-                    y: { repeat: Infinity, duration: 1.8, ease: "easeInOut" },
-                    rotate: { repeat: Infinity, duration: 1.8, ease: "easeInOut" }
-                  }}
-                  className="text-5xl sm:text-7xl md:text-8xl mb-1 sm:mb-2 filter drop-shadow-2xl relative z-10 select-none cursor-pointer"
-                >
-                  <motion.div 
-                    initial={{ y: -15, opacity: 0, rotate: -15 }}
-                    animate={{ y: 0, opacity: 1, rotate: 10 }}
-                    transition={{ delay: 4.2, type: 'spring' }}
-                    className="absolute -top-3 sm:-top-5 lg:-top-6 left-1/2 -translate-x-1/2 text-2xl sm:text-4xl lg:text-5xl z-20 drop-shadow-md origin-bottom-left"
-                  >
-                    <Crown className="w-7 h-7 sm:w-10 sm:h-10 text-yellow-400" />
-                  </motion.div>
-                  
-                  {/* Golden Trophy floating next to avatar */}
-                  <motion.div 
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    className="absolute -right-4 sm:-right-6 bottom-0 text-2xl sm:text-4xl filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
-                  >
-                    <Trophy className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-500" />
-                  </motion.div>
-
-                  {/* Golden Halo aura behind 1st place */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
-
-                  {winner.avatar ? <Avatar emoji={winner.avatar} className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-14 h-14 text-white/50" />}
-                </motion.div>
-
-                <div className="text-center mb-1 sm:mb-2 px-1 z-10">
-                  <div className="font-extrabold text-white text-xs sm:text-sm md:text-lg tracking-tight truncate max-w-[90px] sm:max-w-[120px] drop-shadow-md">{winner.name}</div>
-                  <div className="font-black text-yellow-300 text-[10px] sm:text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
-                </div>
-                
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: '100%' }}
-                  transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 3.2 }}
-                  className="w-full h-[120px] sm:h-[150px] md:h-[180px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
-                  style={{ animation: 'glowGoldPulse 3s ease-in-out infinite' }}
-                >
-                  {/* Gold Medal */}
-                  <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
-                    <div className="w-4 sm:w-5 h-5 sm:h-6 bg-red-600 rounded-sm mb-[-6px] z-0 shadow-inner border border-red-800 flex overflow-hidden">
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                      <div className="w-1/3 h-full bg-transparent"></div>
-                      <div className="w-1/3 h-full bg-white/30"></div>
-                    </div>
-                    <div className="relative z-10 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_4px_15px_rgba(255,200,0,0.5)] border-[2px] sm:border-[3px] border-[#d4af37]">
-                      <div className="w-[85%] h-[85%] rounded-full border border-yellow-200/50 flex items-center justify-center bg-gradient-to-tr from-yellow-600/30 to-transparent">
-                        <span className="font-outfit text-base sm:text-2xl font-black text-white drop-shadow-md">1</span>
+                    <motion.div 
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ type: 'spring', stiffness: 55, damping: 14, delay: revealDelays.p2Rise }}
+                      style={{ transformOrigin: 'bottom' }}
+                      className="w-full h-[150px] sm:h-[190px] md:h-[250px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
+                    >
+                      {/* Silver Medal */}
+                      <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                        <div className="w-3 sm:w-4 h-4 sm:h-5 bg-blue-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-blue-800 flex overflow-hidden">
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                          <div className="w-1/3 h-full bg-transparent"></div>
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                        </div>
+                        <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a8a9ad]">
+                          <div className="w-[85%] h-[85%] rounded-full border border-white/60 flex items-center justify-center bg-gradient-to-tr from-gray-500/20 to-transparent">
+                            <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">2</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
-                </motion.div>
+                )}
+
+                {/* 1ST PLACE PODIUM (Center) */}
+                {winner && (
+                  <div className="flex flex-col items-center flex-1 z-20 w-1/3 -mx-1 sm:-mx-2 md:-mx-4">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 25, scale: 0.6 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ type: 'spring', bounce: 0.5, delay: revealDelays.p1Reveal }}
+                      className="flex flex-col items-center mb-1 sm:mb-2 text-center relative"
+                    >
+                      <motion.div 
+                        animate={{ y: [0, -8, 0], rotate: [-2, 2, -2] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                        className="text-5xl sm:text-7xl md:text-8xl mb-1 sm:mb-2 filter drop-shadow-2xl relative z-10 select-none cursor-pointer"
+                      >
+                        {/* Crown */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: -20, scale: 0, rotate: -20 }}
+                          animate={{ opacity: 1, y: 0, scale: 1, rotate: 10 }}
+                          transition={{ delay: revealDelays.p1Crown, type: 'spring', bounce: 0.6 }}
+                          className="absolute -top-3 sm:-top-5 lg:-top-6 left-1/2 -translate-x-1/2 text-2xl sm:text-4xl lg:text-5xl z-20 drop-shadow-md origin-bottom-left"
+                        >
+                          <Crown className="w-7 h-7 sm:w-10 sm:h-10 text-yellow-400" />
+                        </motion.div>
+                        
+                        {/* Golden Trophy floating next to avatar */}
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1, y: [0, -8, 0] }}
+                          transition={{ opacity: { delay: revealDelays.p1Crown }, scale: { delay: revealDelays.p1Crown, type: 'spring' }, y: { repeat: Infinity, duration: 2, ease: "easeInOut" } }}
+                          className="absolute -right-4 sm:-right-6 bottom-0 filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
+                        >
+                          <Trophy className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-500" />
+                        </motion.div>
+
+                        {/* Golden Halo aura behind 1st place */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
+
+                        {winner.avatar ? <Avatar emoji={winner.avatar} className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-14 h-14 text-white/50" />}
+                      </motion.div>
+
+                      <div className="font-extrabold text-white text-xs sm:text-sm md:text-lg tracking-tight truncate max-w-[90px] sm:max-w-[120px] drop-shadow-md">{winner.name}</div>
+                      <div className="font-black text-yellow-300 text-[10px] sm:text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
+                    </motion.div>
+                    
+                    <motion.div 
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ type: 'spring', stiffness: 45, damping: 12, delay: revealDelays.p1Rise }}
+                      style={{ transformOrigin: 'bottom', animation: 'glowGoldPulse 3s ease-in-out infinite' }}
+                      className="w-full h-[210px] sm:h-[270px] md:h-[330px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
+                    >
+                      {/* Gold Medal */}
+                      <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                        <div className="w-4 sm:w-5 h-5 sm:h-6 bg-red-600 rounded-sm mb-[-6px] z-0 shadow-inner border border-red-800 flex overflow-hidden">
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                          <div className="w-1/3 h-full bg-transparent"></div>
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                        </div>
+                        <div className="relative z-10 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_4px_15px_rgba(255,200,0,0.5)] border-[2px] sm:border-[3px] border-[#d4af37]">
+                          <div className="w-[85%] h-[85%] rounded-full border border-yellow-200/50 flex items-center justify-center bg-gradient-to-tr from-yellow-600/30 to-transparent">
+                            <span className="font-outfit text-base sm:text-2xl font-black text-white drop-shadow-md">1</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+
+                {/* 3RD PLACE PODIUM (Right) */}
+                {third && (
+                  <div className="flex flex-col items-center flex-1 z-10 w-1/3">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20, scale: 0.7 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ type: 'spring', bounce: 0.4, delay: revealDelays.p3Reveal }}
+                      className="flex flex-col items-center mb-1 sm:mb-2 text-center"
+                    >
+                      <motion.div 
+                        animate={{ y: [0, -5, 0], rotate: [-4, 4, -4] }}
+                        transition={{ repeat: Infinity, duration: 2.4, ease: "easeInOut" }}
+                        className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl select-none"
+                      >
+                        {third.avatar ? <Avatar emoji={third.avatar} className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16" /> : <User className="w-10 h-10 text-white/50" />}
+                      </motion.div>
+                      <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{third.name}</div>
+                      <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
+                    </motion.div>
+
+                    <motion.div 
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ type: 'spring', stiffness: 60, damping: 15, delay: revealDelays.p3Rise }}
+                      style={{ transformOrigin: 'bottom' }}
+                      className="w-full h-[105px] sm:h-[140px] md:h-[190px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
+                    >
+                      {/* Bronze Medal */}
+                      <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
+                        <div className="w-3 sm:w-4 h-4 sm:h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                          <div className="w-1/3 h-full bg-transparent"></div>
+                          <div className="w-1/3 h-full bg-white/30"></div>
+                        </div>
+                        <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
+                          <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
+                            <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">3</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+
               </div>
-            ) : <div className="flex-1 w-1/3" />}
-
-            {/* 3RD PLACE */}
-            <div className="flex flex-col items-center flex-1 z-10 w-1/3">
-              {third ? (
-                <>
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 0.95, y: [0, -10, 0], rotate: [-8, 8, -8] }}
-                    transition={{ 
-                      scale: { type: 'spring', delay: 0.7 },
-                      y: { repeat: Infinity, duration: 1.3, ease: "easeInOut" },
-                      rotate: { repeat: Infinity, duration: 1.3, ease: "easeInOut" }
-                    }}
-                    className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl relative z-10 select-none cursor-pointer"
-                  >
-                    {third.avatar ? <Avatar emoji={third.avatar} className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16" /> : <User className="w-10 h-10 text-white/50" />}
-                  </motion.div>
-                  <div className="text-center mb-1 sm:mb-2 px-1 z-10">
-                    <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{third.name}</div>
-                    <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
-                  </div>
-                </>
-              ) : (
-                <div className="h-[60px] sm:h-[96px] md:h-[128px] mb-3"></div>
-              )}
-                
-              <motion.div 
-                initial={{ height: 0 }}
-                animate={{ height: '100%' }}
-                transition={{ type: 'spring', stiffness: 60, damping: 15, delay: 0.5 }}
-                className="w-full h-[60px] sm:h-[75px] md:h-[90px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
-              >
-                {/* Bronze Medal */}
-                <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
-                  <div className="w-3 sm:w-4 h-4 sm:h-5 bg-emerald-600 rounded-sm mb-[-4px] z-0 shadow-inner border border-emerald-800 flex overflow-hidden">
-                    <div className="w-1/3 h-full bg-white/30"></div>
-                    <div className="w-1/3 h-full bg-transparent"></div>
-                    <div className="w-1/3 h-full bg-white/30"></div>
-                  </div>
-                  <div className="relative z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#ffc894] via-[#cd7f32] to-[#8b4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-[#a0522d]">
-                    <div className="w-[85%] h-[85%] rounded-full border border-[#ffd8b8]/30 flex items-center justify-center bg-gradient-to-tr from-[#6b3510]/30 to-transparent">
-                      <span className="font-outfit text-sm sm:text-lg font-black text-white drop-shadow-md">3</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-          </div>
 
           {/* RUNNER UPS */}
           {rankedPlayers.length > 3 ? (
@@ -688,11 +715,7 @@ export default function FinalResult() {
                             </div>
                           </div>
 
-                          {!hasAnswered && (
-                            <div className="rounded-lg border px-3 py-2 text-xs border-orange-500/20 bg-orange-500/10 text-orange-300">
-                              <span className="font-semibold">Status:</span> {statusLabel}
-                            </div>
-                          )}
+
 
                           {/* Your Answer and Correct Answer */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-300">

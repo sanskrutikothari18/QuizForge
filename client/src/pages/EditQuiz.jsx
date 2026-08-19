@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -60,6 +60,27 @@ export default function EditQuiz() {
       });
     });
   };
+
+  const pageHeaderRef = useRef(null);
+
+  // Measure dynamic page header height and update CSS property --page-header-height
+  useEffect(() => {
+    const updatePageHeaderHeight = () => {
+      if (pageHeaderRef.current) {
+        document.documentElement.style.setProperty('--page-header-height', `${pageHeaderRef.current.offsetHeight}px`);
+      }
+    };
+    updatePageHeaderHeight();
+    const observer = new ResizeObserver(updatePageHeaderHeight);
+    if (pageHeaderRef.current) {
+      observer.observe(pageHeaderRef.current);
+    }
+    window.addEventListener('resize', updatePageHeaderHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updatePageHeaderHeight);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -215,24 +236,25 @@ export default function EditQuiz() {
 
         {/* ACTION TOOLBAR (PAGE TITLE & SAVE ACTIONS) */}
         <div 
-          className="sticky top-0 z-30 w-full border-b backdrop-blur-xl shadow-md transition-colors duration-300 px-4 sm:px-6 lg:px-8 py-3"
+          ref={pageHeaderRef}
+          className="fixed top-[var(--main-header-height,64px)] left-0 right-0 z-40 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300 py-3 sm:py-3.5"
           style={{
             backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
             borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
           }}
         >
-          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="mx-auto max-w-5xl px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => navigate('/quiz/my')}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
               >
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
                 <h1 className="font-outfit text-xl sm:text-2xl font-extrabold flex items-center gap-2" style={{ color: 'var(--text-heading)' }}>
-                  <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  <Edit3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0" />
                   <span>Edit Quiz</span>
                 </h1>
                 <p className="text-xs text-gray-400 mt-0.5">
@@ -241,17 +263,17 @@ export default function EditQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0">
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit, onInvalid)}
                   disabled={updateMutation.isPending}
-                  className="btn-premium px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
+                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
                   {updateMutation.isPending
-                    ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <Save className="h-4 w-4" />
+                    ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                    : <Save className="h-4 w-4 shrink-0" />
                   }
                   <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
                 </button>
@@ -260,7 +282,7 @@ export default function EditQuiz() {
           </div>
 
         {/* MAIN FORM CONTENT */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-6 sm:pt-8 pb-12 px-4 sm:px-8">
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-[calc(var(--page-header-height,68px)+1.5rem)] pb-12 px-4 sm:px-8">
 
           {/* EDITOR FORM */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
@@ -331,16 +353,16 @@ export default function EditQuiz() {
 
             {/* Background Settings */}
             <div className="glass-panel rounded-3xl overflow-hidden relative border border-white/5 p-6 sm:p-8 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-4 gap-4">
-                <div className="text-left">
-                  <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <Image className="h-4.5 w-4.5 text-primary" />
-                    Quiz Background Settings
+              <div className="secondary-section-header">
+                <div className="section-title-group">
+                  <h3 className="section-title">
+                    <Image className="h-4.5 w-4.5 text-primary shrink-0" />
+                    <span>Quiz Background Settings</span>
                   </h3>
-                  <p className="text-xs text-gray-400 mt-1">Configure global and question-specific visual styling.</p>
+                  <p className="section-subtitle">Configure global and question-specific visual styling.</p>
                 </div>
                 {/* Mode Toggle */}
-                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
+                <div className="section-action-group">
                   <span className="text-xs font-bold text-gray-300">Same background for all questions</span>
                   <button
                     type="button"
