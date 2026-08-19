@@ -1664,8 +1664,8 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
         {/* PEXELS LIBRARY PORTAL MODAL (REMOVED FROM NORMAL DOCUMENT FLOW) */}
         {isPexelsModalOpen && createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-hidden">
-            <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden relative text-left`}>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-6 overflow-hidden">
+            <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border-0 sm:border rounded-none sm:rounded-2xl w-full max-w-5xl h-full sm:h-[88vh] flex flex-col shadow-2xl overflow-hidden relative text-left`}>
               
               {/* Modal Header */}
               <div className={`flex items-center justify-between px-6 py-4 border-b ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-[#18181f]'} shrink-0`}>
@@ -2189,8 +2189,8 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
                 {/* LARGE PREVIEW MODAL INSIDE PORTAL */}
                 {selectedImageForPreview && (
-                  <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 sm:p-6 animate-fade-in">
-                    <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row relative text-left`}>
+                  <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-0 sm:p-6 animate-fade-in">
+                    <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border-0 sm:border rounded-none sm:rounded-2xl w-full max-w-3xl h-full sm:h-auto overflow-hidden shadow-2xl flex flex-col md:flex-row relative text-left`}>
                       
                       {/* Close Button */}
                       <button

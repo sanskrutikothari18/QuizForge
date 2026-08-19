@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,8 +10,6 @@ import { register as registerUser } from '../services/authService';
 export default function Register() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordValue, setPasswordValue] = useState('');
-  const [isRegistered, setIsRegistered] = useState(false);
 
   const {
     register,

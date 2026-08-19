@@ -16,6 +16,7 @@ import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 
 import BackgroundPicker from '../components/BackgroundPicker';
+import CategoryQuestionsExplorer from '../components/CategoryQuestionsExplorer';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
@@ -35,6 +36,30 @@ export default function CreateQuiz() {
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
+  const [showRefExplorer, setShowRefExplorer] = useState(true);
+
+  const handleAddQuestionFromRef = (q) => {
+    append({
+      questionText: q.questionText || '',
+      options: q.options?.length === 4 ? q.options : ['', '', '', ''],
+      correctAnswer: q.correctAnswer ?? 0,
+      timeLimit: q.timeLimit || 20,
+      backgroundImage: ''
+    });
+  };
+
+  const handleImportAllRefQuestions = (questionsList) => {
+    if (!questionsList || questionsList.length === 0) return;
+    questionsList.forEach(q => {
+      append({
+        questionText: q.questionText || '',
+        options: q.options?.length === 4 ? q.options : ['', '', '', ''],
+        correctAnswer: q.correctAnswer ?? 0,
+        timeLimit: q.timeLimit || 20,
+        backgroundImage: ''
+      });
+    });
+  };
 
   // Sticky toolbar scroll tracking
   const [isScrolled, setIsScrolled] = useState(false);
@@ -405,9 +430,21 @@ export default function CreateQuiz() {
                     >
                       <option value="general knowledge">General Knowledge</option>
                       <option value="science">Science</option>
+                      <option value="technology">Technology</option>
                       <option value="programming">Programming</option>
                       <option value="geography">Geography</option>
                       <option value="history">History</option>
+                      <option value="space">Space & Astronomy</option>
+                      <option value="gaming">Gaming & Esports</option>
+                      <option value="education">Education & Literature</option>
+                      <option value="mathematics">Mathematics</option>
+                      <option value="nature">Nature & Environment</option>
+                      <option value="sports">Sports & Fitness</option>
+                      <option value="music">Music & Arts</option>
+                      <option value="food">Food & Culinary</option>
+                      <option value="movies">Movies & Entertainment</option>
+                      <option value="birds">Wildlife & Birds</option>
+                      <option value="business">Business & Finance</option>
                     </select>
                   </div>
 
@@ -493,6 +530,31 @@ export default function CreateQuiz() {
                 )}
               </div>
 
+              {/* ── DYNAMIC CATEGORY REFERENCE QUESTIONS EXPLORER ── */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen className="h-4.5 w-4.5 text-amber-400" />
+                    Reference Questions for "{watch('category') || 'Selected Category'}"
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowRefExplorer(!showRefExplorer)}
+                    className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    {showRefExplorer ? 'Hide Reference Explorer' : 'Explore Reference Questions'}
+                  </button>
+                </div>
+
+                {showRefExplorer && (
+                  <CategoryQuestionsExplorer
+                    activeCategory={watch('category')}
+                    onAddQuestion={handleAddQuestionFromRef}
+                    onImportAll={handleImportAllRefQuestions}
+                  />
+                )}
+              </div>
+
               {/* QUESTIONS BUILDER LIST */}
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -505,10 +567,10 @@ export default function CreateQuiz() {
                     <button
                       type="button"
                       onClick={() => append({ questionText: '', options: ['', '', '', ''], correctAnswer: 0, timeLimit: 20, backgroundImage: '' })}
-                      className="btn-premium btn-secondary-gradient px-4 py-2 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow"
+                      className="btn-premium btn-secondary-gradient px-4 py-2 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow cursor-pointer"
                     >
                       <Plus className="h-3.5 w-3.5" />
-                      <span>Add Question</span>
+                      <span>Add Blank Question</span>
                     </button>
                   </div>
                 </div>

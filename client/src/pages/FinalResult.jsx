@@ -260,7 +260,7 @@ export default function FinalResult() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen font-outfit bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white overflow-hidden flex flex-col justify-between">
+      <div className="relative min-h-screen font-outfit bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white overflow-x-hidden overflow-y-auto flex flex-col justify-between">
         
         {/* Component specific animations and keyframes */}
         <style>{`

@@ -13,6 +13,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import BackgroundPicker from '../components/BackgroundPicker';
+import CategoryQuestionsExplorer from '../components/CategoryQuestionsExplorer';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizById, updateQuiz } from '../services/quizService';
 
@@ -35,6 +36,30 @@ export default function EditQuiz() {
   const [bgModalTarget, setBgModalTarget] = useState(null);
   const [formReady, setFormReady] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showRefExplorer, setShowRefExplorer] = useState(true);
+
+  const handleAddQuestionFromRef = (q) => {
+    append({
+      questionText: q.questionText || '',
+      options: q.options?.length === 4 ? q.options : ['', '', '', ''],
+      correctAnswer: q.correctAnswer ?? 0,
+      timeLimit: q.timeLimit || 20,
+      backgroundImage: ''
+    });
+  };
+
+  const handleImportAllRefQuestions = (questionsList) => {
+    if (!questionsList || questionsList.length === 0) return;
+    questionsList.forEach(q => {
+      append({
+        questionText: q.questionText || '',
+        options: q.options?.length === 4 ? q.options : ['', '', '', ''],
+        correctAnswer: q.correctAnswer ?? 0,
+        timeLimit: q.timeLimit || 20,
+        backgroundImage: ''
+      });
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -273,9 +298,21 @@ export default function EditQuiz() {
                   >
                     <option value="general knowledge">General Knowledge</option>
                     <option value="science">Science</option>
+                    <option value="technology">Technology</option>
                     <option value="programming">Programming</option>
                     <option value="geography">Geography</option>
                     <option value="history">History</option>
+                    <option value="space">Space & Astronomy</option>
+                    <option value="gaming">Gaming & Esports</option>
+                    <option value="education">Education & Literature</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="nature">Nature & Environment</option>
+                    <option value="sports">Sports & Fitness</option>
+                    <option value="music">Music & Arts</option>
+                    <option value="food">Food & Culinary</option>
+                    <option value="movies">Movies & Entertainment</option>
+                    <option value="birds">Wildlife & Birds</option>
+                    <option value="business">Business & Finance</option>
                   </select>
                 </div>
 
@@ -330,12 +367,12 @@ export default function EditQuiz() {
               ) : (
                 <div className="p-8 rounded-2xl bg-white/[0.02] border border-dashed border-white/10 text-center space-y-3">
                   <Image className="h-10 w-10 text-primary mx-auto opacity-70" />
-                  <h4 className="text-sm font-bold text-gray-300 flex items-center justify-center gap-1.5">
+                  <h4 className="text-sm font-bold text-gray-300 flex items-center gap-1.5 justify-center">
                     <Palette className="h-4 w-4 text-secondary" />
                     Different Background Mode Active
                   </h4>
                   <p className="text-xs text-gray-500 max-w-md mx-auto">
-                    Each question can have its own unique background. Customize them below using the "Customize Background" option.
+                    Each question can now have its own unique background setup! Customize them below inside the Questions List.
                   </p>
                   <div className="pt-2">
                     <BackgroundPicker
@@ -343,15 +380,37 @@ export default function EditQuiz() {
                       onChange={(val) => setValue('backgroundImage', val)}
                       showPreview={false}
                     />
-                    <p className="text-[10px] text-gray-500 italic mt-2">
-                      *This background serves as the fallback for questions without custom backgrounds.
-                    </p>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Questions Builder */}
+            {/* DYNAMIC CATEGORY REFERENCE QUESTIONS EXPLORER */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                  <BookOpen className="h-4.5 w-4.5 text-amber-400" />
+                  Reference Questions for "{watch('category') || 'Selected Category'}"
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowRefExplorer(!showRefExplorer)}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  {showRefExplorer ? 'Hide Reference Explorer' : 'Explore Reference Questions'}
+                </button>
+              </div>
+
+              {showRefExplorer && (
+                <CategoryQuestionsExplorer
+                  activeCategory={watch('category')}
+                  onAddQuestion={handleAddQuestionFromRef}
+                  onImportAll={handleImportAllRefQuestions}
+                />
+              )}
+            </div>
+
+            {/* QUESTIONS BUILDER LIST */}
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
@@ -361,10 +420,10 @@ export default function EditQuiz() {
                 <button
                   type="button"
                   onClick={() => append({ questionText: '', options: ['', '', '', ''], correctAnswer: 0, timeLimit: 20, backgroundImage: '' })}
-                  className="btn-premium btn-secondary-gradient px-4 py-2 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow"
+                  className="btn-premium btn-secondary-gradient px-4 py-2 flex items-center gap-1.5 text-xs font-bold shadow-secondary-glow cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  <span>Add Question</span>
+                  <span>Add Blank Question</span>
                 </button>
               </div>
 

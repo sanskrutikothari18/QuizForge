@@ -84,7 +84,7 @@ export default function Sidebar() {
 
       {/* SIDEBAR PANEL (DESKTOP FIXED & MOBILE DRAWER) */}
       <aside 
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 flex flex-col justify-between border-r shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 sm:w-64 flex flex-col justify-between border-r shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
         style={{

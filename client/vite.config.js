@@ -45,7 +45,7 @@ function ngrokPlugin() {
               path.resolve(__dirname, 'src/tunnel.json'),
               JSON.stringify({ url: "" }, null, 2)
             );
-          } catch (e) {}
+          } catch (e) { void e; }
           return;
         }
 
@@ -68,7 +68,7 @@ function ngrokPlugin() {
               path.resolve(__dirname, 'src/tunnel.json'),
               JSON.stringify({ url: existing.url }, null, 2)
             );
-          } catch (e) {}
+          } catch (e) { void e; }
           return;
         }
 
@@ -124,10 +124,10 @@ function ngrokPlugin() {
             if (current) {
               try {
                 if (current.tunnel) await current.tunnel.close();
-              } catch (e) {}
+              } catch (e) { void e; }
               try {
                 if (current.session) await current.session.close();
-              } catch (e) {}
+              } catch (e) { void e; }
               globalThis.__ngrok__ = null;
             }
             try {
@@ -135,7 +135,7 @@ function ngrokPlugin() {
                 path.resolve(__dirname, 'src/tunnel.json'),
                 JSON.stringify({ url: "" }, null, 2)
               );
-            } catch (e) {}
+            } catch (e) { void e; }
           };
 
           const syncCleanup = () => {
@@ -144,7 +144,7 @@ function ngrokPlugin() {
                 path.resolve(__dirname, 'src/tunnel.json'),
                 JSON.stringify({ url: "" }, null, 2)
               );
-            } catch (e) {}
+            } catch (e) { void e; }
           };
 
           // Register lifecycle handlers once
@@ -164,7 +164,7 @@ function ngrokPlugin() {
               path.resolve(__dirname, 'src/tunnel.json'),
               JSON.stringify({ url: "" }, null, 2)
             );
-          } catch (e) {}
+          } catch (e) { void e; }
         }
       });
     }

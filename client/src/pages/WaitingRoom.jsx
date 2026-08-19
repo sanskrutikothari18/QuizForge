@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ShieldAlert, Zap, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Users, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+import { connectSocket, emitJoinRoom } from '../services/socketService';
 import { useGame } from '../context/GameContext';
 import { getGame } from '../services/gameService';
 
@@ -48,7 +48,7 @@ const parseBgConfig = (bgStr) => {
         darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
       };
     }
-  } catch (e) { }
+  } catch (e) { void e; }
   return {
     url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
@@ -68,7 +68,6 @@ export default function WaitingRoom() {
   const navigate = useNavigate();
   const { playerName, setPin, setPlayerName } = useGame();
   const [players, setPlayers] = useState([]);
-  const [isConnected, setIsConnected] = useState(false);
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
 
   // Fetch quiz background image and players list on mount
@@ -113,7 +112,6 @@ export default function WaitingRoom() {
 
     // 1. Establish Socket Connection
     const socket = connectSocket();
-    setIsConnected(true);
 
     // 2. Register Player inside Socket Room (handle reconnects)
     const joinRoom = () => {

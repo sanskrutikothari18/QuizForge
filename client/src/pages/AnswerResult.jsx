@@ -446,7 +446,7 @@ export default function AnswerResult() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen text-gray-200 p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-hidden">
+      <div className="relative min-h-screen text-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-x-hidden overflow-y-auto">
         
         {/* Customized Background Layer */}
         {bgConfig.url ? (

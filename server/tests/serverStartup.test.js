@@ -36,10 +36,14 @@ function loadServerModule() {
     if (request === 'express') return expressFactory;
     if (request === 'dotenv') return { config() {} };
     if (request === 'cors') return () => (req, res, next) => next();
+    if (request === 'socket.io') {
+      return { Server: class { constructor() {} } };
+    }
     if (request === './routes/authRoutes') return {};
     if (request === './routes/gameRoutes') return {};
     if (request === './routes/quizRoutes') return {};
     if (request === './routes/resultRoutes') return {};
+    if (request === './routes/imageRoutes') return {};
     if (request === './socket/index') return () => {};
     return originalLoad.apply(this, arguments);
   };

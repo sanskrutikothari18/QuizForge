@@ -3,10 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Clock, HelpCircle, Loader2, ArrowRight, ArrowLeft, XCircle,
-  Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
-  Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
-  Globe, Compass, Map, Scroll, Landmark, Anchor, History,
-  Sparkles, Lightbulb, Gamepad2, BookOpen
+  Cpu, Monitor, Keyboard, Mouse, Database, Server
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -105,7 +102,7 @@ const parseBgConfig = (bgStr) => {
         darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
       };
     }
-  } catch (e) { }
+  } catch (e) { void e; }
   return {
     url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
@@ -132,7 +129,11 @@ export default function LiveQuiz() {
   const location = useLocation();
   const { playerName, setPin, setPlayerName, setCurrentQuestion, setLeaderboard } = useGame();
 
-  // Game state
+  const localPlayer = playerName || localStorage.getItem('guest_playerName');
+  const hostToken = localStorage.getItem('token');
+  const hostedPin = localStorage.getItem('current_hosted_pin');
+  const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+  const isHost = isUserHost;
   const [question, setQuestion] = useState(null);
   const [questionNumber, setQuestionNumber] = useState(1);
   const [totalQuestions, setTotalQuestions] = useState(1);
@@ -148,18 +149,13 @@ export default function LiveQuiz() {
   // Player state
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
-  const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
     const localPlayer = playerName || localStorage.getItem('guest_playerName');
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
 
-    // Determine user role
-    const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
-    setIsHost(isUserHost);
-
-    if (!localPlayer && !isUserHost) {
+    if (!localPlayer && !isHost) {
       toast.error('Session invalid. Please join again.');
       navigate('/join');
       return;
@@ -498,7 +494,7 @@ export default function LiveQuiz() {
 
   return (
     <AnimatedPage>
-      <div className="relative h-[100dvh] flex flex-col justify-between gap-3 p-3 sm:p-6 transition-all duration-700 overflow-hidden select-none">
+      <div className="relative h-[100dvh] flex flex-col justify-between gap-3 p-3 sm:p-6 transition-all duration-700 overflow-x-hidden overflow-y-auto sm:overflow-hidden select-none">
 
         {/* Customized Background Layer */}
         {bgConfig.url ? (

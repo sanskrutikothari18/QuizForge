@@ -3,14 +3,15 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Award, Play, Trash2, Search, Filter, Plus, ArrowLeft, 
-  HelpCircle, MoreVertical, Calendar, ArrowRight, ShieldCheck,
+  Play, Trash2, Search, Filter, Plus, ArrowLeft, 
+  HelpCircle, Calendar, ArrowRight, ShieldCheck,
   BarChart3, Trophy, Users, Pencil
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import ReportsModal from '../components/ReportsModal';
-import { getMyQuizzes, deleteQuiz } from '../services/quizService';
+import CategoryQuestionsExplorer from '../components/CategoryQuestionsExplorer';
+import { getMyQuizzes, deleteQuiz, createQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 
@@ -19,6 +20,34 @@ export default function MyQuizzes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openReportMenuId, setOpenReportMenuId] = useState(null);
+
+  const handleCreateQuizFromCategory = async (categoryName, questionsList) => {
+    try {
+      toast.loading(`Creating quiz from ${categoryName}...`, { id: 'create-cat-quiz' });
+      const payload = {
+        title: `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Quiz`,
+        description: `Pre-built reference questions for ${categoryName}.`,
+        category: categoryName,
+        backgroundImage: '',
+        questions: questionsList.map(q => ({
+          questionText: q.questionText,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          timeLimit: q.timeLimit || 15,
+          backgroundImage: ''
+        }))
+      };
+      const res = await createQuiz(payload);
+      if (res.success) {
+        toast.success(`Created "${payload.title}" successfully!`, { id: 'create-cat-quiz' });
+        refetch();
+      } else {
+        toast.error(res.message || 'Failed to create quiz', { id: 'create-cat-quiz' });
+      }
+    } catch (err) {
+      toast.error('Error creating category quiz', { id: 'create-cat-quiz' });
+    }
+  };
 
   // Query to fetch quizzes
   const { 
@@ -268,7 +297,6 @@ export default function MyQuizzes() {
                         });
 
                         const hasResults = quizResults.length > 0;
-                        const medals = [null, null, null]; // medals handled by icons
 
                         return (
                           <button
@@ -296,6 +324,14 @@ export default function MyQuizzes() {
               </AnimatePresence>
             </div>
           )}
+
+          {/* DYNAMIC THEME & CATEGORY REFERENCE QUESTIONS SECTION */}
+          <div className="pt-8 border-t border-white/10 mt-10">
+            <CategoryQuestionsExplorer
+              activeCategory={selectedCategory === 'all' ? (searchQuery || 'general knowledge') : selectedCategory}
+              onCreateQuizFromCategory={handleCreateQuizFromCategory}
+            />
+          </div>
 
         </div>
       </div>

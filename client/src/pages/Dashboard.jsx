@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Award, PlusCircle, Mail,
+  LayoutDashboard, PlusCircle, Mail,
   Calendar, FileText, ArrowRight, Play, Users, HelpCircle,
   X, Trophy, Clock, BarChart3, UserCheck, ChevronRight, User
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
+import CategoryQuestionsExplorer from '../components/CategoryQuestionsExplorer';
 import { getProfile } from '../services/authService';
-import { getMyQuizzes } from '../services/quizService';
+import { getMyQuizzes, createQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 import { useTheme } from '../context/ThemeContext';
@@ -23,6 +24,35 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
+
+  const handleCreateQuizFromCategory = async (categoryName, questionsList) => {
+    try {
+      toast.loading(`Creating quiz from ${categoryName}...`, { id: 'dash-create-quiz' });
+      const payload = {
+        title: `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Quiz`,
+        description: `Pre-built reference questions for ${categoryName}.`,
+        category: categoryName,
+        backgroundImage: '',
+        questions: questionsList.map(q => ({
+          questionText: q.questionText,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          timeLimit: q.timeLimit || 15,
+          backgroundImage: ''
+        }))
+      };
+      const res = await createQuiz(payload);
+      if (res.success) {
+        toast.success(`Created "${payload.title}" successfully!`, { id: 'dash-create-quiz' });
+        refetchQuizzes();
+        navigate('/quiz/my');
+      } else {
+        toast.error(res.message || 'Failed to create quiz', { id: 'dash-create-quiz' });
+      }
+    } catch (err) {
+      toast.error('Error creating category quiz', { id: 'dash-create-quiz' });
+    }
+  };
 
   // Display Welcome Popup Toast when arriving directly from Sign In or Registration
   useEffect(() => {
@@ -336,6 +366,14 @@ export default function Dashboard() {
 
             </div>
 
+          </div>
+
+          {/* DYNAMIC PRE-BUILT CATEGORY QUESTIONS & THEMES EXPLORER WIDGET */}
+          <div className="pt-8 border-t border-white/10 mt-6">
+            <CategoryQuestionsExplorer
+              activeCategory="general knowledge"
+              onCreateQuizFromCategory={handleCreateQuizFromCategory}
+            />
           </div>
 
         </div>

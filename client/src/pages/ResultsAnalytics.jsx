@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
-  Users, CheckCircle, XCircle, AlertCircle, Percent, Calendar, FileSpreadsheet, FileText, Crown, Medal
+  CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -37,7 +36,7 @@ export default function ResultsAnalytics() {
 
   const result = data?.result;
   const players = result?.players || [];
-  const { themeMode, toggleThemeMode } = useTheme();
+  const { themeMode } = useTheme();
   const isDark = themeMode !== 'light';
   const sortedPlayers = [...players].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
   const playerSummaries = sortedPlayers.map((player, index) => {
