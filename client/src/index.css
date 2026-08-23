@@ -1223,10 +1223,12 @@ html, body {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* Ensure text doesn't overflow */
-  .truncate {
-    max-width: 150px;
-  }
+  /* `.truncate` keeps its own explicit max-width (e.g. navbar profile name
+     max-w-[50px], leaderboard podium names max-w-[70px]/max-w-[80px]). The
+     global 150px cap below 380px was removed because it overrode those and
+     could push the header / podium content out of the viewport on tiny phones.
+     Truncation still works via the `.truncate` utility + each element's own
+     width constraint. */
 }
 
 @media (max-width: 480px) {
@@ -1246,6 +1248,16 @@ html, body {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
   }
+}
+
+/* Keep header buttons (e.g. the mobile "Get Started") content-sized so the
+   navbar never stretches a button to full width and overflows on small phones.
+   This overrides the <=480px `.btn-premium { width: 100% }` rule above using
+   higher specificity (two selectors). CTA / form buttons OUTSIDE the header
+   still keep their full-width mobile behavior. */
+header .btn-premium {
+  width: auto;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -1289,8 +1301,13 @@ html, body {
     font-size: 0.75rem;
   }
 
-  /* Fix grid layouts that might have too many columns */
-  .lg\:grid-cols-3, .lg\:grid-cols-4, .grid-cols-3, .grid-cols-4 {
+  /* Fix grid layouts that might have too many columns.
+     NOTE: bare `.grid-cols-3`/`.grid-cols-4` were removed from this selector
+     because they collapsed intended multi-column mobile grids into a single
+     column — e.g. the JoinGame avatar picker (grid-cols-4 sm:grid-cols-6) and
+     the AnswerResult stats row (grid grid-cols-3). Only the lg: variants
+     remain, which is what this rule was meant to cap on tablet. */
+  .lg\:grid-cols-3, .lg\:grid-cols-4 {
     grid-template-columns: 1fr !important;
   }
 

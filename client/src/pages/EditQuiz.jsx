@@ -263,12 +263,12 @@ export default function EditQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit, onInvalid)}
                   disabled={updateMutation.isPending}
-                  className="btn-premium px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
+                  className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
                   {updateMutation.isPending

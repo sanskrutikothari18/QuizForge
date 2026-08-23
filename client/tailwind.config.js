@@ -7,6 +7,14 @@ export default {
   ],
   theme: {
     extend: {
+      // Enable the `xs:` breakpoint already referenced across the codebase
+      // (HeroSection.jsx & LiveDemoSection.jsx). Without this, every `xs:`
+      // class is dead CSS, so headings/line-breaks/progressive UI never adapt.
+      // 480px keeps phones (320–414px) identical to today and only activates
+      // the authored enhancements on tablets & up.
+      screens: {
+        xs: '480px',
+      },
       spacing: {
         '4.5': '1.125rem',
       },

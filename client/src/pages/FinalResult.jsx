@@ -586,77 +586,77 @@ export default function FinalResult() {
                   transition={{ duration: 0.5 }}
                   className="w-full max-w-6xl mx-auto mb-8"
                 >
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                     {/* Total Questions */}
-                    <div className="p-4 rounded-xl border bg-white/5 border-white/10">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Target className="h-4 w-4 text-blue-400" />
-                        <span className="text-xs font-bold uppercase text-gray-400">Total Questions</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-white/5 border-white/10">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <Target className="h-4 w-4 text-blue-400 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-gray-400 truncate">Total Questions</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.totalQuestions}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.totalQuestions}</p>
                     </div>
 
                     {/* Correct Answers */}
-                    <div className="p-4 rounded-xl border bg-green-500/10 border-green-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-xs font-bold uppercase text-green-400">Correct</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-green-500/10 border-green-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-green-400 truncate">Correct</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.correctAnswers}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.correctAnswers}</p>
                     </div>
 
                     {/* Incorrect Answers */}
-                    <div className="p-4 rounded-xl border bg-red-500/10 border-red-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <XCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-xs font-bold uppercase text-red-400">Incorrect</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-red-500/10 border-red-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <XCircle className="h-4 w-4 text-red-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-red-400 truncate">Incorrect</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.incorrectAnswers}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.incorrectAnswers}</p>
                     </div>
 
                     {/* Not Submitted */}
-                    <div className="p-4 rounded-xl border bg-orange-500/10 border-orange-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <AlertCircle className="h-4 w-4 text-orange-500" />
-                        <span className="text-xs font-bold uppercase text-orange-400">Not Submitted</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-orange-500/10 border-orange-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <AlertCircle className="h-4 w-4 text-orange-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-orange-400 truncate">Not Submitted</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.notSubmitted}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.notSubmitted}</p>
                     </div>
 
                     {/* Score */}
-                    <div className="p-4 rounded-xl border bg-purple-500/10 border-purple-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Trophy className="h-4 w-4 text-purple-500" />
-                        <span className="text-xs font-bold uppercase text-purple-400">Score</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-purple-500/10 border-purple-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <Trophy className="h-4 w-4 text-purple-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-purple-400 truncate">Score</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.totalScore}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.totalScore}</p>
                     </div>
 
                     {/* Percentage */}
-                    <div className="p-4 rounded-xl border bg-blue-500/10 border-blue-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Percent className="h-4 w-4 text-blue-500" />
-                        <span className="text-xs font-bold uppercase text-blue-400">Percentage</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-blue-500/10 border-blue-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <Percent className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-blue-400 truncate">Percentage</span>
                       </div>
-                      <p className="text-2xl font-black text-white">{playerStats.percentage}%</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.percentage}%</p>
                     </div>
 
                     {/* Rank */}
-                    <div className="p-4 rounded-xl border bg-yellow-500/10 border-yellow-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Award className="h-4 w-4 text-yellow-500" />
-                        <span className="text-xs font-bold uppercase text-yellow-400">Rank</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-yellow-500/10 border-yellow-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <Award className="h-4 w-4 text-yellow-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-yellow-400 truncate">Rank</span>
                       </div>
-                      <p className="text-2xl font-black text-white">#{playerStats.rank}</p>
+                      <p className="text-xl sm:text-2xl font-black text-white">#{playerStats.rank}</p>
                     </div>
 
                     {/* Completion */}
-                    <div className="p-4 rounded-xl border bg-teal-500/10 border-teal-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-teal-500" />
-                        <span className="text-xs font-bold uppercase text-teal-400">Completion</span>
+                    <div className="p-3 sm:p-4 rounded-xl border bg-teal-500/10 border-teal-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                        <TrendingUp className="h-4 w-4 text-teal-500 shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-bold uppercase text-teal-400 truncate">Completion</span>
                       </div>
-                      <p className="text-2xl font-black text-white">
+                      <p className="text-xl sm:text-2xl font-black text-white">
                         {Math.round(((playerStats.totalQuestions - playerStats.notSubmitted) / playerStats.totalQuestions) * 100)}%
                       </p>
                     </div>

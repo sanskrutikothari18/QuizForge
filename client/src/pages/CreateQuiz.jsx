@@ -341,7 +341,7 @@ export default function CreateQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
                 {/* Hidden File Input for Excel/CSV */}
                 <input
                   type="file"
@@ -352,7 +352,7 @@ export default function CreateQuiz() {
                 />
                 <label
                   htmlFor="excel-file-upload"
-                  className="btn-premium px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
                 >
                   <FileSpreadsheet className="h-4 w-4 shrink-0" />
@@ -388,7 +388,7 @@ export default function CreateQuiz() {
                       toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                     }
                   }, onInvalid)}
-                  className="btn-premium px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
                 >
                   <Play className="h-4 w-4 fill-current shrink-0" />
@@ -398,7 +398,7 @@ export default function CreateQuiz() {
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit, onInvalid)}
-                  className="btn-premium px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
                   <Save className="h-4 w-4 shrink-0" />

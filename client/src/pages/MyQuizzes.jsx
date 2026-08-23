@@ -280,10 +280,10 @@ export default function MyQuizzes() {
                     </div>
 
                     {/* Launch + Reports buttons */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-5 pt-4 border-t border-white/5">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-5 pt-4 border-t border-white/5">
                       <button
                         onClick={() => handleHostGame(quiz._id)}
-                        className="flex-1 btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow"
+                        className="flex-1 w-full sm:w-auto btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow"
                       >
                         <Play className="h-3 w-3 fill-current" />
                         <span>Launch Lobby</span>
@@ -305,7 +305,7 @@ export default function MyQuizzes() {
                               if (!hasResults) return;
                               setOpenReportMenuId(quiz._id);
                             }}
-                            className={`px-3.5 py-2 rounded-xl border transition-all text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                            className={`w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl border transition-all text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
                               hasResults
                                 ? 'bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 cursor-pointer'
                                 : 'bg-white/2 border-white/5 text-gray-600 cursor-default'

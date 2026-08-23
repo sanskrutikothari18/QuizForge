@@ -243,30 +243,30 @@ export default function Leaderboard() {
             Leaderboard Arena
           </h2>
 
-          <div className="flex items-end justify-center gap-3 sm:gap-6 w-full max-w-lg h-60 mt-8">
+          <div className="flex items-end justify-center gap-1.5 sm:gap-6 w-full max-w-lg h-60 mt-8">
             
             {/* 2ND PLACE PODIUM */}
             {secondPlace ? (
-              <div className="flex flex-col items-center flex-1">
-                <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{secondPlace.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
+              <div className="flex flex-col items-center flex-1 min-w-0">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-300 truncate w-full text-center max-w-[70px] sm:max-w-[80px]">{secondPlace.name}</span>
+                <span className="text-[8px] sm:text-[10px] text-gray-400 font-semibold text-center w-full truncate">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 100 }}
                   transition={{ type: 'spring', stiffness: 50, delay: 0.2 }}
                   className="w-full bg-gradient-to-t from-white/5 to-white/15 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
                 >
-                  <Medal className="h-6 w-6 text-gray-400" />
+                  <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
 
             {/* 1ST PLACE PODIUM (CROWN & MIDDLE TALL) */}
             {firstPlace ? (
-              <div className="flex flex-col items-center flex-1">
-                <Crown className="h-5 w-5 text-warning animate-bounce mb-1" />
-                <span className="text-sm font-bold text-white truncate max-w-[90px]">{firstPlace.name}</span>
-                <span className="text-[10px] text-warning font-bold">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
+              <div className="flex flex-col items-center flex-1 min-w-0">
+                <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-warning animate-bounce mb-1" />
+                <span className="text-xs sm:text-sm font-bold text-white truncate w-full text-center max-w-[80px] sm:max-w-[90px]">{firstPlace.name}</span>
+                <span className="text-[8px] sm:text-[10px] text-warning font-bold text-center w-full truncate">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 140 }}
@@ -274,23 +274,23 @@ export default function Leaderboard() {
                   className="w-full bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20 rounded-t-2xl flex items-center justify-center mt-2 relative"
                 >
                   <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-                  <Crown className="h-8 w-8 text-yellow-400" />
+                  <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
 
             {/* 3RD PLACE PODIUM */}
             {thirdPlace ? (
-              <div className="flex flex-col items-center flex-1">
-                <span className="text-xs font-bold text-gray-300 truncate max-w-[80px]">{thirdPlace.name}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
+              <div className="flex flex-col items-center flex-1 min-w-0">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-300 truncate w-full text-center max-w-[70px] sm:max-w-[80px]">{thirdPlace.name}</span>
+                <span className="text-[8px] sm:text-[10px] text-gray-400 font-semibold text-center w-full truncate">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 75 }}
                   transition={{ type: 'spring', stiffness: 50, delay: 0.3 }}
                   className="w-full bg-gradient-to-t from-white/5 to-white/10 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
                 >
-                  <Medal className="h-6 w-6 text-amber-700" />
+                  <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-amber-700" />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}

@@ -187,13 +187,13 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
         className="glass-panel rounded-2xl sm:rounded-3xl border border-white/15 p-3.5 sm:p-8 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-950/90 via-black/95 to-slate-950 w-full"
       >
         {/* Top Game Bar - Flexible & Compact on Phone */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4 sm:mb-6 gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-3 mb-4 sm:mb-6 gap-1.5 sm:gap-2 gap-y-2">
           <div className="flex items-center gap-1.5 sm:gap-3">
-            <span className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-[10px] sm:text-xs font-extrabold text-primary shrink-0">
+            <span className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-[10px] sm:text-xs font-extrabold text-primary shrink-0 whitespace-nowrap">
               PIN: 849-204
             </span>
             {!isCompleted && (
-              <span className="text-[10px] sm:text-xs text-gray-400 font-extrabold shrink-0">
+              <span className="text-[10px] sm:text-xs text-gray-400 font-extrabold shrink-0 whitespace-nowrap">
                 Q{currentQIndex + 1}/{sampleQuestions.length}
               </span>
             )}
@@ -211,15 +211,15 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
                     : 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
                 }`}
               >
-                <Clock className={`h-3.5 w-3.5 ${timeLeft <= 5 ? 'animate-bounce text-red-400' : 'text-cyan-400'}`} />
-                <span>{timeLeft}s</span>
+                <Clock className={`h-3.5 w-3.5 shrink-0 ${timeLeft <= 5 ? 'animate-bounce text-red-400' : 'text-cyan-400'}`} />
+                <span className="whitespace-nowrap">{timeLeft}s</span>
               </div>
             )}
 
             {/* Live Score Counter */}
             <div className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-extrabold text-[11px] sm:text-sm shrink-0">
-              <Trophy className="h-3.5 w-3.5 text-amber-400" />
-              <span>{score.toLocaleString()} pts</span>
+              <Trophy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+              <span className="whitespace-nowrap">{score.toLocaleString()} pts</span>
             </div>
 
             {/* Streak Indicator */}

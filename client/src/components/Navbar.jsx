@@ -106,10 +106,10 @@ export default function Navbar() {
       <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
         
         {/* Brand Logo - Leftmost */}
-        <Link to="/" className="flex items-center gap-2 sm:gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
+        <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
           <Logo className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
-          <span className="font-outfit text-base sm:text-xl font-bold tracking-tight shrink-0 whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
-            Fourise <span className="text-secondary">Quiz Hub</span>
+          <span className="font-outfit text-sm sm:text-xl font-bold tracking-tight shrink-0 whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
+            Fourise <span className="hidden sm:inline text-secondary">Quiz Hub</span>
           </span>
         </Link>
 
@@ -188,11 +188,11 @@ export default function Navbar() {
         </nav>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
           {/* Theme Toggle Button */}
           <button
             onClick={toggleThemeMode}
-            className="rounded-xl p-2 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
+            className="rounded-xl p-1.5 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
             style={{
               background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
               borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
@@ -211,14 +211,14 @@ export default function Navbar() {
             <>
               {/* Profile Badge - Visible on all screens */}
               <div
-                className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 border transition-all"
+                className="flex items-center gap-1 sm:gap-1.5 rounded-xl px-1.5 py-1 sm:px-2.5 sm:py-1.5 border transition-all"
                 style={{
                   background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
                   borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
                 }}
               >
                 <User className="h-3.5 w-3.5 text-secondary shrink-0" />
-                <span className="text-xs font-bold truncate max-w-[70px] sm:max-w-[120px]" style={{ color: 'var(--text-main)' }}>
+                <span className="text-xs font-bold truncate max-w-[50px] sm:max-w-[120px]" style={{ color: 'var(--text-main)' }}>
                   {user?.name || 'User'}
                 </span>
               </div>
