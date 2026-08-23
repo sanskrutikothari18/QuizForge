@@ -200,7 +200,7 @@ export default function MyQuizzes() {
 
           {/* QUIZZES CARD GRID */}
           {isLoading || isResultsLoading ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="h-48 skeleton-loading rounded-2xl"></div>
               ))}
@@ -224,7 +224,7 @@ export default function MyQuizzes() {
               )}
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence>
                 {filteredQuizzes.map((quiz) => (
                   <motion.div

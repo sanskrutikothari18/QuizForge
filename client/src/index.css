@@ -1203,6 +1203,34 @@ html, body {
   }
 }
 
+/* ── Pricing cards & Plan Details modal fixes ── */
+/* Hard guarantee: pricing cards ALWAYS stack vertically (Free → Pro →
+   Enterprise, full width each) below the lg breakpoint, regardless of
+   any other grid rules elsewhere in this file. */
+@media (max-width: 1023px) {
+  #pricing > div.grid,
+  #pricing .grid.grid-cols-1 {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* Allow feature-list items to shrink and wrap instead of clipping
+   ("corporate trainers", "Unlimited live participants", etc.) */
+#pricing .space-y-3 > div {
+  min-width: 0;
+}
+#pricing .space-y-3 > div > span {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+/* The global mobile rule sets tables to nowrap+block for scrolling;
+   keep the comparison table readable by letting long labels wrap
+   (its container still scrolls horizontally if ever needed). */
+@media (max-width: 640px) {
+  .plan-table, .plan-table th, .plan-table td {
+    white-space: normal;
+  }
+}
+
 /* Extra small screens (320px+) */
 @media (max-width: 380px) {
   .font-outfit.text-3xl {
@@ -1296,25 +1324,28 @@ header .btn-premium {
     overflow-y: auto;
   }
 
-  /* Leaderboard table responsive */
+    /* Leaderboard table responsive */
   .leaderboard-table {
     font-size: 0.75rem;
   }
 
-  /* Fix grid layouts that might have too many columns.
-     NOTE: bare `.grid-cols-3`/`.grid-cols-4` were removed from this selector
-     because they collapsed intended multi-column mobile grids into a single
-     column — e.g. the JoinGame avatar picker (grid-cols-4 sm:grid-cols-6) and
-     the AnswerResult stats row (grid grid-cols-3). Only the lg: variants
-     remain, which is what this rule was meant to cap on tablet. */
-  .lg\:grid-cols-3, .lg\:grid-cols-4 {
-    grid-template-columns: 1fr !important;
-  }
+  /* REMOVED: The previous rule forced `.lg\:grid-cols-3` and `.lg\:grid-cols-4`
+     to `grid-template-columns: 1fr !important` inside this media query. Because
+     `@media (max-width: 768px)` covers the entire mobile AND small-tablet range,
+     the `!important` flag overrode Tailwind's `sm:grid-cols-2` breakpoint on
+     tablets (640-768px), collapsing legitimate 2-column grids into 1 column
+     and disrupting the responsive cascade on landing-page cards.
 
-  /* Stack flex rows on mobile */
-  .flex-col.md\:flex-row {
-    flex-direction: column !important;
-  }
+     On true mobile (≤639px) every landing section already declares a base
+     `grid-cols-1` class, so the override was redundant there. On tablet the
+     dedicated `@media (min-width: 769px) and (max-width: 1024px)` rule below
+     already caps `lg:` grids to 2 columns. Removing this mobile override lets
+     `sm:grid-cols-2` take effect on small tablets while base classes continue
+     to guarantee a single-column stack on phones. */
+
+  /* REMOVED: The previous `.flex-col.md\:flex-row { flex-direction: column !important }`
+     rule suffered the same problem — it overrode `md:flex-row` on tablets.
+     Base `flex-col` already handles mobile stacking. */
 
   /* Ensure images in cards don't overflow */
   .glass-panel img, .quiz-card img {
@@ -1324,6 +1355,12 @@ header .btn-premium {
 }
 
 @media (max-width: 1024px) {
+  /* Fix 3-column grids to 2 columns on tablet ONLY.
+     Must not apply below 768px, otherwise it overrides the
+     single-column stack (both rules use !important and this
+     one came later in the file, winning on phones too). */
+}
+@media (min-width: 769px) and (max-width: 1024px) {
   /* Fix 3-column grids to 2 columns on tablet */
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(2, 1fr) !important;
