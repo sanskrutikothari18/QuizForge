@@ -75,16 +75,7 @@ export default function FinalResult() {
       answers: p.answers || []
     })),
     winner: socketData.winner
-  } : (pin === 'demo' || pin === 'test' ? {
-    pin,
-    quiz: { title: 'Champions League Quiz', category: 'General Knowledge' },
-    players: [
-      { name: 'Alex Johnson', avatar: '🦊', totalScore: 980, answers: [{ isCorrect: true, timeTaken: 1200 }] },
-      { name: 'Jordan Smith', avatar: '🦁', totalScore: 850, answers: [{ isCorrect: true, timeTaken: 1500 }] },
-      { name: 'Sam Taylor', avatar: '🐼', totalScore: 720, answers: [{ isCorrect: true, timeTaken: 1800 }] },
-      { name: 'Chris Lee', avatar: '🐨', totalScore: 610, answers: [{ isCorrect: true, timeTaken: 2000 }] }
-    ]
-  } : null));
+  } : null);
 
   const sessionId = game?.id;
 

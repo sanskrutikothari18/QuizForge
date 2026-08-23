@@ -6,7 +6,7 @@ import {
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
   Settings, CheckCircle, Clock, Eye, AlertCircle, FileSpreadsheet, Play,
   Image, Upload, X, ChevronDown, ChevronUp, Palette, Copy,
-  BookOpen, LayoutDashboard, LogOut, User, Sun, Moon
+  LayoutDashboard, LogOut, User, Sun, Moon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -16,7 +16,6 @@ import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 
 import BackgroundPicker from '../components/BackgroundPicker';
-import CategoryQuestionsExplorer from '../components/CategoryQuestionsExplorer';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
@@ -36,30 +35,6 @@ export default function CreateQuiz() {
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
-  const [showRefExplorer, setShowRefExplorer] = useState(true);
-
-  const handleAddQuestionFromRef = (q) => {
-    append({
-      questionText: q.questionText || '',
-      options: q.options?.length === 4 ? q.options : ['', '', '', ''],
-      correctAnswer: q.correctAnswer ?? 0,
-      timeLimit: q.timeLimit || 20,
-      backgroundImage: ''
-    });
-  };
-
-  const handleImportAllRefQuestions = (questionsList) => {
-    if (!questionsList || questionsList.length === 0) return;
-    questionsList.forEach(q => {
-      append({
-        questionText: q.questionText || '',
-        options: q.options?.length === 4 ? q.options : ['', '', '', ''],
-        correctAnswer: q.correctAnswer ?? 0,
-        timeLimit: q.timeLimit || 20,
-        backgroundImage: ''
-      });
-    });
-  };
 
   const pageHeaderRef = useRef(null);
 
@@ -549,31 +524,6 @@ export default function CreateQuiz() {
                       </p>
                     </div>
                   </div>
-                )}
-              </div>
-
-              {/* ── DYNAMIC CATEGORY REFERENCE QUESTIONS EXPLORER ── */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <BookOpen className="h-4.5 w-4.5 text-amber-400" />
-                    Reference Questions for "{watch('category') || 'Selected Category'}"
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowRefExplorer(!showRefExplorer)}
-                    className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    {showRefExplorer ? 'Hide Reference Explorer' : 'Explore Reference Questions'}
-                  </button>
-                </div>
-
-                {showRefExplorer && (
-                  <CategoryQuestionsExplorer
-                    activeCategory={watch('category')}
-                    onAddQuestion={handleAddQuestionFromRef}
-                    onImportAll={handleImportAllRefQuestions}
-                  />
                 )}
               </div>
 

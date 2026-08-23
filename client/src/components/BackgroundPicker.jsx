@@ -1214,13 +1214,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const defaultPreviewData = {
-    category: 'Preview Category',
-    timeLimit: 15,
-    questionText: 'What organelle generates chemical energy for the cell?',
-    options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
-    correctAnswer: 1
-  };
+    const defaultPreviewData = {};
   const pd = previewData || defaultPreviewData;
   const displayCategory = pd.category || 'Preview Category';
   const displayTime = pd.timeLimit || 20;
