@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles, Zap, Shield, ArrowRight, X } from 'lucide-react';
@@ -7,21 +7,6 @@ import PlanComparisonTable from '../PlanComparisonTable';
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
   const [showPlanDetails, setShowPlanDetails] = useState(false);
-
-  // Close modal with Escape key and lock body scroll while open
-  useEffect(() => {
-    if (!showPlanDetails) return;
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setShowPlanDetails(false);
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [showPlanDetails]);
 
   return (
     <section id="pricing" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20">
@@ -96,20 +81,16 @@ export default function PricingSection() {
               </span>
             </div>
 
-            {/* Fixed-height price row keeps dividers aligned across all cards */}
-            <div className="mb-6 min-h-[3.5rem]">
-              <div className="flex flex-wrap items-end gap-x-2">
-                <span className="font-outfit text-4xl sm:text-5xl font-black text-white">₹0</span>
-                <span className="text-xs text-gray-400 font-semibold">/ forever free</span>
-              </div>
+            <div className="mb-6">
+              <span className="font-outfit text-4xl sm:text-5xl font-black text-white">₹0</span>
+              <span className="text-xs text-gray-400 font-semibold ml-2 whitespace-nowrap">/ forever free</span>
             </div>
 
-            {/* Fixed-height description block keeps feature lists aligned */}
-            <p className="text-xs text-gray-400 mb-6 leading-relaxed break-words min-h-[2.5rem]">
+            <p className="text-xs text-gray-400 mb-6 leading-relaxed">
               Perfect for students and casual trivia hosts getting started with live quiz battles.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6 flex-1">
+            <div className="space-y-3 border-t border-white/10 pt-6">
               <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
                 <Check className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>Create up to 5 quizzes</span>
@@ -162,29 +143,19 @@ export default function PricingSection() {
               </span>
             </div>
 
-            {/* Fixed-height price row keeps dividers aligned across all cards.
-                The yearly sub-line is absolutely positioned so billing toggle
-                changes never shift the divider / feature list position. */}
-            <div className="mb-6 min-h-[3.5rem] relative">
-              <div className="flex flex-wrap items-end gap-x-2">
-                <span className="font-outfit text-4xl sm:text-5xl font-black text-white">
-                  {isYearly ? '₹239' : '₹299'}
-                </span>
-                <span className="text-xs text-gray-300 font-semibold">/ month</span>
-              </div>
-              {isYearly && (
-                <span className="block text-[11px] text-emerald-400 font-bold mt-1">
-                  Billed annually (Save ₹720/yr)
-                </span>
-              )}
+            <div className="mb-6">
+              <span className="font-outfit text-4xl sm:text-5xl font-black text-white">
+                {isYearly ? '₹239' : '₹299'}
+              </span>
+              <span className="text-xs text-gray-300 font-semibold ml-2 whitespace-nowrap">/ month</span>
+              {isYearly && <span className="block text-[11px] text-emerald-400 font-bold mt-1">Billed annually (Save ₹720/yr)</span>}
             </div>
 
-            {/* Fixed-height description block keeps feature lists aligned */}
-            <p className="text-xs text-gray-300 mb-6 leading-relaxed break-words min-h-[2.5rem]">
+            <p className="text-xs text-gray-300 mb-6 leading-relaxed">
               Designed for teachers, schools, corporate trainers, and high-frequency quizmasters.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6 flex-1">
+            <div className="space-y-3 border-t border-white/10 pt-6">
               <div className="flex items-center gap-3 text-xs font-bold text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Unlimited quizzes creation</span>
@@ -247,18 +218,16 @@ export default function PricingSection() {
               </span>
             </div>
 
-            {/* Fixed-height price row keeps dividers aligned across all cards */}
-            <div className="mb-6 min-h-[3.5rem] flex flex-wrap items-end gap-x-2">
+            <div className="mb-6">
               <span className="font-outfit text-3xl sm:text-4xl font-black text-white">Custom</span>
-              <span className="text-xs text-gray-400 font-semibold">/ tailored plan</span>
+              <span className="text-xs text-gray-400 font-semibold ml-2 whitespace-nowrap">/ tailored plan</span>
             </div>
 
-            {/* Fixed-height description block keeps feature lists aligned */}
-            <p className="text-xs text-gray-400 mb-6 leading-relaxed break-words min-h-[2.5rem]">
+            <p className="text-xs text-gray-400 mb-6 leading-relaxed">
               Custom solutions tailored for universities, large educational institutions, and global enterprises.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6 flex-1">
+            <div className="space-y-3 border-t border-white/10 pt-6">
               <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Everything in Pro Plan</span>
