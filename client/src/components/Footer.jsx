@@ -129,55 +129,55 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => handleNavClick('#interactive-demo')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Play Interactive Demo</span>
+                  <span className="text-xs">Play Interactive Demo</span>
                 </button>
               </li>
               <li>
                 <Link
                   to="/join"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Join Game with PIN</span>
+                  <span className="text-xs">Join Game with PIN</span>
                 </Link>
               </li>
               <li>
                 <button
                   onClick={() => handleNavClick('#how-it-works')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>How Quiz Hub Works</span>
+                  <span className="text-xs">How Quiz Hub Works</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleNavClick('#pricing')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Pricing & Plans</span>
+                  <span className="text-xs">Pricing & Plans</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleNavClick('#faq')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Help & FAQs</span>
+                  <span className="text-xs">Help & FAQs</span>
                 </button>
               </li>
               <li>
                 <Link
                   to="/login"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Host Login / Register</span>
+                  <span className="text-xs">Host Login / Register</span>
                 </Link>
               </li>
             </ul>
