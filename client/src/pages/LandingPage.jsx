@@ -1,5 +1,6 @@
 import React from 'react';
 import AnimatedPage from '../components/AnimatedPage';
+import ThemeBackground from '../components/ThemeBackground';
 import HeroSection from '../components/landing/HeroSection';
 import LiveDemoSection from '../components/landing/LiveDemoSection';
 import FeaturesSection from '../components/landing/FeaturesSection';
@@ -11,28 +12,30 @@ import CTASection from '../components/landing/CTASection';
 export default function LandingPage() {
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen overflow-hidden bg-background">
-        {/* Hero Section */}
-        <HeroSection />
+      <ThemeBackground>
+        <div className="relative min-h-screen overflow-hidden">
+          {/* Hero Section */}
+          <HeroSection />
 
-        {/* Interactive Mini Quiz Product Demo */}
-        <LiveDemoSection />
+          {/* Interactive Mini Quiz Product Demo */}
+          <LiveDemoSection />
 
-        {/* How It Works (4-Step Process) */}
-        <HowItWorksSection />
+          {/* How It Works (4-Step Process) */}
+          <HowItWorksSection />
 
-        {/* Features Grid */}
-        <FeaturesSection />
+          {/* Features Grid */}
+          <FeaturesSection />
 
-        {/* Flexible Pricing Section */}
-        <PricingSection />
+          {/* Flexible Pricing Section */}
+          <PricingSection />
 
-        {/* Frequently Asked Questions */}
-        <FAQSection />
+          {/* Frequently Asked Questions */}
+          <FAQSection />
 
-        {/* Call to Action Section */}
-        <CTASection />
-      </div>
+          {/* Call to Action Section */}
+          <CTASection />
+        </div>
+      </ThemeBackground>
     </AnimatedPage>
   );
 }

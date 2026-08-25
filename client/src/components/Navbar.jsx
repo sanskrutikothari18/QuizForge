@@ -99,8 +99,8 @@ export default function Navbar() {
       ref={headerRef}
       className="fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300"
       style={{
-        backgroundColor: isLight ? 'rgba(255, 255, 255, 0.96)' : 'rgba(10, 10, 15, 0.96)',
-        borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
+        backgroundColor: isLight ? 'rgba(240, 249, 255, 0.94)' : 'rgba(10, 10, 15, 0.96)',
+        borderColor: isLight ? 'rgba(186, 230, 253, 0.8)' : 'rgba(255, 255, 255, 0.10)'
       }}
     >
       <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
@@ -122,7 +122,7 @@ export default function Navbar() {
                 className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
                   location.pathname === '/dashboard' 
                     ? 'text-primary bg-primary/10 border border-primary/25 shadow-sm' 
-                    : isLight ? 'text-gray-700 hover:text-primary hover:bg-purple-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    : isLight ? 'text-slate-700 hover:text-sky-700 hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <LayoutDashboard className="h-4 w-4 text-primary" />
@@ -133,7 +133,7 @@ export default function Navbar() {
                 className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
                   location.pathname === '/quiz/my' 
                     ? 'text-secondary bg-secondary/10 border border-secondary/25 shadow-sm' 
-                    : isLight ? 'text-gray-700 hover:text-secondary hover:bg-cyan-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    : isLight ? 'text-slate-700 hover:text-secondary hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <BookOpen className="h-4 w-4 text-secondary" />
@@ -144,7 +144,7 @@ export default function Navbar() {
                 className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
                   location.pathname === '/quiz/create' 
                     ? 'text-accent bg-accent/10 border border-accent/25 shadow-sm' 
-                    : isLight ? 'text-gray-700 hover:text-accent hover:bg-pink-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    : isLight ? 'text-slate-700 hover:text-accent hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <PlusCircle className="h-4 w-4 text-accent" />
@@ -174,7 +174,7 @@ export default function Navbar() {
                   key={link.label}
                   onClick={() => handleNavClick(link.hash)}
                   className={`text-sm font-extrabold transition-all cursor-pointer relative py-1 ${
-                    isActive ? 'text-primary' : isLight ? 'text-gray-700 hover:text-primary' : 'text-gray-300 hover:text-white'
+                    isActive ? 'text-sky-600' : isLight ? 'text-slate-700 hover:text-sky-600' : 'text-gray-300 hover:text-white'
                   }`}
                 >
                   {link.label}
@@ -194,14 +194,14 @@ export default function Navbar() {
             onClick={toggleThemeMode}
             className="rounded-xl p-1.5 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
             style={{
-              background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-              borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
-              color: isLight ? '#6d28d9' : '#d1d5db',
+              background: isLight ? 'rgba(224, 242, 254, 0.7)' : 'rgba(255,255,255,0.05)',
+              borderColor: isLight ? 'rgba(186, 230, 253, 0.9)' : 'rgba(255,255,255,0.10)',
+              color: isLight ? '#0284c7' : '#d1d5db',
             }}
             aria-label="Toggle Theme"
           >
             {isLight ? (
-              <Moon className="h-4 w-4" style={{ color: '#6d28d9' }} />
+              <Moon className="h-4 w-4" style={{ color: '#0284c7' }} />
             ) : (
               <Sun className="h-4 w-4 text-yellow-400" />
             )}
@@ -213,8 +213,8 @@ export default function Navbar() {
               <div
                 className="flex items-center gap-1 sm:gap-1.5 rounded-xl px-1.5 py-1 sm:px-2.5 sm:py-1.5 border transition-all"
                 style={{
-                  background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-                  borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
+                  background: isLight ? 'rgba(224, 242, 254, 0.7)' : 'rgba(255,255,255,0.05)',
+                  borderColor: isLight ? 'rgba(186, 230, 253, 0.9)' : 'rgba(255,255,255,0.10)',
                 }}
               >
                 <User className="h-3.5 w-3.5 text-secondary shrink-0" />

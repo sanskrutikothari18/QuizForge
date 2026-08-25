@@ -89,13 +89,8 @@ export default function HostLobby() {
   // Sync whatsappUrl when customUrl changes
   useEffect(() => {
     const shareMessage = `Join my Fourise Quiz Hub arena!\n\nGame PIN: ${pin}\n\nJoin Link:\n${customUrl}`;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const baseUrl = isMobile 
-      ? 'https://api.whatsapp.com/send' 
-      : 'https://web.whatsapp.com/send';
-    
-    setWhatsappUrl(`${baseUrl}?text=${encodeURIComponent(shareMessage)}`);
-  }, [pin, customUrl, hostnameUrl, ipInput]);
+    setWhatsappUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`);
+  }, [pin, customUrl]);
 
   useEffect(() => {
     // Identify as host for this pin in local storage

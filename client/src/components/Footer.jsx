@@ -69,42 +69,43 @@ export default function Footer() {
           </div>
 
           {/* Column 2: Head Office & Navigable Map Address */}
-          <div className="space-y-2.5 text-left min-w-0">
+          <div className="space-y-2.5 text-left">
             <h4 className="font-outfit text-xs font-black tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
               Head Office & Contact
             </h4>
 
-            {/* Clickable Navigable Address — same row structure as email/phone rows below */}
+            {/* Clickable Navigable Address */}
             <a
               href={googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
+              className="group block p-2.5 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
               title="Fourise Software Solutions Pvt. Ltd Pune (Google Maps)"
-              className="group flex items-start gap-2 min-w-0 hover:text-primary transition-colors"
-              style={{ color: 'var(--text-muted)' }}
             >
-              <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-              <span className="min-w-0 break-words">
-                <span className="text-[10px] font-black uppercase text-secondary tracking-wider flex items-center gap-1">
-                  <span>Pune (Head Office)</span>
-                  <ExternalLink className="h-3 w-3 text-secondary opacity-70 group-hover:opacity-100 shrink-0" />
-                </span>
-                <span className="block text-[11px] font-semibold leading-snug break-words" style={{ color: 'var(--text-main)' }}>
-                  305, City Vista, Kharadi, Pune 411014
-                </span>
-              </span>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="space-y-0.5 overflow-hidden">
+                  <span className="text-[10px] font-black uppercase text-secondary tracking-wider flex items-center gap-1">
+                    <span>Pune (Head Office)</span>
+                    <ExternalLink className="h-3 w-3 text-secondary opacity-70 group-hover:opacity-100 shrink-0" />
+                  </span>
+                  <p className="text-[11px] font-semibold leading-snug truncate" style={{ color: 'var(--text-main)' }}>
+                    305, City Vista, Kharadi, Pune 411014
+                  </p>
+                </div>
+              </div>
             </a>
 
-            <ul className="space-y-1.5 text-xs min-w-0">
-              <li className="flex items-start gap-2 min-w-0" style={{ color: 'var(--text-muted)' }}>
-                <Mail className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-                <a href="mailto:support@fourisequizhub.com" className="hover:text-primary transition-colors break-all min-w-0">
+            <ul className="space-y-1.5 text-xs">
+              <li className="flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+                <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
+                <a href="mailto:support@fourisequizhub.com" className="hover:text-primary transition-colors">
                   support@fourisequizhub.com
                 </a>
               </li>
-              <li className="flex items-start gap-2 min-w-0" style={{ color: 'var(--text-muted)' }}>
-                <Phone className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-                <a href="tel:+13866883295" className="hover:text-primary transition-colors whitespace-nowrap">
+              <li className="flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+                <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
+                <a href="tel:+13866883295" className="hover:text-primary transition-colors">
                   +1 386-688-3295
                 </a>
               </li>
@@ -112,7 +113,7 @@ export default function Footer() {
           </div>
 
           {/* Column 3: Quick Links */}
-          <div className="space-y-2.5 text-left min-w-0">
+          <div className="space-y-2.5 text-left">
             <h4 className="font-outfit text-xs font-black tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
               Quick Links
             </h4>
