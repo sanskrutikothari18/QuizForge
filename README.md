@@ -2,6 +2,8 @@
 
 A Kahoot-inspired Quiz Platform built using the MERN Stack as part of our internship project.
 
+> **Handoff documentation:** See [docs/HANDOFF.md](docs/HANDOFF.md) for setup, architecture, environment variables, REST and Socket.IO contracts, testing, deployment, and known gaps.
+
 ## Team Members
 
 | Member | Responsibility |

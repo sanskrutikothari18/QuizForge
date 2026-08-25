@@ -1,145 +1,49 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { motion } from 'framer-motion';
-import { 
-  Atom, Dna, FlaskConical, Microscope, Telescope,
-  Cpu, Monitor, Keyboard, Database, Network,
-  Globe, Compass, Map, Milestone,
-  Leaf, TreePine, Bird,
-  Music, Radio, Speaker,
-  Film, Video, Clapperboard,
-  Waves, Fish, Shell,
-  Flower2, PartyPopper, Hexagon, Sparkles
-} from 'lucide-react';
 
 const ThemeBackground = ({ children }) => {
   const { activeTheme, themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const getParticles = () => {
-    const type = activeTheme?.effects?.particleType;
-    if (!type) return null;
-
-    const particleCount = 12;
-    const particles = Array.from({ length: particleCount });
-    
-    return particles.map((_, i) => {
-      const size = Math.random() * 25 + 15;
-      const left = Math.random() * 100;
-      const duration = Math.random() * 15 + 15;
-      const delay = Math.random() * 10;
-      
-      let IconComponent = null;
-      let iconColor = 'rgba(255,255,255,0.15)';
-
-      if (type === 'atoms') {
-        const icons = [Atom, Dna, FlaskConical, Microscope, Telescope];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.accent;
-      } else if (type === 'grid') {
-        const icons = [Cpu, Monitor, Keyboard, Database, Network];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.primary;
-      } else if (type === 'planes') {
-        const icons = [Globe, Compass, Map, Milestone];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.primary;
-      } else if (type === 'leaves') {
-        const icons = [Leaf, TreePine, Bird];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.secondary;
-      } else if (type === 'equalizer') {
-        const icons = [Music, Radio, Speaker];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.accent;
-      } else if (type === 'spotlight') {
-        const icons = [Film, Video, Clapperboard];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.primary;
-      } else if (type === 'bubbles') {
-        const icons = [Waves, Fish, Shell];
-        IconComponent = icons[i % icons.length];
-        iconColor = activeTheme.colors.accent;
-      } else if (type === 'petals') {
-        IconComponent = Flower2;
-        iconColor = activeTheme?.colors?.accent || 'rgba(255,255,255,0.15)';
-      } else if (type === 'confetti') {
-        IconComponent = PartyPopper;
-        iconColor = activeTheme?.colors?.primary || 'rgba(255,255,255,0.15)';
-      } else if (type === 'nodes') {
-        IconComponent = Hexagon;
-        iconColor = activeTheme?.colors?.secondary || 'rgba(255,255,255,0.15)';
-      } else {
-        IconComponent = Sparkles;
-        iconColor = activeTheme?.colors?.accent || 'rgba(255,255,255,0.15)';
-      }
-
-      return (
-        <motion.div
-          key={i}
-          className="absolute pointer-events-none"
-          style={{
-            left: `${left}%`,
-            bottom: '-15%',
-            color: iconColor,
-            opacity: Math.random() * 0.3 + 0.1
-          }}
-          animate={{
-            y: ['0vh', '-120vh'],
-            x: Math.random() > 0.5 ? ['0vw', '15vw', '-15vw'] : ['0vw', '-15vw', '15vw'],
-            rotate: [0, 180, 360]
-          }}
-          transition={{
-            duration: duration,
-            repeat: Infinity,
-            delay: delay,
-            ease: 'linear'
-          }}
-        >
-          <IconComponent size={size} strokeWidth={1.5} />
-        </motion.div>
-      );
-    });
-  };
+  const primaryColor = activeTheme?.colors?.primary || '#0284c7';
+  const secondaryColor = activeTheme?.colors?.secondary || '#38bdf8';
+  const accentColor = activeTheme?.colors?.accent || '#06b6d4';
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex flex-col">
-      {/* Background base */}
+      {/* Base Background: Shades of Light Blue in Light mode */}
       <div 
-        className="absolute inset-0 z-0 opacity-100 transition-all duration-1000" 
+        className="absolute inset-0 z-0 transition-colors duration-700" 
         style={{ 
           background: isLight 
-            ? 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)' 
+            ? '#f8fafc' 
             : (activeTheme?.colors?.background || 'var(--theme-bg)') 
         }}
       />
-      
-      {/* Subtle Glowing Orbs */}
+
+      {/* Subtle Ambient Soft Light Blue Orbs (Static / CSS Animated) */}
       <div 
-        className={`absolute top-[10%] left-[15%] w-[400px] h-[400px] rounded-full pointer-events-none filter blur-[100px] animate-pulse ${
-          isLight ? 'mix-blend-multiply opacity-20' : 'mix-blend-screen opacity-40'
+        className={`absolute top-[-5%] left-[10%] w-[500px] h-[500px] rounded-full pointer-events-none filter blur-[120px] animate-pulse ${
+          isLight ? 'mix-blend-multiply opacity-25' : 'mix-blend-screen opacity-40'
         }`}
-        style={{ background: activeTheme?.colors?.primary }}
+        style={{ background: isLight ? '#bae6fd' : primaryColor }}
       />
+
       <div 
-        className={`absolute bottom-[10%] right-[15%] w-[500px] h-[500px] rounded-full pointer-events-none filter blur-[120px] animate-pulse ${
-          isLight ? 'mix-blend-multiply opacity-15' : 'mix-blend-screen opacity-30'
+        className={`absolute bottom-[5%] right-[5%] w-[600px] h-[600px] rounded-full pointer-events-none filter blur-[140px] animate-pulse ${
+          isLight ? 'mix-blend-multiply opacity-20' : 'mix-blend-screen opacity-30'
         }`}
-        style={{ background: activeTheme?.colors?.accent, animationDuration: '8s' }}
+        style={{ background: isLight ? '#7dd3fc' : accentColor, animationDuration: '9s' }}
       />
+
       <div 
-        className={`absolute top-[40%] right-[40%] w-[300px] h-[300px] rounded-full pointer-events-none filter blur-[90px] animate-pulse ${
+        className={`absolute top-[40%] right-[30%] w-[400px] h-[400px] rounded-full pointer-events-none filter blur-[110px] animate-pulse ${
           isLight ? 'mix-blend-multiply opacity-15' : 'mix-blend-screen opacity-20'
         }`}
-        style={{ background: activeTheme?.colors?.secondary, animationDuration: '12s' }}
+        style={{ background: isLight ? '#93c5fd' : secondaryColor, animationDuration: '12s' }}
       />
 
-      {/* Particles layer */}
-      <div className="absolute inset-0 z-1 overflow-hidden pointer-events-none">
-        {getParticles()}
-      </div>
-
-      {/* Content */}
+      {/* Main Content Container */}
       <div className="relative z-10 flex-1 flex flex-col">
         {children}
       </div>

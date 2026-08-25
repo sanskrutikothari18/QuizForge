@@ -246,22 +246,26 @@ module.exports = (io) => {
                 if (role === 'host') {
                     console.log(`⚡ Host disconnected from room: ${pin}`);
                     try {
-                        await GameSession.findOneAndUpdate(
-                            { pin },
-                            { status: 'finished' }
-                        );
+                        const game = await GameSession.findOne({ pin });
+                        // Only close session if game was actively in progress, not when host is in waiting lobby
+                        // (Host may be switching apps to share WhatsApp link or reconnecting)
+                        if (game && game.status !== 'waiting') {
+                            await GameSession.findOneAndUpdate(
+                                { pin },
+                                { status: 'finished' }
+                            );
+                            const payload = {
+                                message: 'Host has ended the quiz',
+                                reason: 'host_disconnected'
+                            };
+                            io.to(roomName).emit('room_closed', payload);
+                            io.to(pin).emit('room_closed', payload);
+                            io.to(roomName).emit('host_left', payload);
+                            io.to(pin).emit('host_left', payload);
+                        }
                     } catch (err) {
-                        console.error('Error updating game status on host disconnect:', err.message);
+                        console.error('Error handling host disconnect:', err.message);
                     }
-
-                    const payload = {
-                        message: 'Host has ended the quiz',
-                        reason: 'host_disconnected'
-                    };
-                    io.to(roomName).emit('room_closed', payload);
-                    io.to(pin).emit('room_closed', payload);
-                    io.to(roomName).emit('host_left', payload);
-                    io.to(pin).emit('host_left', payload);
                 } else if (username) {
                     io.to(roomName).emit('player_disconnected', { username });
                     io.to(pin).emit('player-joined', {

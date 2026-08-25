@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Play } from 'lucide-react';
+import QuickRegisterModal from '../QuickRegisterModal';
 
 export default function CTASection() {
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
   return (
     <section id="cta" className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
       <motion.div
@@ -32,13 +35,14 @@ export default function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
-            <Link
-              to="/register"
-              className="btn-premium btn-primary-gradient px-8 py-4 text-sm sm:text-base font-extrabold text-white rounded-2xl shadow-premium-glow flex items-center justify-center gap-2.5 w-full sm:w-auto hover:scale-105 active:scale-95 transition-all"
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              className="btn-premium btn-primary-gradient px-8 py-4 text-sm sm:text-base font-extrabold text-white rounded-2xl shadow-premium-glow flex items-center justify-center gap-2.5 w-full sm:w-auto hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <span>Get Started for Free</span>
               <ArrowRight className="h-5 w-5" />
-            </Link>
+            </button>
 
             <Link
               to="/join"
@@ -50,6 +54,11 @@ export default function CTASection() {
           </div>
         </div>
       </motion.div>
+
+      <QuickRegisterModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+      />
     </section>
   );
 }

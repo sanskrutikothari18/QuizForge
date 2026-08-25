@@ -144,48 +144,56 @@ const joinGame = async (req, res) => {
     try {
         const { pin, playerName, avatar } = req.body;
 
-        if (!pin || !playerName) {
+        const cleanPin = pin ? pin.toString().trim() : '';
+        const cleanName = playerName ? playerName.toString().trim() : '';
+
+        if (!cleanPin || !cleanName) {
             return res.status(400).json({
                 success: false,
                 message: 'Please provide PIN and player name'
             });
         }
 
-        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const escName = cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         let updatedGame = await GameSession.findOneAndUpdate(
             {
-                pin,
+                pin: cleanPin,
                 status: 'waiting',
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
-            { $push: { players: { name: playerName, avatar: avatar || 'dog', totalScore: 0, answers: [] } } },
+            { $push: { players: { name: cleanName, avatar: avatar || 'dog', totalScore: 0, answers: [] } } },
             { new: true }
         );
 
         if (!updatedGame) {
-            const checkGame = await GameSession.findOne({ pin });
+            const checkGame = await GameSession.findOne({ pin: cleanPin });
             if (!checkGame) {
                 return res.status(404).json({
                     success: false,
-                    message: 'Game not found. Check your PIN!'
+                    message: 'Game session not found. Check your PIN!'
                 });
             }
 
             const existingPlayer = checkGame.players?.find(
-                p => p.name.toLowerCase() === playerName.trim().toLowerCase()
+                p => p.name.toLowerCase() === cleanName.toLowerCase()
             );
 
             if (existingPlayer) {
                 updatedGame = checkGame;
-            } else if (checkGame.status !== 'waiting') {
+            } else if (checkGame.status === 'active') {
                 return res.status(400).json({
                     success: false,
-                    message: 'Game has already started!'
+                    message: 'Quiz battle is already in progress!'
+                });
+            } else if (checkGame.status === 'finished') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This quiz session has ended. Ask host for a new PIN.'
                 });
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: 'This name is already taken!'
+                    message: 'This nickname is already taken in the lobby!'
                 });
             }
         }

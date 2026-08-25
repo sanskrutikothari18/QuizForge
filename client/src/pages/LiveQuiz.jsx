@@ -563,11 +563,15 @@ export default function LiveQuiz() {
           </div>
         </div>
 
-        {/* Timer Display — centered above the question card */}
-        <div className="quiz-timer-container relative z-10 shrink-0">
-          <div className={`quiz-timer ${timeLeft <= 5 ? 'urgent' : ''}`}>
-            <Clock className={`h-4 w-4 ${timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-secondary'}`} />
-            <span className="text-base sm:text-lg font-mono tracking-widest">
+        {/* Centered Timer Display */}
+        <div className="w-full flex justify-center items-center relative z-10 shrink-0 my-1.5">
+          <div className={`flex items-center gap-2.5 px-6 py-2 sm:px-8 sm:py-2.5 rounded-full glass-panel border transition-all duration-300 shadow-xl ${
+            timeLeft <= 5 
+              ? 'bg-red-500/20 border-red-500/50 text-red-400 scale-105 shadow-[0_0_25px_rgba(239,68,68,0.5)] animate-pulse' 
+              : 'bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(6,182,212,0.25)]'
+          }`}>
+            <Clock className={`h-5 w-5 sm:h-6 sm:w-6 ${timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-secondary'}`} />
+            <span className="text-xl sm:text-2xl md:text-3xl font-black font-mono tracking-widest">
               {formatTime(timeLeft)}
             </span>
           </div>
