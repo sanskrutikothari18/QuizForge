@@ -106,10 +106,10 @@ export default function Navbar() {
       <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
         
         {/* Brand Logo - Leftmost */}
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-          <Logo className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
-          <span className="font-outfit text-sm sm:text-xl font-bold tracking-tight shrink-0 whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
-            Fourise <span className="hidden sm:inline text-secondary">Quiz Hub</span>
+        <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 transition-transform active:scale-95 shrink-0 min-w-0" onClick={closeMobile}>
+          <Logo className="h-7 w-7 sm:h-9 sm:w-9 shrink-0" />
+          <span className="font-outfit text-xs sm:text-xl font-extrabold tracking-tight whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
+            Fourise <span className="text-secondary">Quiz Hub</span>
           </span>
         </Link>
 
