@@ -1066,15 +1066,29 @@ input:-webkit-autofill:active {
    MOBILE RESPONSIVENESS & SPACING IMPROVEMENTS
    ══════════════════════════════════════════════════════════ */
 
-/* Prevent horizontal scroll on all screens */
+/* Prevent horizontal scroll on all screens & disable mobile browser font boosting */
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
+  -webkit-text-size-adjust: 100% !important;
+  -moz-text-size-adjust: 100% !important;
+  -ms-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
 }
 
-/* Ensure touch targets are large enough on mobile */
+/* Ensure footer text stays 100% uniform across mobile browsers */
+footer, footer * {
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+footer button, footer a, footer li {
+  min-height: 0 !important;
+}
+
+/* Ensure touch targets are large enough on mobile (except in compact footer lists) */
 @media (max-width: 640px) {
-  button, a {
+  button:not(footer button), a:not(footer a) {
     min-height: 40px;
   }
 

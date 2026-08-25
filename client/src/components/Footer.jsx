@@ -127,32 +127,32 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
               <li>
-                <button onClick={() => handleNavClick('#interactive-demo')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block w-full">
+                <button onClick={() => handleNavClick('#interactive-demo')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   Play Interactive Demo
                 </button>
               </li>
               <li>
-                <Link to="/join" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block">
+                <Link to="/join" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   Join Game with PIN
                 </Link>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block w-full">
+                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   How Quiz Hub Works
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block w-full">
+                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   Pricing & Plans
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block w-full">
+                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   Help & FAQs
                 </button>
               </li>
               <li>
-                <Link to="/login" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold block">
+                <Link to="/login" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
                   Host Login / Register
                 </Link>
               </li>
