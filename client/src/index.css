@@ -1323,7 +1323,7 @@ header .btn-premium {
   }
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
   /* Fix 3-column grids to 2 columns on tablet */
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(2, 1fr) !important;

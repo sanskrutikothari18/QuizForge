@@ -35,10 +35,10 @@ export default function PricingSection() {
         </p>
 
         {/* Monthly / Yearly Toggle Switch */}
-        <div className="mt-8 inline-flex items-center gap-3 p-1.5 rounded-full glass-panel border border-white/10">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-2 sm:p-1.5 rounded-2xl sm:rounded-full glass-panel border border-white/10 max-w-xs sm:max-w-none mx-auto">
           <button
             onClick={() => setIsYearly(false)}
-            className={`px-5 py-2 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
+            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
               !isYearly ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -46,18 +46,18 @@ export default function PricingSection() {
           </button>
           <button
             onClick={() => setIsYearly(true)}
-            className={`px-5 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
               isYearly ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'
             }`}
           >
             <span>Yearly Billing</span>
-            <span className="bg-emerald-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
+            <span className="bg-emerald-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase shrink-0">
               Save 20%
             </span>
           </button>
           <button
             onClick={() => setShowPlanDetails(true)}
-            className="px-4 py-2 rounded-full text-xs font-extrabold text-gray-300 hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold text-gray-300 hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer whitespace-nowrap"
           >
             Plan Details
           </button>
@@ -73,12 +73,12 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-8 border border-white/10 flex flex-col justify-between relative group text-left"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between relative group text-left"
         >
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-outfit text-xl font-extrabold text-white">FREE</h3>
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-white/5 text-gray-300 border border-white/10">
+            <div className="flex justify-between items-center gap-2 mb-4">
+              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">FREE</h3>
+              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-white/5 text-gray-300 border border-white/10 shrink-0">
                 Starter
               </span>
             </div>
@@ -130,18 +130,18 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-8 border-2 border-primary/50 flex flex-col justify-between relative group text-left bg-gradient-to-b from-primary/20 via-black/80 to-black shadow-2xl shadow-primary/20 scale-105 z-10"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border-2 border-primary/50 flex flex-col justify-between relative group text-left bg-gradient-to-b from-primary/20 via-black/80 to-black shadow-2xl shadow-primary/20 lg:scale-105 z-10"
         >
           {/* Ribbon Badge */}
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-[11px] font-black uppercase px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-[10px] sm:text-[11px] font-black uppercase px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap z-20">
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-yellow-300" />
             <span>Most Popular</span>
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-4 mt-2">
-              <h3 className="font-outfit text-xl font-extrabold text-white">PRO</h3>
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-primary/20 text-primary border border-primary/30">
+            <div className="flex justify-between items-center gap-2 mb-4 mt-2">
+              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">PRO</h3>
+              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 shrink-0">
                 Best Value
               </span>
             </div>
@@ -211,12 +211,12 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-8 border border-white/10 flex flex-col justify-between relative group text-left"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between relative group text-left"
         >
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-outfit text-xl font-extrabold text-white">ENTERPRISE</h3>
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20">
+            <div className="flex justify-between items-center gap-2 mb-4">
+              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">ENTERPRISE</h3>
+              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20 shrink-0">
                 Custom
               </span>
             </div>
