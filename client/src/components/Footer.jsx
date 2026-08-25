@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Phone, MapPin, ExternalLink, Globe, Sparkles, Building2 } from 'lucide-react';
+import { Mail, Phone, MapPin, ExternalLink, Globe, Sparkles, Building2, ChevronRight } from 'lucide-react';
 import Logo from './Logo';
 
 export default function Footer() {
@@ -125,35 +125,59 @@ export default function Footer() {
             <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
               Quick Links
             </h4>
-            <ul className="space-y-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
+            <ul className="space-y-2.5 text-xs" style={{ color: 'var(--text-muted)' }}>
               <li>
-                <button onClick={() => handleNavClick('#interactive-demo')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Play Interactive Demo
+                <button
+                  onClick={() => handleNavClick('#interactive-demo')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Play Interactive Demo</span>
                 </button>
               </li>
               <li>
-                <Link to="/join" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Join Game with PIN
+                <Link
+                  to="/join"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Join Game with PIN</span>
                 </Link>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  How Quiz Hub Works
+                <button
+                  onClick={() => handleNavClick('#how-it-works')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>How Quiz Hub Works</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Pricing & Plans
+                <button
+                  onClick={() => handleNavClick('#pricing')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Pricing & Plans</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Help & FAQs
+                <button
+                  onClick={() => handleNavClick('#faq')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Help & FAQs</span>
                 </button>
               </li>
               <li>
-                <Link to="/login" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Host Login / Register
+                <Link
+                  to="/login"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Host Login / Register</span>
                 </Link>
               </li>
             </ul>
