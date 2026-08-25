@@ -82,9 +82,9 @@ export default function Footer() {
               className="group block p-2.5 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
               title="Fourise Software Solutions Pvt. Ltd Pune (Google Maps)"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <MapPin className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="space-y-0.5 overflow-hidden">
+                <div className="space-y-0.5 overflow-hidden min-w-0">
                   <span className="text-[10px] font-black uppercase text-secondary tracking-wider flex items-center gap-1">
                     <span>Pune (Head Office)</span>
                     <ExternalLink className="h-3 w-3 text-secondary opacity-70 group-hover:opacity-100 shrink-0" />
@@ -96,17 +96,25 @@ export default function Footer() {
               </div>
             </a>
 
-            <ul className="space-y-1.5 text-xs">
-              <li className="flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
-                <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
-                <a href="mailto:support@fourisequizhub.com" className="hover:text-primary transition-colors">
-                  support@fourisequizhub.com
+            <ul className="space-y-2 text-xs px-2.5 pt-1">
+              <li>
+                <a
+                  href="mailto:support@fourisequizhub.com"
+                  className="inline-flex items-center gap-2.5 hover:text-primary transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <Mail className="h-4 w-4 text-primary shrink-0" />
+                  <span className="leading-none">support@fourisequizhub.com</span>
                 </a>
               </li>
-              <li className="flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
-                <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
-                <a href="tel:+13866883295" className="hover:text-primary transition-colors">
-                  +1 386-688-3295
+              <li>
+                <a
+                  href="tel:+13866883295"
+                  className="inline-flex items-center gap-2.5 hover:text-primary transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <Phone className="h-4 w-4 text-primary shrink-0" />
+                  <span className="leading-none">+1 386-688-3295</span>
                 </a>
               </li>
             </ul>
