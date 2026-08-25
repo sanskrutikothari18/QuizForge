@@ -511,11 +511,11 @@ export default function AnswerResult() {
         )}
 
         {/* Mobile Tab Switcher */}
-        <div className="w-full max-w-4xl relative z-10 flex md:hidden bg-white/5 border border-white/10 rounded-2xl p-1 mb-4">
+        <div className="w-full max-w-4xl relative z-10 flex md:hidden gap-1 bg-white/5 border border-white/10 rounded-2xl p-1 mb-4">
           <button
             type="button"
             onClick={() => setMobileTab('feedback')}
-            className={`flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+            className={`flex-1 min-w-0 px-2 py-2.5 text-[11px] leading-tight font-black uppercase tracking-wider rounded-xl transition-all ${
               mobileTab === 'feedback'
                 ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-premium-glow'
                 : 'text-gray-200 hover:text-white bg-transparent'
@@ -526,7 +526,7 @@ export default function AnswerResult() {
           <button
             type="button"
             onClick={() => setMobileTab('standings')}
-            className={`flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+            className={`flex-1 min-w-0 px-2 py-2.5 text-[11px] leading-tight font-black uppercase tracking-wider rounded-xl transition-all ${
               mobileTab === 'standings'
                 ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-premium-glow'
                 : 'text-gray-200 hover:text-white bg-transparent'
@@ -536,13 +536,13 @@ export default function AnswerResult() {
           </button>
         </div>
 
-        <div className="w-full max-w-4xl relative z-10 grid gap-8 md:grid-cols-5 text-left">
+        <div className="w-full max-w-4xl relative z-10 grid gap-6 md:gap-8 md:grid-cols-5 text-left">
           
           {/* LEFT/CENTER AREA: INDIVIDUAL SCORE OR HOST STATISTICS */}
-          <div className={`md:col-span-3 space-y-6 md:block ${mobileTab === 'feedback' ? 'block' : 'hidden'}`}>
+          <div className={`md:col-span-3 min-w-0 space-y-6 md:block ${mobileTab === 'feedback' ? 'block' : 'hidden'}`}>
             {isHost ? (
               /* HOST SCREEN: ANSWER STATS CHART */
-              <div className={`glass-panel rounded-3xl p-6 sm:p-8 border ${theme.cardBorder} space-y-6`}>
+              <div className={`glass-panel rounded-3xl p-5 sm:p-8 border ${theme.cardBorder} space-y-6`}>
                 <div className="border-b border-white/5 pb-4">
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${theme.badgeBg}`}>
                     Question Standings
@@ -615,9 +615,10 @@ export default function AnswerResult() {
             ) : (
               /* PLAYER SCREEN: CORRECT / INCORRECT FEEDBACK */
               <motion.div
-                initial={!isCorrect ? { x: [-10, 10, -10, 10, 0] } : {}}
+                initial={{ x: 0 }}
+                animate={!isCorrect ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
                 transition={{ duration: 0.4 }}
-                className={`glass-panel rounded-3xl p-8 border text-center space-y-6 relative overflow-hidden ${
+                className={`glass-panel rounded-3xl p-5 sm:p-8 border text-center space-y-5 sm:space-y-6 relative overflow-hidden w-full ${
                   isUnanswered
                     ? 'border-orange-500/20 shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] bg-orange-500/5'
                     : isCorrect
@@ -644,7 +645,7 @@ export default function AnswerResult() {
 
                 {/* Title */}
                 <div className="space-y-1">
-                  <h3 className={`font-outfit text-3xl font-black ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  <h3 className={`font-outfit text-2xl sm:text-3xl font-black break-words ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-red-400'}`}>
                     {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Incorrect Answer'}
                   </h3>
                   <p className="text-xs sm:text-sm font-bold text-gray-200">
@@ -653,7 +654,7 @@ export default function AnswerResult() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-3 w-full">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full">
                   {/* Time taken */}
                   <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
                     <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">SOLVE TIME</span>
@@ -677,13 +678,13 @@ export default function AnswerResult() {
 
                 {/* Overall Rank badge */}
                 {myLeaderboardEntry && (
-                  <div className="text-xs text-gray-300 font-bold bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl inline-block mt-2">
+                  <div className="text-[11px] sm:text-xs text-gray-300 font-bold bg-white/5 border border-white/10 px-3 sm:px-4 py-2.5 rounded-xl inline-block mt-1">
                     Lobby rank: <span className="text-secondary font-black">#{myLeaderboardEntry.rank}</span> &bull; Total score: <span className="text-primary font-black">{myLeaderboardEntry.totalScore !== undefined ? myLeaderboardEntry.totalScore : currentScore} pts</span>
                   </div>
                 )}
 
                 {/* Bottom status */}
-                 <p className="text-xs font-extrabold text-gray-400 animate-pulse border-t border-white/5 pt-6 mt-4">
+                 <p className="text-xs font-extrabold text-gray-400 animate-pulse border-t border-white/5 pt-4 sm:pt-5 mt-1">
                    Waiting for Host to trigger next action...
                  </p>
               </motion.div>
@@ -691,7 +692,7 @@ export default function AnswerResult() {
           </div>
 
           {/* RIGHT PANEL: PODIUM LEADERBOARD STANDINGS */}
-          <div className={`glass-panel rounded-3xl p-6 sm:p-8 border ${theme.cardBorder} space-y-4 flex flex-col md:col-span-2 overflow-hidden md:flex ${mobileTab === 'standings' ? 'flex' : 'hidden'}`}>
+          <div className={`glass-panel rounded-3xl p-5 sm:p-8 border ${theme.cardBorder} space-y-4 flex flex-col md:col-span-2 min-w-0 overflow-hidden md:flex ${mobileTab === 'standings' ? 'flex' : 'hidden'}`}>
             <h3 className="font-outfit text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 border-b border-white/5 pb-4">
               <Trophy className="h-4 w-4 text-primary" />
               Lobby Standings

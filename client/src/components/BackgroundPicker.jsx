@@ -2537,7 +2537,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
               )}
 
               {/* Mock Quiz UI Container */}
-              <div className="absolute inset-0 flex flex-col justify-between p-3 relative z-10 select-none">
+              <div className={`absolute inset-0 flex flex-col justify-center p-3 relative z-10 select-none ${previewDevice === 'mobile' ? 'gap-1' : 'gap-0'}`}>
                 
                 {/* Top Section */}
                 <div className="flex flex-col">
@@ -2565,9 +2565,6 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     </p>
                   </div>
                 </div>
-
-                {/* Flexible spacer (this will naturally push options to the bottom) */}
-                <div className="flex-1" />
 
                 {/* Options grid */}
                 <div className={`grid gap-1.5 relative z-10 w-full pb-1 ${previewDevice === 'mobile' ? 'grid-cols-1' : 'grid-cols-2'}`}>
