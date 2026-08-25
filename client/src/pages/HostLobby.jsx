@@ -86,28 +86,12 @@ export default function HostLobby() {
     }
   }, [game]);
 
-  // Direct WhatsApp share handler using native protocol scheme
+  // Direct WhatsApp share handler ensuring "Send message to" contact picker pops up every time
   const handleShareWhatsapp = (e) => {
     if (e) e.preventDefault();
     const shareMessage = `🎮 *Join my Fourise Quiz Hub arena!*\n\n📌 *Game PIN:* ${pin}\n\n🔗 *Direct Join Link:*\n${customUrl}\n\n❓ *How to Join:*\n1️⃣ Click the link above OR visit Quiz Hub\n2️⃣ Enter PIN: *${pin}*\n3️⃣ Enter your Nickname & tap Join!\n4️⃣ Ready up for the live battle! 🚀`;
-    const encodedText = encodeURIComponent(shareMessage);
-    
-    const nativeUrl = `whatsapp://send?text=${encodedText}`;
-    const webUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      window.location.href = nativeUrl;
-    } else {
-      const start = Date.now();
-      window.location.href = nativeUrl;
-      setTimeout(() => {
-        if (Date.now() - start < 1500 && !document.hidden) {
-          window.open(webUrl, '_blank', 'noopener,noreferrer');
-        }
-      }, 1000);
-    }
+    const shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
