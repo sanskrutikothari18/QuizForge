@@ -125,35 +125,41 @@ export default function Footer() {
             <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
               Quick Links
             </h4>
-            <ul className="space-y-2 text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>
+            <ul className="space-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
               <li>
-                <button onClick={() => handleNavClick('#interactive-demo')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Play Interactive Demo
+                <button onClick={() => handleNavClick('#interactive-demo')} className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>Play Interactive Demo</span>
                 </button>
               </li>
               <li>
-                <Link to="/join" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Join Game with PIN
+                <Link to="/join" className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>Join Game with PIN</span>
                 </Link>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  How Quiz Hub Works
+                <button onClick={() => handleNavClick('#how-it-works')} className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>How Quiz Hub Works</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Pricing & Plans
+                <button onClick={() => handleNavClick('#pricing')} className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>Pricing & Plans</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Help & FAQs
+                <button onClick={() => handleNavClick('#faq')} className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>Help & FAQs</span>
                 </button>
               </li>
               <li>
-                <Link to="/login" className="hover:text-primary transition-colors cursor-pointer text-left font-semibold text-xs py-0.5 block w-full">
-                  Host Login / Register
+                <Link to="/login" className="hover:text-primary transition-colors cursor-pointer text-left font-extrabold text-secondary flex items-center gap-1.5 text-xs py-0.5">
+                  <span className="shrink-0 text-[10px]">▶</span>
+                  <span>Host Login / Register</span>
                 </Link>
               </li>
             </ul>
