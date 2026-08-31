@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Trophy, RotateCcw, CheckCircle2, XCircle, Sparkles, ArrowRight, Flame, Clock } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 const sampleQuestions = [
   {
@@ -48,12 +49,28 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   const [streak, setStreak] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [earnedPts, setEarnedPts] = useState(0);
+  const [showIntermediateLeaderboard, setShowIntermediateLeaderboard] = useState(false);
   
   // 30-Second Countdown Timer
   const [timeLeft, setTimeLeft] = useState(30);
-  const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const currentQ = sampleQuestions[currentQIndex];
+
+  const startDemoTimer = () => {
+    if (!hasStarted && !isCompleted) {
+      setHasStarted(true);
+      setIsTimerRunning(true);
+    }
+  };
+
+  // Auto-start timer if in modal or hash is interactive-demo
+  useEffect(() => {
+    if ((isModal || window.location.hash === '#interactive-demo') && !hasStarted) {
+      startDemoTimer();
+    }
+  }, [isModal, hasStarted]);
 
   // Timer Effect
   useEffect(() => {
@@ -83,6 +100,21 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   const handleSelectOption = (index) => {
     if (selectedOption !== null || isTimedOut || isCompleted) return;
 
+    // Trigger Confetti Pop-up on any answer click
+    try {
+      confetti({
+        particleCount: 65,
+        spread: 75,
+        origin: { y: 0.65 },
+        colors: ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#ffffff']
+      });
+    } catch (e) {
+      console.error('Confetti error:', e);
+    }
+
+    if (!hasStarted) {
+      setHasStarted(true);
+    }
     setIsTimerRunning(false);
     setSelectedOption(index);
 
@@ -108,9 +140,11 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
     setSelectedOption(null);
     setIsTimedOut(false);
     setTimeLeft(30);
+    setShowIntermediateLeaderboard(false);
 
     if (currentQIndex < sampleQuestions.length - 1) {
       setCurrentQIndex((prev) => prev + 1);
+      setHasStarted(true);
       setIsTimerRunning(true);
     } else {
       setIsCompleted(true);
@@ -125,8 +159,10 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
     setCorrectCount(0);
     setStreak(0);
     setIsCompleted(false);
+    setShowIntermediateLeaderboard(false);
     setEarnedPts(0);
     setTimeLeft(30);
+    setHasStarted(true);
     setIsTimerRunning(true);
   };
 
@@ -147,8 +183,10 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   const userRankIndex = sortedLeaderboard.findIndex((p) => p.isUser);
 
   return (
-    <section
+    <motion.section
       id="interactive-demo"
+      onViewportEnter={startDemoTimer}
+      viewport={{ amount: 0.2, once: true }}
       className={`relative mx-auto w-full ${isModal ? 'p-0' : 'max-w-5xl px-3 sm:px-6 lg:px-8 py-8 sm:py-20 scroll-mt-20'}`}
     >
       {/* Radial glow background */}
@@ -204,15 +242,17 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
             {!isCompleted && (
               <div
                 className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full border text-[11px] sm:text-sm font-black transition-all shrink-0 ${
-                  timeLeft <= 5
+                  !hasStarted
+                    ? 'bg-primary/25 border-primary/40 text-primary animate-pulse'
+                    : timeLeft <= 5
                     ? 'bg-red-500/20 border-red-500/50 text-red-400 animate-pulse'
                     : timeLeft <= 10
                     ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
                     : 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
                 }`}
               >
-                <Clock className={`h-3.5 w-3.5 shrink-0 ${timeLeft <= 5 ? 'animate-bounce text-red-400' : 'text-cyan-400'}`} />
-                <span className="whitespace-nowrap">{timeLeft}s</span>
+                <Clock className={`h-3.5 w-3.5 shrink-0 ${timeLeft <= 5 && hasStarted ? 'animate-bounce text-red-400' : 'text-cyan-400'}`} />
+                <span className="whitespace-nowrap">{!hasStarted ? '30s (Ready)' : `${timeLeft}s`}</span>
               </div>
             )}
 
@@ -241,130 +281,226 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
           </div>
         </div>
 
-        {/* CONTENT VIEW: Active Question vs Leaderboard Result */}
+        {/* CONTENT VIEW: Active Question vs Intermediate Leaderboard vs Final Result */}
         {!isCompleted ? (
-          <div className="space-y-4 sm:space-y-6">
-            
-            {/* Question Box */}
-            <div className="relative p-4 sm:p-7 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-left overflow-hidden">
-              {/* Animated Progress Bar for Timer */}
-              <div
-                className="absolute top-0 left-0 bottom-0 bg-primary/10 transition-all duration-1000 ease-linear pointer-events-none"
-                style={{ width: `${(timeLeft / 30) * 100}%` }}
-              />
-
-              <div className="relative z-10 flex items-center justify-between gap-2 mb-1.5">
-                <span className="text-[9px] sm:text-xs font-black uppercase text-secondary tracking-wider bg-secondary/15 px-2 py-0.5 rounded-full border border-secondary/20">
-                  {currentQ.category}
-                </span>
-                <span className="text-[10px] sm:text-xs font-bold text-gray-400">
-                  Question {currentQIndex + 1} of {sampleQuestions.length}
-                </span>
+          showIntermediateLeaderboard ? (
+            /* INTERMEDIATE LEADERBOARD SCREEN AFTER QUESTION */
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-4 sm:space-y-6 text-center py-2"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between border-b border-white/10 pb-3 gap-2">
+                <div className="text-center sm:text-left">
+                  <span className="text-[10px] sm:text-xs font-black uppercase text-amber-400 tracking-wider bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                    Live Leaderboard Arena
+                  </span>
+                  <h3 className="font-outfit text-lg sm:text-2xl font-black text-white mt-1">
+                    Standings After Question {currentQIndex + 1}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-extrabold text-xs sm:text-sm shrink-0">
+                  <Trophy className="h-4 w-4 text-amber-400 shrink-0" />
+                  <span>Current Score: {score.toLocaleString()} pts</span>
+                </div>
               </div>
 
-              <h3 className="relative z-10 font-outfit text-sm sm:text-2xl font-extrabold text-white leading-snug">
-                {currentQ.question}
-              </h3>
-            </div>
+              {/* DYNAMIC LEADERBOARD TABLE */}
+              <div className="max-w-md mx-auto rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 overflow-hidden divide-y divide-white/5 text-left text-xs">
+                {sortedLeaderboard.map((player, idx) => {
+                  const rankNum = idx + 1;
+                  const isUser = player.isUser;
 
-            {/* Answer Options Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
-              {currentQ.options.map((opt, idx) => {
-                const isSelected = selectedOption === idx;
-                const isRevealed = selectedOption !== null || isTimedOut;
-
-                let stateStyles = opt.color;
-                if (isRevealed) {
-                  if (opt.isCorrect) {
-                    stateStyles = 'bg-emerald-600 border-2 border-emerald-300 ring-2 ring-emerald-400/50 shadow-emerald-500/30 shadow-lg';
-                  } else if (isSelected && !opt.isCorrect) {
-                    stateStyles = 'bg-red-600/90 border-2 border-red-400 opacity-90';
-                  } else {
-                    stateStyles = 'bg-white/5 border-white/10 opacity-40';
-                  }
-                }
-
-                return (
-                  <motion.button
-                    key={idx}
-                    whileHover={selectedOption === null && !isTimedOut ? { scale: 1.01 } : {}}
-                    whileTap={selectedOption === null && !isTimedOut ? { scale: 0.98 } : {}}
-                    onClick={() => handleSelectOption(idx)}
-                    disabled={selectedOption !== null || isTimedOut}
-                    className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-between text-white font-extrabold text-xs sm:text-base cursor-pointer text-left border ${stateStyles}`}
-                  >
-                    <div className="flex items-center gap-2.5 overflow-hidden">
-                      <span className="h-6 w-6 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-black/25 flex items-center justify-center font-mono text-xs sm:text-base shrink-0">
-                        {opt.shape}
+                  return (
+                    <div
+                      key={idx}
+                      className={`p-3 sm:p-3.5 flex items-center justify-between transition-all ${
+                        isUser
+                          ? 'bg-primary/25 border-l-4 border-primary font-black'
+                          : 'hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full flex items-center justify-center font-black text-[10px] sm:text-xs ${
+                            rankNum === 1
+                              ? 'bg-amber-400 text-black'
+                              : rankNum === 2
+                              ? 'bg-gray-300 text-black'
+                              : 'bg-amber-700 text-white'
+                          }`}
+                        >
+                          {rankNum}
+                        </span>
+                        <div>
+                          <span className={`font-extrabold text-xs block ${isUser ? 'text-white' : 'text-gray-200'}`}>
+                            {player.name}
+                          </span>
+                          <span className="text-[9px] sm:text-[10px] text-gray-400 font-semibold">
+                            {player.correct} Correct
+                          </span>
+                        </div>
+                      </div>
+                      <span className={`font-outfit font-black text-xs sm:text-sm ${isUser ? 'text-amber-400' : 'text-gray-300'}`}>
+                        {player.score.toLocaleString()} pts
                       </span>
-                      <span className="truncate">{opt.text}</span>
                     </div>
+                  );
+                })}
+              </div>
 
-                    {isRevealed && opt.isCorrect && (
-                      <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5 animate-bounce" />
-                    )}
-                    {isRevealed && isSelected && !opt.isCorrect && (
-                      <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5" />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* Feedback Banner & Next Button */}
-            <AnimatePresence>
-              {(selectedOption !== null || isTimedOut) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-left"
+              {/* Action buttons inside Intermediate Leaderboard */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => setShowIntermediateLeaderboard(false)}
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 cursor-pointer transition-all w-full sm:w-auto justify-center"
                 >
-                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                    {isTimedOut ? (
-                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
-                        <Clock className="h-4 w-4 sm:h-6 sm:w-6" />
-                      </div>
-                    ) : currentQ.options[selectedOption].isCorrect ? (
-                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                        <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6" />
-                      </div>
-                    ) : (
-                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
-                        <XCircle className="h-4 w-4 sm:h-6 sm:w-6" />
-                      </div>
-                    )}
+                  <span>Back to Question Result</span>
+                </button>
 
-                    <div className="overflow-hidden">
-                      <p className="text-xs sm:text-sm font-black text-white leading-tight truncate">
-                        {isTimedOut
-                          ? '⏰ Time Out! 30s elapsed (0 pts).'
-                          : currentQ.options[selectedOption].isCorrect
-                          ? `🎉 Correct! Earned +${earnedPts} pts!`
-                          : `✕ Incorrect! Correct: ${currentQ.options.find((o) => o.isCorrect).text}`}
-                      </p>
-                      <p className="text-[10px] text-gray-400 hidden xs:block">
-                        {currentQIndex < sampleQuestions.length - 1
-                          ? 'Click next to continue.'
-                          : 'Final question done! View leaderboard.'}
-                      </p>
-                    </div>
-                  </div>
+                <button
+                  onClick={handleNextQuestion}
+                  className="btn-premium btn-primary-gradient px-5 py-2.5 text-xs sm:text-sm font-black text-white rounded-xl shadow-lg flex items-center gap-1.5 shrink-0 cursor-pointer w-full sm:w-auto justify-center"
+                >
+                  <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
+                  <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="space-y-4 sm:space-y-6">
+              
+              {/* Question Box */}
+              <div className="relative p-4 sm:p-7 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-left overflow-hidden">
+                {/* Animated Progress Bar for Timer */}
+                <div
+                  className="absolute top-0 left-0 bottom-0 bg-primary/10 transition-all duration-1000 ease-linear pointer-events-none"
+                  style={{ width: `${(timeLeft / 30) * 100}%` }}
+                />
 
-                  <button
-                    onClick={handleNextQuestion}
-                    className="btn-premium btn-primary-gradient px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-black text-white rounded-xl shadow-lg flex items-center gap-1.5 shrink-0 cursor-pointer w-full sm:w-auto justify-center"
+                <div className="relative z-10 flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-[9px] sm:text-xs font-black uppercase text-secondary tracking-wider bg-secondary/15 px-2 py-0.5 rounded-full border border-secondary/20">
+                    {currentQ.category}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-bold text-gray-400">
+                    Question {currentQIndex + 1} of {sampleQuestions.length}
+                  </span>
+                </div>
+
+                <h3 className="relative z-10 font-outfit text-sm sm:text-2xl font-extrabold text-white leading-snug">
+                  {currentQ.question}
+                </h3>
+              </div>
+
+              {/* Answer Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+                {currentQ.options.map((opt, idx) => {
+                  const isSelected = selectedOption === idx;
+                  const isRevealed = selectedOption !== null || isTimedOut;
+
+                  let stateStyles = opt.color;
+                  if (isRevealed) {
+                    if (opt.isCorrect) {
+                      stateStyles = 'bg-emerald-600 border-2 border-emerald-300 ring-2 ring-emerald-400/50 shadow-emerald-500/30 shadow-lg';
+                    } else if (isSelected && !opt.isCorrect) {
+                      stateStyles = 'bg-red-600/90 border-2 border-red-400 opacity-90';
+                    } else {
+                      stateStyles = 'bg-white/5 border-white/10 opacity-40';
+                    }
+                  }
+
+                  return (
+                    <motion.button
+                      key={idx}
+                      whileHover={selectedOption === null && !isTimedOut ? { scale: 1.01 } : {}}
+                      whileTap={selectedOption === null && !isTimedOut ? { scale: 0.98 } : {}}
+                      onClick={() => handleSelectOption(idx)}
+                      disabled={selectedOption !== null || isTimedOut}
+                      className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-between text-white font-extrabold text-xs sm:text-base cursor-pointer text-left border ${stateStyles}`}
+                    >
+                      <div className="flex items-center gap-2.5 overflow-hidden">
+                        <span className="h-6 w-6 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-black/25 flex items-center justify-center font-mono text-xs sm:text-base shrink-0">
+                          {opt.shape}
+                        </span>
+                        <span className="truncate">{opt.text}</span>
+                      </div>
+
+                      {isRevealed && opt.isCorrect && (
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5 animate-bounce" />
+                      )}
+                      {isRevealed && isSelected && !opt.isCorrect && (
+                        <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5" />
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Feedback Banner & Next / Leaderboard Action Buttons */}
+              <AnimatePresence>
+                {(selectedOption !== null || isTimedOut) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-left"
                   >
-                    <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'View Leaderboard'}</span>
-                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                      {isTimedOut ? (
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+                          <Clock className="h-4 w-4 sm:h-6 sm:w-6" />
+                        </div>
+                      ) : currentQ.options[selectedOption].isCorrect ? (
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                          <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6" />
+                        </div>
+                      ) : (
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
+                          <XCircle className="h-4 w-4 sm:h-6 sm:w-6" />
+                        </div>
+                      )}
 
-          </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs sm:text-sm font-black text-white leading-tight truncate">
+                          {isTimedOut
+                            ? '⏰ Time Out! 30s elapsed (0 pts).'
+                            : currentQ.options[selectedOption].isCorrect
+                            ? `🎉 Correct! Earned +${earnedPts} pts!`
+                            : `✕ Incorrect! Correct: ${currentQ.options.find((o) => o.isCorrect).text}`}
+                        </p>
+                        <p className="text-[10px] text-gray-400 hidden xs:block">
+                          Choose Leaderboard or Next Question below.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* TWO Action Options: Leaderboard OR Next Question */}
+                    <div className="flex flex-col xs:flex-row items-center gap-2 w-full sm:w-auto shrink-0">
+                      <button
+                        onClick={() => setShowIntermediateLeaderboard(true)}
+                        className="px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-extrabold text-amber-300 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-all w-full xs:w-auto"
+                      >
+                        <Trophy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                        <span>Leaderboard</span>
+                      </button>
+
+                      <button
+                        onClick={handleNextQuestion}
+                        className="btn-premium btn-primary-gradient px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-black text-white rounded-xl shadow-lg flex items-center justify-center gap-1.5 shrink-0 cursor-pointer w-full xs:w-auto"
+                      >
+                        <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
+                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+            </div>
+          )
         ) : (
-          /* LEADERBOARD & RESULT SCREEN */
+          /* FINAL LEADERBOARD & RESULT SCREEN */
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -461,6 +597,6 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
         )}
 
       </motion.div>
-    </section>
+    </motion.section>
   );
 }
