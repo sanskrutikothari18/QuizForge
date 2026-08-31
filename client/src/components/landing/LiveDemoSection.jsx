@@ -100,18 +100,6 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   const handleSelectOption = (index) => {
     if (selectedOption !== null || isTimedOut || isCompleted) return;
 
-    // Trigger Confetti Pop-up on any answer click
-    try {
-      confetti({
-        particleCount: 65,
-        spread: 75,
-        origin: { y: 0.65 },
-        colors: ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#ffffff']
-      });
-    } catch (e) {
-      console.error('Confetti error:', e);
-    }
-
     if (!hasStarted) {
       setHasStarted(true);
     }
@@ -121,6 +109,18 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
     const opt = currentQ.options[index];
 
     if (opt.isCorrect) {
+      // Trigger Confetti Pop-up on correct answer click
+      try {
+        confetti({
+          particleCount: 75,
+          spread: 80,
+          origin: { y: 0.65 },
+          colors: ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#ffffff']
+        });
+      } catch (e) {
+        console.error('Confetti error:', e);
+      }
+
       const speedBonus = Math.round((timeLeft / 30) * 500);
       const basePoints = 500;
       const streakBonus = streak * 50;
